@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class AnalysisTest {
 
@@ -97,7 +98,7 @@ public class AnalysisTest {
         for (ClassDef classDef: dexFile.getClasses()) {
             StringWriter stringWriter = new StringWriter();
             IndentingWriter writer = new IndentingWriter(stringWriter);
-            ClassDefinition classDefinition = new ClassDefinition(options, classDef);
+            ClassDefinition classDefinition = new ClassDefinitionImpl(options, classDef);
             classDefinition.writeTo(writer);
             writer.close();
 

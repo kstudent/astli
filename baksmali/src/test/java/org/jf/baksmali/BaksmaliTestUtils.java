@@ -45,6 +45,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class BaksmaliTestUtils {
     public static void assertSmaliCompiledEquals(String source, String expected,
@@ -86,7 +87,7 @@ public class BaksmaliTestUtils {
             throws IOException {
         StringWriter stringWriter = new StringWriter();
         IndentingWriter writer = new IndentingWriter(stringWriter);
-        ClassDefinition classDefinition = new ClassDefinition(options, classDef);
+        ClassDefinition classDefinition = new ClassDefinitionImpl(options, classDef);
         classDefinition.writeTo(writer);
         writer.close();
         return normalizeSmali(stringWriter.toString(), stripComments);

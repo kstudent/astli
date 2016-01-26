@@ -63,7 +63,7 @@ public class PackedSwitchMethodItem extends InstructionMethodItem<PackedSwitchPa
                     first = false;
                 }
                 LabelMethodItem label = methodDef.getLabelCache().internLabel(
-                        new LabelMethodItem(methodDef.classDef.options, baseCodeAddress + switchElement.getOffset(),
+                        new LabelMethodItem(methodDef.classDef.getOptions(), baseCodeAddress + switchElement.getOffset(),
                                 "pswitch_"));
                 targets.add(new PackedSwitchLabelTarget(label));
             }

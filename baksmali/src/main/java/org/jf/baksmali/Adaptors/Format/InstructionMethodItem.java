@@ -67,12 +67,12 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
     }
 
     private boolean isAllowedOdex(@Nonnull Opcode opcode) {
-        baksmaliOptions options = methodDef.classDef.options;
+        baksmaliOptions options = methodDef.classDef.getOptions();
         if (options.allowOdex) {
             return true;
         }
 
-        if (methodDef.classDef.options.apiLevel >= 14) {
+        if (methodDef.classDef.getOptions().apiLevel >= 14) {
             return false;
         }
 
@@ -104,7 +104,7 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
                 Reference reference = referenceInstruction.getReference();
 
                 String classContext = null;
-                if (methodDef.classDef.options.useImplicitReferences) {
+                if (methodDef.classDef.getOptions().useImplicitReferences) {
                     classContext = methodDef.method.getDefiningClass();
                 }
 
@@ -548,7 +548,7 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
     }
 
     protected boolean writeCommentIfResourceId(IndentingWriter writer, int val) throws IOException {
-        Map<Integer,String> resourceIds = methodDef.classDef.options.resourceIds;
+        Map<Integer,String> resourceIds = methodDef.classDef.getOptions().resourceIds;
         String resource = resourceIds.get(Integer.valueOf(val));
         if (resource != null) {
             writer.write("    # ");

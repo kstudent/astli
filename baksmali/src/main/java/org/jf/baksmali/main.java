@@ -330,7 +330,7 @@ public class main {
         formatter.setWidth(consoleWidth);
 
         formatter.printHelp("java -jar baksmali.jar [options] <dex-file>",
-                "disassembles and/or dumps a dex file", basicOptions, printDebugOptions?debugOptions:null);
+                "/opt/smali/baksmali. srsly. disassembles and/or dumps a dex file", basicOptions, printDebugOptions?debugOptions:null);
     }
 
     private static void usage() {

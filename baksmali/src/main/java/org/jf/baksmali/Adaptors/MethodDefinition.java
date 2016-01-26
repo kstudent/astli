@@ -212,7 +212,7 @@ public class MethodDefinition {
         writer.write('\n');
 
         writer.indent(4);
-        if (classDef.options.useLocalsDirective) {
+        if (classDef.getOptions().useLocalsDirective) {
             writer.write(".locals ");
             writer.printSignedIntAsDec(methodImpl.getRegisterCount() - parameterRegisterCount);
         } else {
@@ -220,15 +220,15 @@ public class MethodDefinition {
             writer.printSignedIntAsDec(methodImpl.getRegisterCount());
         }
         writer.write('\n');
-        writeParameters(writer, method, methodParameters, classDef.options);
+        writeParameters(writer, method, methodParameters, classDef.getOptions());
 
         if (registerFormatter == null) {
-            registerFormatter = new RegisterFormatter(classDef.options, methodImpl.getRegisterCount(),
+            registerFormatter = new RegisterFormatter(classDef.getOptions(), methodImpl.getRegisterCount(),
                     parameterRegisterCount);
         }
 
         String containingClass = null;
-        if (classDef.options.useImplicitReferences) {
+        if (classDef.getOptions().useImplicitReferences) {
             containingClass = method.getDefiningClass();
         }
         AnnotationFormatter.writeTo(writer, method.getAnnotations(), containingClass);
@@ -366,19 +366,19 @@ public class MethodDefinition {
     private List<MethodItem> getMethodItems() {
         ArrayList<MethodItem> methodItems = new ArrayList<MethodItem>();
 
-        if ((classDef.options.registerInfo != 0) || (classDef.options.normalizeVirtualMethods) ||
-                (classDef.options.deodex && needsAnalyzed())) {
+        if ((classDef.getOptions().registerInfo != 0) || (classDef.getOptions().normalizeVirtualMethods) ||
+                (classDef.getOptions().deodex && needsAnalyzed())) {
             addAnalyzedInstructionMethodItems(methodItems);
         } else {
             addInstructionMethodItems(methodItems);
         }
 
         addTries(methodItems);
-        if (classDef.options.outputDebugInfo) {
+        if (classDef.getOptions().outputDebugInfo) {
             addDebugInfo(methodItems);
         }
 
-        if (classDef.options.useSequentialLabels) {
+        if (classDef.getOptions().useSequentialLabels) {
             setLabelSequentialNumbers();
         }
 
@@ -415,7 +415,7 @@ public class MethodDefinition {
                 methodItems.add(new BlankMethodItem(currentCodeAddress));
             }
 
-            if (classDef.options.addCodeOffsets) {
+            if (classDef.getOptions().addCodeOffsets) {
                 methodItems.add(new MethodItem(currentCodeAddress) {
 
                     @Override
@@ -432,7 +432,7 @@ public class MethodDefinition {
                 });
             }
 
-            if (!classDef.options.noAccessorComments && (instruction instanceof ReferenceInstruction)) {
+            if (!classDef.getOptions().noAccessorComments && (instruction instanceof ReferenceInstruction)) {
                 Opcode opcode = instruction.getOpcode();
 
                 if (opcode.referenceType == ReferenceType.METHOD) {
@@ -447,7 +447,7 @@ public class MethodDefinition {
                     if (methodReference != null &&
                             SyntheticAccessorResolver.looksLikeSyntheticAccessor(methodReference.getName())) {
                         AccessedMember accessedMember =
-                                classDef.options.syntheticAccessorResolver.getAccessedMember(methodReference);
+                                classDef.getOptions().syntheticAccessorResolver.getAccessedMember(methodReference);
                         if (accessedMember != null) {
                             methodItems.add(new SyntheticAccessCommentMethodItem(accessedMember, currentCodeAddress));
                         }
@@ -460,8 +460,8 @@ public class MethodDefinition {
     }
 
     private void addAnalyzedInstructionMethodItems(List<MethodItem> methodItems) {
-        MethodAnalyzer methodAnalyzer = new MethodAnalyzer(classDef.options.classPath, method,
-                classDef.options.inlineResolver, classDef.options.normalizeVirtualMethods);
+        MethodAnalyzer methodAnalyzer = new MethodAnalyzer(classDef.getOptions().classPath, method,
+                classDef.getOptions().inlineResolver, classDef.getOptions().normalizeVirtualMethods);
 
         AnalysisException analysisException = methodAnalyzer.getAnalysisException();
         if (analysisException != null) {
@@ -493,7 +493,7 @@ public class MethodDefinition {
                 methodItems.add(new BlankMethodItem(currentCodeAddress));
             }
 
-            if (classDef.options.addCodeOffsets) {
+            if (classDef.getOptions().addCodeOffsets) {
                 methodItems.add(new MethodItem(currentCodeAddress) {
 
                     @Override
@@ -510,10 +510,10 @@ public class MethodDefinition {
                 });
             }
 
-            if (classDef.options.registerInfo != 0 &&
+            if (classDef.getOptions().registerInfo != 0 &&
                     !instruction.getInstruction().getOpcode().format.isPayloadFormat) {
                 methodItems.add(
-                        new PreInstructionRegisterInfoMethodItem(classDef.options.registerInfo,
+                        new PreInstructionRegisterInfoMethodItem(classDef.getOptions().registerInfo,
                                 methodAnalyzer, registerFormatter, instruction, currentCodeAddress));
 
                 methodItems.add(
@@ -565,7 +565,7 @@ public class MethodDefinition {
                 }
 
                 //use the address from the last covered instruction
-                CatchMethodItem catchMethodItem = new CatchMethodItem(classDef.options, labelCache, lastCoveredAddress,
+                CatchMethodItem catchMethodItem = new CatchMethodItem(classDef.getOptions(), labelCache, lastCoveredAddress,
                         handler.getExceptionType(), startAddress, endAddress, handlerAddress);
                 methodItems.add(catchMethodItem);
             }
@@ -597,8 +597,8 @@ public class MethodDefinition {
 
     @Nullable
     private String getContainingClassForImplicitReference() {
-        if (classDef.options.useImplicitReferences) {
-            return classDef.classDef.getType();
+        if (classDef.getOptions().useImplicitReferences) {
+            return classDef.getClassDef().getType();
         }
         return null;
     }

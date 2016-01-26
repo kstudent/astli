@@ -51,6 +51,8 @@ import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
+import org.androidlibid.proto.MyClassDefinitionImpl;
+import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class baksmali {
 
@@ -144,6 +146,9 @@ public class baksmali {
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
         for (final ClassDef classDef: classDefs) {
+            
+            System.out.println("Going over... " + classDef.getType());
+            
             tasks.add(executor.submit(new Callable<Boolean>() {
                 @Override public Boolean call() throws Exception {
                     return disassembleClass(classDef, fileNameHandler, options);
@@ -194,7 +199,7 @@ public class baksmali {
         File smaliFile = fileNameHandler.getUniqueFilenameForClass(classDescriptor);
 
         //create and initialize the top level string template
-        ClassDefinition classDefinition = new ClassDefinition(options, classDef);
+        ClassDefinition classDefinition = new MyClassDefinitionImpl(options, classDef);
 
         //write the disassembly
         Writer writer = null;

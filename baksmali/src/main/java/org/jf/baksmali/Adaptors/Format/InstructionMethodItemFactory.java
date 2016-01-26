@@ -44,7 +44,7 @@ public class InstructionMethodItemFactory {
             MethodDefinition methodDef, int codeAddress, Instruction instruction) {
 
         if (instruction instanceof OffsetInstruction) {
-            return new OffsetInstructionFormatMethodItem(methodDef.classDef.options, methodDef, codeAddress,
+            return new OffsetInstructionFormatMethodItem(methodDef.classDef.getOptions(), methodDef, codeAddress,
                     (OffsetInstruction)instruction);
         }
 
