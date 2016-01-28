@@ -67,12 +67,12 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
     }
 
     private boolean isAllowedOdex(@Nonnull Opcode opcode) {
-        baksmaliOptions options = methodDef.classDef.getOptions();
+        baksmaliOptions options = methodDef.getClassDef().getOptions();
         if (options.allowOdex) {
             return true;
         }
 
-        if (methodDef.classDef.getOptions().apiLevel >= 14) {
+        if (methodDef.getClassDef().getOptions().apiLevel >= 14) {
             return false;
         }
 
@@ -104,8 +104,8 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
                 Reference reference = referenceInstruction.getReference();
 
                 String classContext = null;
-                if (methodDef.classDef.getOptions().useImplicitReferences) {
-                    classContext = methodDef.method.getDefiningClass();
+                if (methodDef.getClassDef().getOptions().useImplicitReferences) {
+                    classContext = methodDef.getMethod().getDefiningClass();
                 }
 
                 referenceString = ReferenceUtil.getReferenceString(reference, classContext);
@@ -378,7 +378,7 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
     }
 
     protected void writeRegister(IndentingWriter writer, int registerNumber) throws IOException {
-        methodDef.registerFormatter.writeTo(writer, registerNumber);
+        methodDef.getRegisterFormatter().writeTo(writer, registerNumber);
     }
 
     protected void writeFirstRegister(IndentingWriter writer) throws IOException {
@@ -483,7 +483,7 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
             writer.write("{}");
         } else {
             int startRegister = instruction.getStartRegister();
-            methodDef.registerFormatter.writeRegisterRange(writer, startRegister, startRegister+regCount-1);
+            methodDef.getRegisterFormatter().writeRegisterRange(writer, startRegister, startRegister+regCount-1);
         }
     }
 
@@ -548,7 +548,7 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
     }
 
     protected boolean writeCommentIfResourceId(IndentingWriter writer, int val) throws IOException {
-        Map<Integer,String> resourceIds = methodDef.classDef.getOptions().resourceIds;
+        Map<Integer,String> resourceIds = methodDef.getClassDef().getOptions().resourceIds;
         String resource = resourceIds.get(Integer.valueOf(val));
         if (resource != null) {
             writer.write("    # ");

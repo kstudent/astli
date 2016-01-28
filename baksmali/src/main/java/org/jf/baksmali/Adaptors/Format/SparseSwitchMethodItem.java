@@ -55,7 +55,7 @@ public class SparseSwitchMethodItem extends InstructionMethodItem<SparseSwitchPa
         if (baseCodeAddress >= 0) {
             for (SwitchElement switchElement: instruction.getSwitchElements()) {
                 LabelMethodItem label = methodDef.getLabelCache().internLabel(
-                        new LabelMethodItem( methodDef.classDef.getOptions(), baseCodeAddress + switchElement.getOffset(),
+                        new LabelMethodItem( methodDef.getClassDef().getOptions(), baseCodeAddress + switchElement.getOffset(),
                                 "sswitch_"));
                 targets.add(new SparseSwitchLabelTarget(switchElement.getKey(), label));
             }
