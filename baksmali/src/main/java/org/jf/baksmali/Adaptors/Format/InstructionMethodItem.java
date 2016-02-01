@@ -79,6 +79,10 @@ public class InstructionMethodItem<T extends Instruction> extends MethodItem {
         return opcode.isVolatileFieldAccessor() || opcode == Opcode.THROW_VERIFICATION_ERROR;
     }
 
+    public T getInstruction() {
+        return instruction;
+    }
+
     @Override
     public boolean writeTo(IndentingWriter writer) throws IOException {
         Opcode opcode = instruction.getOpcode();

@@ -43,7 +43,8 @@ dependencies {
     compile project(':dexlib2')
     compile depends.commons_cli
     compile depends.guava
-
+    compile "org.la4j:la4j:0.6.0"
+    
     testCompile depends.junit
     testCompile project(':smali')
 }
@@ -103,3 +104,12 @@ task proguard(type: proguard.gradle.ProGuardTask, dependsOn: fatJar) {
 }
 
 tasks.getByPath(':release').dependsOn(proguard)
+
+task copyTestTimeLibs(type: Copy) {
+    into "build/test.lib"
+    from configurations.testCompile
+}
+
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'org.jf.baksmali.main'
+}

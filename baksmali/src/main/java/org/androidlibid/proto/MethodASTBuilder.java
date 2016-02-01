@@ -25,8 +25,7 @@
  * INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package org.jf.baksmali.Adaptors;
+package org.androidlibid.proto;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -63,8 +62,25 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+import org.jf.baksmali.Adaptors.AnnotationFormatter;
+import org.jf.baksmali.Adaptors.BlankMethodItem;
+import org.jf.baksmali.Adaptors.CatchMethodItem;
+import org.jf.baksmali.Adaptors.ClassDefinition;
+import org.jf.baksmali.Adaptors.CommentMethodItem;
+import org.jf.baksmali.Adaptors.CommentedOutMethodItem;
+import org.jf.baksmali.Adaptors.Format.InstructionMethodItem;
+import org.jf.baksmali.Adaptors.LabelMethodItem;
+import org.jf.baksmali.Adaptors.MethodDefinition;
+import org.jf.baksmali.Adaptors.MethodItem;
+import org.jf.baksmali.Adaptors.PostInstructionRegisterInfoMethodItem;
+import org.jf.baksmali.Adaptors.PreInstructionRegisterInfoMethodItem;
+import org.jf.baksmali.Adaptors.ReferenceFormatter;
+import org.jf.baksmali.Adaptors.RegisterFormatter;
+import org.jf.baksmali.Adaptors.RegisterFormatterImpl;
+import org.jf.baksmali.Adaptors.SyntheticAccessCommentMethodItem;
+import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 
-public class MethodDefinitionImpl implements MethodDefinition {
+public class MethodASTBuilder implements MethodDefinition {
     @Nonnull private final ClassDefinition classDef;
     @Nonnull private final Method method;
     @Nonnull private final MethodImplementation methodImpl;
@@ -108,12 +124,12 @@ public class MethodDefinitionImpl implements MethodDefinition {
         return registerFormatter;
     }
     
-    @Nonnull private final LabelCache labelCache = new LabelCache();
+    @Nonnull private final MethodDefinition.LabelCache labelCache = new MethodDefinition.LabelCache();
     @Nonnull private final SparseIntArray packedSwitchMap;
     @Nonnull private final SparseIntArray sparseSwitchMap;
     @Nonnull private final InstructionOffsetMap instructionOffsetMap;
 
-    public MethodDefinitionImpl(@Nonnull ClassDefinition classDef, @Nonnull Method method,
+    public MethodASTBuilder(@Nonnull ClassDefinition classDef, @Nonnull Method method,
                             @Nonnull MethodImplementation methodImpl) {
         this.classDef = classDef;
         this.method = method;
@@ -144,7 +160,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
                     int targetOffset = codeOffset + ((OffsetInstruction)instruction).getCodeOffset();
                     try {
                         targetOffset = findPayloadOffset(targetOffset, Opcode.PACKED_SWITCH_PAYLOAD);
-                    } catch (InvalidSwitchPayload ex) {
+                    } catch (MethodDefinition.InvalidSwitchPayload ex) {
                         valid = false;
                     }
                     if (valid) {
@@ -165,7 +181,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
                     int targetOffset = codeOffset + ((OffsetInstruction)instruction).getCodeOffset();
                     try {
                         targetOffset = findPayloadOffset(targetOffset, Opcode.SPARSE_SWITCH_PAYLOAD);
-                    } catch (InvalidSwitchPayload ex) {
+                    } catch (MethodDefinition.InvalidSwitchPayload ex) {
                         valid = false;
                         // The offset to the payload instruction was invalid. Nothing to do, except that we won't
                         // add this instruction to the map.
@@ -224,59 +240,88 @@ public class MethodDefinitionImpl implements MethodDefinition {
 
     @Override
     public void writeTo(IndentingWriter writer) throws IOException {
+        
+        
+        Node root = new Node(NodeType.METHOD);
+        
         int parameterRegisterCount = 0;
         if (!AccessFlags.STATIC.isSet(method.getAccessFlags())) {
             parameterRegisterCount++;
         }
 
-        writer.write(".method ");
-        writeAccessFlags(writer, method.getAccessFlags());
-        writer.write(method.getName());
-        writer.write("(");
         for (MethodParameter parameter: methodParameters) {
-            String type = parameter.getType();
-            writer.write(type);
+            root.addChild(new Node(NodeType.ARGUMENT));
             parameterRegisterCount++;
-            if (TypeUtils.isWideType(type)) {
+            if (TypeUtils.isWideType(parameter.getType())) {
                 parameterRegisterCount++;
             }
         }
-        writer.write(")");
-        writer.write(method.getReturnType());
-        writer.write('\n');
 
-        writer.indent(4);
-        if (classDef.getOptions().useLocalsDirective) {
-            writer.write(".locals ");
-            writer.printSignedIntAsDec(methodImpl.getRegisterCount() - parameterRegisterCount);
-        } else {
-            writer.write(".registers ");
-            writer.printSignedIntAsDec(methodImpl.getRegisterCount());
-        }
-        writer.write('\n');
-        writeParameters(writer, method, methodParameters, classDef.getOptions());
+        MyRegisterFormatter rfm = new MyRegisterFormatter(classDef.getOptions(), methodImpl.getRegisterCount(),parameterRegisterCount);
 
-        if (registerFormatter == null) {
-            registerFormatter = new RegisterFormatterImpl(classDef.getOptions(), methodImpl.getRegisterCount(),
-                    parameterRegisterCount);
-        }
-
-        String containingClass = null;
-        if (classDef.getOptions().useImplicitReferences) {
-            containingClass = method.getDefiningClass();
-        }
-        AnnotationFormatter.writeTo(writer, method.getAnnotations(), containingClass);
-
-        writer.write('\n');
 
         List<MethodItem> methodItems = getMethodItems();
         for (MethodItem methodItem: methodItems) {
-            if (methodItem.writeTo(writer)) {
-                writer.write('\n');
+            
+            if(methodItem instanceof InstructionMethodItem) {
+                InstructionMethodItem iMethodItem = (InstructionMethodItem) methodItem;
+                Instruction ins = iMethodItem.getInstruction();
+                
+                if(ins.getOpcode().format == Format.Format35c && (ins.getOpcode() == Opcode.INVOKE_DIRECT || ins.getOpcode() == Opcode.INVOKE_VIRTUAL)) {
+                    
+                    Node child;
+                    
+                    switch (ins.getOpcode()) {
+                        case INVOKE_DIRECT:
+                            child = new Node(NodeType.DIRECT);
+                            break;
+                        case INVOKE_VIRTUAL:
+                            child = new Node(NodeType.VIRTUAL);
+                            break;
+                        default:
+                            continue;
+                    }
+                        
+                    root.addChild(child);
+                    
+                    FiveRegisterInstruction instruction = (FiveRegisterInstruction) ins;
+                    
+                    switch (instruction.getRegisterCount()) {
+                        case 1:
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
+                            break;
+                        case 2:
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterD()));
+                            break;
+                        case 3:
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterD()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterE()));
+                            break;
+                        case 4:
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterD()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterE()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterF()));
+                            break;
+                        case 5:
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterD()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterE()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterF()));
+                            child.addChild(rfm.createRegisterNode(instruction.getRegisterG()));
+                            break;
+                    }
+                    
+                }
+                
             }
         }
-        writer.deindent(4);
-        writer.write(".end method\n");
+        
+        writer.write("-----------AST ON THE WAY---------------\n");
+        writer.write(root.toString());
+        writer.write("-----------DONE ---------------\n");
     }
 
     @Override
@@ -285,7 +330,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
         try {
             targetIndex = instructionOffsetMap.getInstructionIndexAtCodeOffset(targetOffset);
         } catch (InvalidInstructionOffset ex) {
-            throw new InvalidSwitchPayload(targetOffset);
+            throw new MethodDefinition.InvalidSwitchPayload(targetOffset);
         }
 
         //TODO: does dalvik let you pad with multiple nops?
@@ -303,7 +348,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
                     }
                 }
             }
-            throw new InvalidSwitchPayload(targetOffset);
+            throw new MethodDefinition.InvalidSwitchPayload(targetOffset);
         } else {
             return instruction;
         }
@@ -315,7 +360,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
         try {
             targetIndex = instructionOffsetMap.getInstructionIndexAtCodeOffset(targetOffset);
         } catch (InvalidInstructionOffset ex) {
-            throw new InvalidSwitchPayload(targetOffset);
+            throw new MethodDefinition.InvalidSwitchPayload(targetOffset);
         }
 
         //TODO: does dalvik let you pad with multiple nops?
@@ -333,7 +378,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
                     }
                 }
             }
-            throw new InvalidSwitchPayload(targetOffset);
+            throw new MethodDefinition.InvalidSwitchPayload(targetOffset);
         } else {
             return targetOffset;
         }
@@ -388,7 +433,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
     }
 
     @Nonnull@Override
-    public LabelCache getLabelCache() {
+    public MethodDefinition.LabelCache getLabelCache() {
         return labelCache;
     }
 

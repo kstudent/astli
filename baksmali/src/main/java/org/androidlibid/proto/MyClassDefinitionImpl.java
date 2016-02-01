@@ -45,6 +45,8 @@ import org.jf.util.StringUtils;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
+import org.jf.dexlib2.util.TypeUtils;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MyClassDefinitionImpl implements ClassDefinition {
     
@@ -116,6 +118,9 @@ public class MyClassDefinitionImpl implements ClassDefinition {
 
     @Override
     public void writeTo(IndentingWriter writer) throws IOException {
+        
+        writer.write("OK, here comes smali\n");
+        writer.write("--------------------\n");
         writeClass(writer);
         writeSuper(writer);
         writeSourceFile(writer);
@@ -125,6 +130,11 @@ public class MyClassDefinitionImpl implements ClassDefinition {
         writeInstanceFields(writer, staticFields);
         Set<String> directMethods = writeDirectMethods(writer);
         writeVirtualMethods(writer, directMethods);
+        writer.write("--------------------\n");
+        writer.write("AST\n");
+        createDirectMethodsAST(writer); 
+        createvirtualMethodsAST(writer); 
+        
     }
 
     private void writeClass(IndentingWriter writer) throws IOException {
@@ -270,7 +280,17 @@ public class MyClassDefinitionImpl implements ClassDefinition {
         } else {
             directMethods = classDef.getDirectMethods();
         }
-
+        
+//        int count = 0; 
+//        
+//        for (Method method: directMethods) {
+//            count++;
+//            String methodString = ReferenceUtil.getMethodDescriptor(method, true);
+//            writtenMethods.add(methodString); 
+//        }
+        
+//        writer.write("This class has " + count + " direct methods.");
+        
         for (Method method: directMethods) {
             if (!wroteHeader) {
                 writer.write("\n\n");
@@ -290,9 +310,9 @@ public class MyClassDefinitionImpl implements ClassDefinition {
 
             MethodImplementation methodImpl = method.getImplementation();
             if (methodImpl == null) {
-                MethodDefinition.writeEmptyMethodTo(methodWriter, method, options);
+                MethodDefinitionImpl.writeEmptyMethodTo(methodWriter, method, options);
             } else {
-                MethodDefinition methodDefinition = new MethodDefinition(this, method, methodImpl);
+                MethodDefinition methodDefinition = new MethodDefinitionImpl(this, method, methodImpl);
                 methodDefinition.writeTo(methodWriter);
             }
         }
@@ -309,7 +329,19 @@ public class MyClassDefinitionImpl implements ClassDefinition {
         } else {
             virtualMethods = classDef.getVirtualMethods();
         }
+        
 
+//        int count = 0; 
+//        
+//        for (Method method: virtualMethods) {
+//            count++;
+//            String methodString = ReferenceUtil.getMethodDescriptor(method, true);
+//            writtenMethods.add(methodString); 
+//        }
+        
+//        writer.write("This class has " + count + " virtual methods.");
+        
+        
         for (Method method: virtualMethods) {
             if (!wroteHeader) {
                 writer.write("\n\n");
@@ -335,11 +367,52 @@ public class MyClassDefinitionImpl implements ClassDefinition {
 
             MethodImplementation methodImpl = method.getImplementation();
             if (methodImpl == null) {
-                MethodDefinition.writeEmptyMethodTo(methodWriter, method, options);
+                MethodDefinitionImpl.writeEmptyMethodTo(methodWriter, method, options);
             } else {
-                MethodDefinition methodDefinition = new MethodDefinition(this, method, methodImpl);
+                MethodDefinition methodDefinition = new MethodDefinitionImpl(this, method, methodImpl);
                 methodDefinition.writeTo(methodWriter);
             }
         }
     }
+
+    private void createDirectMethodsAST(IndentingWriter writer) throws IOException {
+
+        Iterable<? extends Method> directMethods;
+        if (classDef instanceof DexBackedClassDef) {
+            directMethods = ((DexBackedClassDef)classDef).getDirectMethods(false);
+        } else {
+            directMethods = classDef.getDirectMethods();
+        }
+        
+        for (Method method: directMethods) {
+            
+            IndentingWriter methodWriter = writer;
+
+            MethodImplementation methodImpl = method.getImplementation();
+            if (methodImpl != null) {
+                MethodDefinition methodDefinition = new MethodASTBuilder(this, method, methodImpl);
+                methodDefinition.writeTo(methodWriter);
+            }
+        }
+    }
+    
+    private void createvirtualMethodsAST(IndentingWriter writer) throws IOException {
+
+        Iterable<? extends Method> virtualMethods;
+        if (classDef instanceof DexBackedClassDef) {
+            virtualMethods = ((DexBackedClassDef)classDef).getVirtualMethods(false);
+        } else {
+            virtualMethods = classDef.getVirtualMethods();
+        }
+        
+        for (Method method: virtualMethods) {
+            IndentingWriter methodWriter = writer;
+
+            MethodImplementation methodImpl = method.getImplementation();
+            if (methodImpl != null) {
+                MethodDefinition methodDefinition = new MethodASTBuilder(this, method, methodImpl);
+                methodDefinition.writeTo(methodWriter);
+            }
+        }
+    }    
 }

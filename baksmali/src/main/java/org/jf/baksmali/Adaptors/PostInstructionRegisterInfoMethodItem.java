@@ -56,7 +56,7 @@ public class PostInstructionRegisterInfoMethodItem extends MethodItem {
 
     @Override
     public boolean writeTo(IndentingWriter writer) throws IOException {
-        int registerInfo = registerFormatter.options.registerInfo;
+        int registerInfo = registerFormatter.getOptions().registerInfo;
         int registerCount = analyzedInstruction.getRegisterCount();
         BitSet registers = new BitSet(registerCount);
 
