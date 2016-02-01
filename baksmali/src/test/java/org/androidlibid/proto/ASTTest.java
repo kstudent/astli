@@ -6,7 +6,6 @@
 package org.androidlibid.proto;
 
 import java.io.IOException;
-import org.jf.baksmali.baksmali;
 import org.jf.baksmali.main;
 import org.junit.Test;
 

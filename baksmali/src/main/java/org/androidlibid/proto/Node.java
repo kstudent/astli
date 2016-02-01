@@ -13,12 +13,14 @@ import javax.annotation.Nullable;
 
 public class Node {
     
-    @Nullable private final List<Node> children;
+    @Nonnull  private final List<Node> children;
+    @Nullable private Node parent;
     @Nonnull  private final NodeType type;
 
     public Node(NodeType type) {
         this.type = type;
         children = new LinkedList<>();
+        parent = null;
     }
     
     public NodeType getType() {
@@ -29,8 +31,14 @@ public class Node {
         return children;
     }
 
+    @Nullable
+    public Node getParent() {
+        return parent;
+    }
+
     public void addChild(Node child) {
         children.add(child);
+        child.parent = this;
     }
 
     @Override

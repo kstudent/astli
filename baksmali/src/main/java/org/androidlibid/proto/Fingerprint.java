@@ -5,6 +5,7 @@
  */
 package org.androidlibid.proto;
 
+import java.util.Arrays;
 import java.util.List;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
@@ -34,8 +35,12 @@ public class Fingerprint {
     Fingerprint() {
         vector = new BasicVector(FEATURES.size());
     } 
+    
+    void incrementFeature(NodeType... dimension) {
+        Fingerprint.this.incrementFeature(Arrays.asList(dimension));
+    }
 
-    void incrementDimension(List<NodeType> dimension) {
+    void incrementFeature(List<NodeType> dimension) {
         int index = FEATURES.indexOf(dimension);
         if(index == -1) {
             throw new IllegalArgumentException("Dimension not found");
@@ -43,8 +48,8 @@ public class Fingerprint {
         vector.set(index, vector.get(index) + 1);
     }
     
-    double getDimension(List<NodeType> dimension) {
-        int index = FEATURES.indexOf(dimension);
+    double getFeatureCount(List<NodeType> feature) {
+        int index = FEATURES.indexOf(feature);
         if(index == -1) {
             throw new IllegalArgumentException("Dimension not found");
         }
@@ -56,7 +61,7 @@ public class Fingerprint {
         StringBuilder string = new StringBuilder();
         for (int i = 0; i < FEATURES.size(); i++) {
             List<NodeType> feature = FEATURES.get(i);
-            String featureString = String.format("%" + LONGEST_FEATURE + "s", feature.toString());
+            String featureString = String.format("%-" + LONGEST_FEATURE + "s", feature.toString());
             string = string.append(featureString).append(" : ").append(vector.get(i)).append("\n");
         }
         return string.toString();

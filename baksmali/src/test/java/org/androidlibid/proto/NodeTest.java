@@ -15,18 +15,10 @@
  */
 package org.androidlibid.proto;
 
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
-import org.jf.util.IndentingWriter;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 /**
  *
@@ -55,51 +47,23 @@ public class NodeTest {
     }
 
     @Test
-    public void testNodeTypeHorizontalCombinatorics() {
-        NodeType[] values = NodeType.values() //        Stack<NodeType> stack = new Stack<>();       
-                //        for(NodeType type : NodeType.values()) {
-                //            
-                //            for(NodeType type : NodeType.values()) {
-                //                for(NodeType type : NodeType.values()) {
-                //
-                //                }
-                //            }
-                //        } 
-                ;
+    public void testHorizontalFeatures() {
+        System.out.println("horizontal features: ");
+        
+        for(List<NodeType> feature : NodeType.generateHorizontalFeatures()) {
+            System.out.println(feature);
+        }
     }
     
     @Test
-    public void testVerticalFeaturesGenerator() {
-    
-        for(NodeType type0 : filterByLevel(NodeType.values(), 0)) {
-            
-            System.out.println(type0.getName());
-            if (type0.isLeaf()) continue;
-            
-            for(NodeType type1 : filterByLevel(NodeType.values(), 1)) {
-                System.out.println(type0.getName() + " " + type1.getName());
-                if (type1.isLeaf()) continue;
-                
-                for(NodeType type2 : filterByLevel(NodeType.values(), 2)) {
-                    System.out.println(type0.getName() + " " + type1.getName() + " " + type2.getName());
-                }
-            }
+    public void testVerticalFeatures() {
+        System.out.println("vertical features: ");
+        
+        for(List<NodeType> feature : NodeType.generateVerticalFeatures()) {
+            System.out.println(feature);
         }
     }
 
-    private List<NodeType> filterByLevel(NodeType[] values, int level) {
-        List<NodeType> list = new ArrayList<>();
-        
-        for(NodeType type : values) {
-            if(type.getLevel() == level) {
-                list.add(type);
-            }
-        }
-        
-        return list;
-        
-    }
-    
     @Test
     public void testEqualsOnLists() {
         List<Integer> list1 = new ArrayList<>();
@@ -118,9 +82,4 @@ public class NodeTest {
     
     }
     
-    @Test
-    public void testTypeToString() {
-        System.out.println(NodeType.generateHorizontalFeatures());
-        System.out.println(NodeType.generateVerticalFeatures());
-    }
 }

@@ -32,31 +32,31 @@ public class FingerprintTest {
         List<NodeType> dimension = new ArrayList<>();
         dimension.add(NodeType.METHOD);
         
-        assert(f.getDimension(dimension) == 0);
-        f.incrementDimension(dimension);
-        assert(f.getDimension(dimension) == 1);
+        assert(f.getFeatureCount(dimension) == 0);
+        f.incrementFeature(dimension);
+        assert(f.getFeatureCount(dimension) == 1);
         
         dimension.add(NodeType.VIRTUAL);
-        assert(f.getDimension(dimension) == 0);
-        f.incrementDimension(dimension);
-        f.incrementDimension(dimension);
-        assert(f.getDimension(dimension) == 2);
+        assert(f.getFeatureCount(dimension) == 0);
+        f.incrementFeature(dimension);
+        f.incrementFeature(dimension);
+        assert(f.getFeatureCount(dimension) == 2);
         
         dimension.add(NodeType.LOCAL);
-        assert(f.getDimension(dimension) == 0);
-        f.incrementDimension(dimension);
-        assert(f.getDimension(dimension) == 1);
-        f.incrementDimension(dimension);
-        assert(f.getDimension(dimension) == 2);
+        assert(f.getFeatureCount(dimension) == 0);
+        f.incrementFeature(dimension);
+        assert(f.getFeatureCount(dimension) == 1);
+        f.incrementFeature(dimension);
+        assert(f.getFeatureCount(dimension) == 2);
         
         dimension = new ArrayList<>();
         dimension.add(NodeType.PARAMETER);
         dimension.add(NodeType.LOCAL);
-        assert(f.getDimension(dimension) == 0);
-        f.incrementDimension(dimension);
-        assert(f.getDimension(dimension) == 1);
-        f.incrementDimension(dimension);
-        assert(f.getDimension(dimension) == 2);
+        assert(f.getFeatureCount(dimension) == 0);
+        f.incrementFeature(dimension);
+        assert(f.getFeatureCount(dimension) == 1);
+        f.incrementFeature(dimension);
+        assert(f.getFeatureCount(dimension) == 2);
         
         System.out.println(f.toString());
         
