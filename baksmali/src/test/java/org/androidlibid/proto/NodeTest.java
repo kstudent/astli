@@ -50,7 +50,9 @@ public class NodeTest {
     public void testHorizontalFeatures() {
         System.out.println("horizontal features: ");
         
-        for(List<NodeType> feature : NodeType.generateHorizontalFeatures()) {
+        FeatureGenerator fg = new FeatureGenerator();
+        
+        for(List<NodeType> feature : fg.generateHorizontalFeatures()) {
             System.out.println(feature);
         }
     }
@@ -59,7 +61,9 @@ public class NodeTest {
     public void testVerticalFeatures() {
         System.out.println("vertical features: ");
         
-        for(List<NodeType> feature : NodeType.generateVerticalFeatures()) {
+        FeatureGenerator fg = new FeatureGenerator();
+        
+        for(List<NodeType> feature : fg.generateVerticalFeatures()) {
             System.out.println(feature);
         }
     }

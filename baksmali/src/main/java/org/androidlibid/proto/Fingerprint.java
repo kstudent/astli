@@ -12,13 +12,15 @@ import org.la4j.vector.dense.BasicVector;
 
 public class Fingerprint {
 
-    private final Vector vector;
+    private Vector vector;
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE;
+    private static final FeatureGenerator FEATURE_GENERATOR;
     
     static {
-        FEATURES = NodeType.generateVerticalFeatures();
-        FEATURES.addAll(NodeType.generateHorizontalFeatures());
+        FEATURE_GENERATOR = new FeatureGenerator();
+        FEATURES = FEATURE_GENERATOR.generateVerticalFeatures();
+        FEATURES.addAll(FEATURE_GENERATOR.generateHorizontalFeatures());
         int longestFeature = 0; 
         for(List<NodeType> feature : FEATURES){
             int featureLength = 0;
@@ -48,6 +50,10 @@ public class Fingerprint {
         vector.set(index, vector.get(index) + 1);
     }
     
+    double getFeatureCount(NodeType... feature) {
+        return Fingerprint.this.getFeatureCount(Arrays.asList(feature));
+    }
+    
     double getFeatureCount(List<NodeType> feature) {
         int index = FEATURES.indexOf(feature);
         if(index == -1) {
@@ -56,6 +62,10 @@ public class Fingerprint {
         return vector.get(index);
     }
 
+    void add(Fingerprint that) {
+        this.vector = this.vector.add(that.vector);
+    }
+    
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
@@ -68,6 +78,5 @@ public class Fingerprint {
         }
         return string.toString();
     }
-    
-    
+        
 }

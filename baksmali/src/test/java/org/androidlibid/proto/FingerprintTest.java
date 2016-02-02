@@ -61,4 +61,17 @@ public class FingerprintTest {
         System.out.println(f.toString());
         
     }
+    
+    @Test
+    public void testAdd() {
+        Fingerprint f1 = new Fingerprint();
+        Fingerprint f2 = new Fingerprint();
+        assert(f1.getFeatureCount(NodeType.METHOD) == 0);
+        f1.incrementFeature(NodeType.METHOD);
+        assert(f1.getFeatureCount(NodeType.METHOD) == 1);
+        f2.incrementFeature(NodeType.METHOD);
+        assert(f2.getFeatureCount(NodeType.METHOD) == 1);
+        f1.add(f2);
+        assert(f1.getFeatureCount(NodeType.METHOD) == 2);    
+    }
 }

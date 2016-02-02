@@ -29,19 +29,38 @@ public class ClassFingerprintingTask implements Callable<Boolean>{
         List<Node> ast = classDefinition.createAST();
         Fingerprinter fp = new Fingerprinter();
         
+        Fingerprint classFingerprint = new Fingerprint();
+        
         for(Node node : ast) {
-            Fingerprint fingerprint = fp.createFingerprint(node);
-            StringBuilder string = new StringBuilder();
-            string = string.append("begin of fingerprint ")
-                        .append(classDef.getType())
-                        .append(": \n")
-                        .append(fingerprint.toString())
-                        .append("\n");
-            
-            synchronized (System.out) {
-                System.out.println(string.toString());
-            }
+            Fingerprint methodFingerprint = fp.createFingerprint(node);
+            classFingerprint.add(methodFingerprint);
         }
+        
+        StringBuilder string = new StringBuilder();
+        string = string.append("class ")
+                        .append(classDef.getType())
+                        .append(" has this fingerprint:\n")
+                        .append(classFingerprint);
+        
+        synchronized (System.out) {
+            System.out.println(string.toString());
+        }
+
+
+        
+//        for(Node node : ast) {
+//            Fingerprint fingerprint = fp.createFingerprint(node);
+//            StringBuilder string = new StringBuilder();
+//            string = string.append("begin of fingerprint ")
+//                        .append(classDef.getType())
+//                        .append(": \n")
+//                        .append(fingerprint.toString())
+//                        .append("\n");
+//            
+//            synchronized (System.out) {
+//                System.out.println(string.toString());
+//            }
+//        }
         
         return true;
     }

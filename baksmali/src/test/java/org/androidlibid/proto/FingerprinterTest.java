@@ -36,7 +36,6 @@ public class FingerprinterTest {
         Fingerprint fingerprint = fingerPrinter.createFingerprint(root);
         
         System.out.println(root);
-        
         System.out.println(fingerprint);
         
         

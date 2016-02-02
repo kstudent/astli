@@ -34,15 +34,21 @@ public class Fingerprinter {
     }
     
     private void generateVerticalFeature(Node current, Fingerprint fingerprint) {
-        LinkedList<NodeType> feature = new LinkedList<>();
         
-        do {
+        if(current.getParent() == null) {
+            fingerprint.incrementFeature(current.getType());
+        } else {
+            LinkedList<NodeType> feature = new LinkedList<>();
+
             feature.addFirst(current.getType());
             fingerprint.incrementFeature(feature);
-            current = current.getParent();
+
+            while (current.getParent().getParent() != null) {
+                current = current.getParent();
+                feature.addFirst(current.getType());
+                fingerprint.incrementFeature(feature);
+            }
         }
-        while(current != null);
-        
     }
 
     private void countHorizontalFeatures(Node current, Fingerprint fingerprint) {
