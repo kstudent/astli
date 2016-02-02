@@ -146,7 +146,7 @@ public class baksmali {
         ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
-        if(options.androidlibid) {
+        if(options.aliFingerprintAPK) {
             for (final ClassDef classDef: classDefs) {
                 tasks.add(executor.submit(new ClassFingerprintingTask(classDef, options)));
             }

@@ -195,7 +195,10 @@ public class main {
                     options.deodex = true;
                     break;
                 case 'y':
-                    options.androidlibid = true;
+                    options.aliFingerprintAPK = true;
+                    break;
+                case 'z':
+                    options.aliFingerprintJAR = true;
                     break;
                 case 'X':
                     options.experimental = true;
@@ -242,16 +245,7 @@ public class main {
                     assert false;
             }
         }
-        
-        if(options.androidlibid) {
             
-            //todo: remove.... what a hack!
-            
-            String[] x = {"/home/chri/0_tug/master/apks/HelloWorldLinux.apk"};
-            remainingArgs = x;
-        }
-        
-
         if (remainingArgs.length != 1) {
             usage();
             return;
@@ -385,10 +379,14 @@ public class main {
                         "odex file")
                 .create("x");
         
-        Option androidLibIdOption = OptionBuilder.withLongOpt("androidlibid")
-                .withDescription("create android lib id fingerprints")
+        Option aliFingerprintAPK = OptionBuilder.withLongOpt("ali-fingerprint-apk")
+                .withDescription("create fingerprints of an android app (.apk)")
                 .create("y");
 
+        Option aliFingerprintJAR = OptionBuilder.withLongOpt("ali-fingerprint-jar")
+                .withDescription("create fingerprint of a library (.jar)")
+                .create("z");
+        
         Option experimentalOption = OptionBuilder.withLongOpt("experimental")
                 .withDescription("enable experimental opcodes to be disassembled, even if they aren't necessarily supported in the Android runtime yet")
                 .create("X");
@@ -514,7 +512,8 @@ public class main {
         basicOptions.addOption(outputDirOption);
         basicOptions.addOption(noParameterRegistersOption);
         basicOptions.addOption(deodexerantOption);
-        basicOptions.addOption(androidLibIdOption);
+        basicOptions.addOption(aliFingerprintAPK);
+        basicOptions.addOption(aliFingerprintJAR);
         basicOptions.addOption(experimentalOption);
         basicOptions.addOption(useLocalsOption);
         basicOptions.addOption(sequentialLabelsOption);
