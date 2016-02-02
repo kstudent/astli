@@ -31,7 +31,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.jf.baksmali.Adaptors.Debug.DebugMethodItem;
 import org.jf.baksmali.Adaptors.Format.InstructionMethodItemFactory;
-import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.Format;
 import org.jf.dexlib2.Opcode;
@@ -59,10 +58,8 @@ import org.jf.util.IndentingWriter;
 import org.jf.util.SparseIntArray;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
-import org.jf.baksmali.Adaptors.AnnotationFormatter;
 import org.jf.baksmali.Adaptors.BlankMethodItem;
 import org.jf.baksmali.Adaptors.CatchMethodItem;
 import org.jf.baksmali.Adaptors.ClassDefinition;
@@ -74,13 +71,11 @@ import org.jf.baksmali.Adaptors.MethodDefinition;
 import org.jf.baksmali.Adaptors.MethodItem;
 import org.jf.baksmali.Adaptors.PostInstructionRegisterInfoMethodItem;
 import org.jf.baksmali.Adaptors.PreInstructionRegisterInfoMethodItem;
-import org.jf.baksmali.Adaptors.ReferenceFormatter;
 import org.jf.baksmali.Adaptors.RegisterFormatter;
-import org.jf.baksmali.Adaptors.RegisterFormatterImpl;
 import org.jf.baksmali.Adaptors.SyntheticAccessCommentMethodItem;
 import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 
-public class MethodASTBuilder implements MethodDefinition {
+public class ASTMethodDefinition implements MethodDefinition {
     @Nonnull private final ClassDefinition classDef;
     @Nonnull private final Method method;
     @Nonnull private final MethodImplementation methodImpl;
@@ -104,22 +99,18 @@ public class MethodASTBuilder implements MethodDefinition {
         return methodImpl;
     }
 
-    @Override
     public ImmutableList<Instruction> getInstructions() {
         return instructions;
     }
 
-    @Override
     public List<Instruction> getEffectiveInstructions() {
         return effectiveInstructions;
     }
 
-    @Override
     public ImmutableList<MethodParameter> getMethodParameters() {
         return methodParameters;
     }
 
-    @Override
     public RegisterFormatter getRegisterFormatter() {
         return registerFormatter;
     }
@@ -129,7 +120,7 @@ public class MethodASTBuilder implements MethodDefinition {
     @Nonnull private final SparseIntArray sparseSwitchMap;
     @Nonnull private final InstructionOffsetMap instructionOffsetMap;
 
-    public MethodASTBuilder(@Nonnull ClassDefinition classDef, @Nonnull Method method,
+    public ASTMethodDefinition(@Nonnull ClassDefinition classDef, @Nonnull Method method,
                             @Nonnull MethodImplementation methodImpl) {
         this.classDef = classDef;
         this.method = method;
@@ -210,37 +201,8 @@ public class MethodASTBuilder implements MethodDefinition {
             throw ExceptionWithContext.withContext(ex, "Error while processing method %s", methodString);
         }
     }
-
-    public static void writeEmptyMethodTo(IndentingWriter writer, Method method,
-                                          baksmaliOptions options) throws IOException {
-        writer.write(".method ");
-        writeAccessFlags(writer, method.getAccessFlags());
-        writer.write(method.getName());
-        writer.write("(");
-        ImmutableList<MethodParameter> methodParameters = ImmutableList.copyOf(method.getParameters());
-        for (MethodParameter parameter: methodParameters) {
-            writer.write(parameter.getType());
-        }
-        writer.write(")");
-        writer.write(method.getReturnType());
-        writer.write('\n');
-
-        writer.indent(4);
-        writeParameters(writer, method, methodParameters, options);
-
-        String containingClass = null;
-        if (options.useImplicitReferences) {
-            containingClass = method.getDefiningClass();
-        }
-        AnnotationFormatter.writeTo(writer, method.getAnnotations(), containingClass);
-
-        writer.deindent(4);
-        writer.write(".end method\n");
-    }
-
-    @Override
-    public void writeTo(IndentingWriter writer) throws IOException {
-        
+    
+    public Node createAST() throws IOException {
         
         Node root = new Node(NodeType.METHOD);
         
@@ -257,7 +219,7 @@ public class MethodASTBuilder implements MethodDefinition {
             }
         }
 
-        MyRegisterFormatter rfm = new MyRegisterFormatter(classDef.getOptions(), methodImpl.getRegisterCount(),parameterRegisterCount);
+        ASTRegisterNodeCreator rfm = new ASTRegisterNodeCreator(classDef.getOptions(), methodImpl.getRegisterCount(),parameterRegisterCount);
 
 
         List<MethodItem> methodItems = getMethodItems();
@@ -319,12 +281,10 @@ public class MethodASTBuilder implements MethodDefinition {
             }
         }
         
-        writer.write("-----------AST ON THE WAY---------------\n");
-        writer.write(root.toString());
-        writer.write("-----------DONE ---------------\n");
+        return root;
+        
     }
 
-    @Override
     public Instruction findSwitchPayload(int targetOffset, Opcode type) {
         int targetIndex;
         try {
@@ -384,55 +344,8 @@ public class MethodASTBuilder implements MethodDefinition {
         }
     }
 
-    private static void writeAccessFlags(IndentingWriter writer, int accessFlags)
-            throws IOException {
-        for (AccessFlags accessFlag: AccessFlags.getAccessFlagsForMethod(accessFlags)) {
-            writer.write(accessFlag.toString());
-            writer.write(' ');
-        }
-    }
-
-    private static void writeParameters(IndentingWriter writer, Method method,
-                                        List<? extends MethodParameter> parameters,
-                                        baksmaliOptions options) throws IOException {
-        boolean isStatic = AccessFlags.STATIC.isSet(method.getAccessFlags());
-        int registerNumber = isStatic?0:1;
-        for (MethodParameter parameter: parameters) {
-            String parameterType = parameter.getType();
-            String parameterName = parameter.getName();
-            Collection<? extends Annotation> annotations = parameter.getAnnotations();
-            if ((options.outputDebugInfo && parameterName != null) || annotations.size() != 0) {
-                writer.write(".param p");
-                writer.printSignedIntAsDec(registerNumber);
-
-                if (parameterName != null && options.outputDebugInfo) {
-                    writer.write(", ");
-                    ReferenceFormatter.writeStringReference(writer, parameterName);
-                }
-                writer.write("    # ");
-                writer.write(parameterType);
-                writer.write("\n");
-                if (annotations.size() > 0) {
-                    writer.indent(4);
-
-                    String containingClass = null;
-                    if (options.useImplicitReferences) {
-                        containingClass = method.getDefiningClass();
-                    }
-                    AnnotationFormatter.writeTo(writer, annotations, containingClass);
-                    writer.deindent(4);
-                    writer.write(".end param\n");
-                }
-            }
-
-            registerNumber++;
-            if (TypeUtils.isWideType(parameterType)) {
-                registerNumber++;
-            }
-        }
-    }
-
-    @Nonnull@Override
+    @Nonnull
+    @Override
     public MethodDefinition.LabelCache getLabelCache() {
         return labelCache;
     }
@@ -448,7 +361,7 @@ public class MethodASTBuilder implements MethodDefinition {
     }
 
     private List<MethodItem> getMethodItems() {
-        ArrayList<MethodItem> methodItems = new ArrayList<MethodItem>();
+        ArrayList<MethodItem> methodItems = new ArrayList<>();
 
         if ((classDef.getOptions().registerInfo != 0) || (classDef.getOptions().normalizeVirtualMethods) ||
                 (classDef.getOptions().deodex && needsAnalyzed())) {
@@ -679,11 +592,4 @@ public class MethodASTBuilder implements MethodDefinition {
         }
     }
 
-    @Nullable
-    private String getContainingClassForImplicitReference() {
-        if (classDef.getOptions().useImplicitReferences) {
-            return classDef.getClassDef().getType();
-        }
-        return null;
-    }
 }

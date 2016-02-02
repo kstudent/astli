@@ -89,7 +89,7 @@ public class main {
     public static void main(String[] args) throws IOException {
         Locale locale = new Locale("en", "US");
         Locale.setDefault(locale);
-
+        
         CommandLineParser parser = new PosixParser();
         CommandLine commandLine;
 
@@ -194,6 +194,9 @@ public class main {
                 case 'x':
                     options.deodex = true;
                     break;
+                case 'y':
+                    options.androidlibid = true;
+                    break;
                 case 'X':
                     options.experimental = true;
                     break;
@@ -239,6 +242,15 @@ public class main {
                     assert false;
             }
         }
+        
+        if(options.androidlibid) {
+            
+            //todo: remove.... what a hack!
+            
+            String[] x = {"/home/chri/0_tug/master/apks/HelloWorldLinux.apk"};
+            remainingArgs = x;
+        }
+        
 
         if (remainingArgs.length != 1) {
             usage();
@@ -372,6 +384,10 @@ public class main {
                 .withDescription("deodex the given odex file. This option is ignored if the input file is not an " +
                         "odex file")
                 .create("x");
+        
+        Option androidLibIdOption = OptionBuilder.withLongOpt("androidlibid")
+                .withDescription("create android lib id fingerprints")
+                .create("y");
 
         Option experimentalOption = OptionBuilder.withLongOpt("experimental")
                 .withDescription("enable experimental opcodes to be disassembled, even if they aren't necessarily supported in the Android runtime yet")
@@ -498,6 +514,7 @@ public class main {
         basicOptions.addOption(outputDirOption);
         basicOptions.addOption(noParameterRegistersOption);
         basicOptions.addOption(deodexerantOption);
+        basicOptions.addOption(androidLibIdOption);
         basicOptions.addOption(experimentalOption);
         basicOptions.addOption(useLocalsOption);
         basicOptions.addOption(sequentialLabelsOption);

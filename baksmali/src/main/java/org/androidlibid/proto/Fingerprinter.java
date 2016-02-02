@@ -5,22 +5,14 @@
  */
 package org.androidlibid.proto;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import org.la4j.Vector;
-import org.la4j.vector.VectorFactory;
-import org.la4j.vector.dense.BasicVector;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 public class Fingerprinter {
-    
-    public Fingerprinter() {
-    
-    }; 
     
     public Fingerprint createFingerprint(Node root) {
         Fingerprint fingerprint = new Fingerprint();

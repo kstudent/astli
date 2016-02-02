@@ -35,32 +35,22 @@ import org.jf.util.IndentingWriter;
  */
 public interface MethodDefinition {
 
-    int findPayloadOffset(int targetOffset, Opcode type);
-
-    Instruction findSwitchPayload(int targetOffset, Opcode type);
-
-    @Nonnull
-    LabelCache getLabelCache();
-
-    int getPackedSwitchBaseAddress(int packedSwitchPayloadCodeOffset);
-
-    int getSparseSwitchBaseAddress(int sparseSwitchPayloadCodeOffset);
-
-    void writeTo(IndentingWriter writer) throws IOException;
-    
     ClassDefinition getClassDef();
-
-    List<Instruction> getEffectiveInstructions();
-
-    ImmutableList<Instruction> getInstructions();
 
     Method getMethod();
 
     MethodImplementation getMethodImpl();
+    
+    int findPayloadOffset(int targetOffset, Opcode type);
 
-    ImmutableList<MethodParameter> getMethodParameters();
+    @Nonnull
+    MethodDefinition.LabelCache getLabelCache();
+
+    int getPackedSwitchBaseAddress(int packedSwitchPayloadCodeOffset);
 
     RegisterFormatter getRegisterFormatter();
+
+    int getSparseSwitchBaseAddress(int sparseSwitchPayloadCodeOffset);
     
     public static class LabelCache {
             protected HashMap<LabelMethodItem, LabelMethodItem> labels = new HashMap<LabelMethodItem, LabelMethodItem>();
@@ -83,16 +73,16 @@ public interface MethodDefinition {
             }
         }
 
-        public static class InvalidSwitchPayload extends ExceptionWithContext {
-            private final int payloadOffset;
+    public static class InvalidSwitchPayload extends ExceptionWithContext {
+        private final int payloadOffset;
 
-            public InvalidSwitchPayload(int payloadOffset) {
-                super("No switch payload at offset: %d", payloadOffset);
-                this.payloadOffset = payloadOffset;
-            }
-
-            public int getPayloadOffset() {
-                return payloadOffset;
-            }
+        public InvalidSwitchPayload(int payloadOffset) {
+            super("No switch payload at offset: %d", payloadOffset);
+            this.payloadOffset = payloadOffset;
         }
+
+        public int getPayloadOffset() {
+            return payloadOffset;
+        }
+    }
 }

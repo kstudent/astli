@@ -394,7 +394,7 @@ public class main {
         formatter.setWidth(consoleWidth);
 
         formatter.printHelp("java -jar smali.jar [options] [--] [<smali-file>|folder]*",
-                "assembles a set of smali files into a dex file", basicOptions, printDebugOptions?debugOptions:null);
+                "hey! assembles a set of smali files into a dex file", basicOptions, printDebugOptions?debugOptions:null);
     }
 
     private static void usage() {

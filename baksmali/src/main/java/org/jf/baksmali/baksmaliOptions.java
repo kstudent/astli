@@ -77,6 +77,7 @@ public class baksmaliOptions {
     public boolean checkPackagePrivateAccess = false;
     public boolean useImplicitReferences = false;
     public boolean normalizeVirtualMethods = false;
+    public boolean androidlibid = false;
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;
     public int registerInfo = 0;

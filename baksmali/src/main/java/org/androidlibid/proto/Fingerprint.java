@@ -60,9 +60,11 @@ public class Fingerprint {
     public String toString() {
         StringBuilder string = new StringBuilder();
         for (int i = 0; i < FEATURES.size(); i++) {
-            List<NodeType> feature = FEATURES.get(i);
-            String featureString = String.format("%-" + LONGEST_FEATURE + "s", feature.toString());
-            string = string.append(featureString).append(" : ").append(vector.get(i)).append("\n");
+            if (vector.get(i) != 0.0) {
+                List<NodeType> feature = FEATURES.get(i);
+                String featureString = String.format("%-" + LONGEST_FEATURE + "s", feature.toString());
+                string = string.append(featureString).append(" : ").append(vector.get(i)).append("\n");
+            }
         }
         return string.toString();
     }

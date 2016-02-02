@@ -17,7 +17,7 @@ public class ASTTest {
     
     @Test
     public void testAST() throws IOException {
-        String arg[] = {"/home/chri/0_tug/master/apks/HelloWorldLinux.apk"};
+        String arg[] = {"-y"};
         main.main(arg); 
     
     }

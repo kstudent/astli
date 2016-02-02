@@ -88,17 +88,14 @@ public class MethodDefinitionImpl implements MethodDefinition {
         return methodImpl;
     }
 
-    @Override
     public ImmutableList<Instruction> getInstructions() {
         return instructions;
     }
 
-    @Override
     public List<Instruction> getEffectiveInstructions() {
         return effectiveInstructions;
     }
 
-    @Override
     public ImmutableList<MethodParameter> getMethodParameters() {
         return methodParameters;
     }
@@ -222,7 +219,6 @@ public class MethodDefinitionImpl implements MethodDefinition {
         writer.write(".end method\n");
     }
 
-    @Override
     public void writeTo(IndentingWriter writer) throws IOException {
         int parameterRegisterCount = 0;
         if (!AccessFlags.STATIC.isSet(method.getAccessFlags())) {
@@ -279,7 +275,6 @@ public class MethodDefinitionImpl implements MethodDefinition {
         writer.write(".end method\n");
     }
 
-    @Override
     public Instruction findSwitchPayload(int targetOffset, Opcode type) {
         int targetIndex;
         try {
@@ -387,7 +382,8 @@ public class MethodDefinitionImpl implements MethodDefinition {
         }
     }
 
-    @Nonnull@Override
+    @Nonnull
+    @Override
     public LabelCache getLabelCache() {
         return labelCache;
     }

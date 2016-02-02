@@ -51,7 +51,8 @@ import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
-import org.androidlibid.proto.MyClassDefinitionImpl;
+import org.androidlibid.proto.ASTClassDefinition;
+import org.androidlibid.proto.ClassFingerprintingTask;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class baksmali {
@@ -145,16 +146,20 @@ public class baksmali {
         ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
-        for (final ClassDef classDef: classDefs) {
-            
-            System.out.println("Going over... " + classDef.getType());
-            
-            tasks.add(executor.submit(new Callable<Boolean>() {
-                @Override public Boolean call() throws Exception {
-                    return disassembleClass(classDef, fileNameHandler, options);
-                }
-            }));
+        if(options.androidlibid) {
+            for (final ClassDef classDef: classDefs) {
+                tasks.add(executor.submit(new ClassFingerprintingTask(classDef, options)));
+            }
+        } else {
+            for (final ClassDef classDef: classDefs) {
+                tasks.add(executor.submit(new Callable<Boolean>() {
+                    @Override public Boolean call() throws Exception {
+                        return disassembleClass(classDef, fileNameHandler, options);
+                    }
+                }));
+            }
         }
+        
 
         boolean errorOccurred = false;
         try {
@@ -199,7 +204,7 @@ public class baksmali {
         File smaliFile = fileNameHandler.getUniqueFilenameForClass(classDescriptor);
 
         //create and initialize the top level string template
-        ClassDefinition classDefinition = new MyClassDefinitionImpl(options, classDef);
+        ClassDefinition classDefinition = new ClassDefinitionImpl(options, classDef);
 
         //write the disassembly
         Writer writer = null;
@@ -226,6 +231,15 @@ public class baksmali {
             BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(smaliFile), "UTF8"));
 
+//            BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(new OutputStream() {
+//                @Override
+//                public void write(int i) throws IOException {
+//                    synchronized(System.out) {
+//                        System.out.write(i);
+//                    }
+//                }
+//            }));
+            
             writer = new IndentingWriter(bufWriter);
             classDefinition.writeTo((IndentingWriter)writer);
         } catch (Exception ex) {

@@ -291,7 +291,7 @@ public class ClassDefinitionImpl implements ClassDefinition {
             if (methodImpl == null) {
                 MethodDefinitionImpl.writeEmptyMethodTo(methodWriter, method, options);
             } else {
-                MethodDefinition methodDefinition = new MethodDefinitionImpl(this, method, methodImpl);
+                MethodDefinitionImpl methodDefinition = new MethodDefinitionImpl(this, method, methodImpl);
                 methodDefinition.writeTo(methodWriter);
             }
         }
@@ -336,7 +336,7 @@ public class ClassDefinitionImpl implements ClassDefinition {
             if (methodImpl == null) {
                 MethodDefinitionImpl.writeEmptyMethodTo(methodWriter, method, options);
             } else {
-                MethodDefinition methodDefinition = new MethodDefinitionImpl(this, method, methodImpl);
+                MethodDefinitionImpl methodDefinition = new MethodDefinitionImpl(this, method, methodImpl);
                 methodDefinition.writeTo(methodWriter);
             }
         }

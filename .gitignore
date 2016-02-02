@@ -9,3 +9,8 @@
 *.ipr
 *.iws
 .idea
+/nbproject/private/
+/build/
+/nbproject
+/dist/
+/SmaliHack/.nb-gradle/
