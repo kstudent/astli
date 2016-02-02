@@ -29,34 +29,27 @@ public class FingerprintTest {
     public void testFingerprint() {
         Fingerprint f = new Fingerprint();
         
-        List<NodeType> dimension = new ArrayList<>();
-        dimension.add(NodeType.METHOD);
         
-        assert(f.getFeatureCount(dimension) == 0);
-        f.incrementFeature(dimension);
-        assert(f.getFeatureCount(dimension) == 1);
+        assert(f.getFeatureCount(NodeType.METHOD) == 0);
+        f.incrementFeature(NodeType.METHOD);
+        assert(f.getFeatureCount(NodeType.METHOD) == 1);
         
-        dimension.add(NodeType.VIRTUAL);
-        assert(f.getFeatureCount(dimension) == 0);
-        f.incrementFeature(dimension);
-        f.incrementFeature(dimension);
-        assert(f.getFeatureCount(dimension) == 2);
+        assert(f.getFeatureCount(NodeType.VIRTUAL) == 0);
+        f.incrementFeature(NodeType.VIRTUAL);
+        f.incrementFeature(NodeType.VIRTUAL);
+        assert(f.getFeatureCount(NodeType.VIRTUAL) == 2);
         
-        dimension.add(NodeType.LOCAL);
-        assert(f.getFeatureCount(dimension) == 0);
-        f.incrementFeature(dimension);
-        assert(f.getFeatureCount(dimension) == 1);
-        f.incrementFeature(dimension);
-        assert(f.getFeatureCount(dimension) == 2);
+        assert(f.getFeatureCount(NodeType.LOCAL) == 0);
+        f.incrementFeature(NodeType.LOCAL);
+        assert(f.getFeatureCount(NodeType.LOCAL) == 1);
+        f.incrementFeature(NodeType.LOCAL);
+        assert(f.getFeatureCount(NodeType.LOCAL) == 2);
         
-        dimension = new ArrayList<>();
-        dimension.add(NodeType.PARAMETER);
-        dimension.add(NodeType.LOCAL);
-        assert(f.getFeatureCount(dimension) == 0);
-        f.incrementFeature(dimension);
-        assert(f.getFeatureCount(dimension) == 1);
-        f.incrementFeature(dimension);
-        assert(f.getFeatureCount(dimension) == 2);
+        assert(f.getFeatureCount(NodeType.PARAMETER, NodeType.LOCAL) == 0);
+        f.incrementFeature(NodeType.PARAMETER, NodeType.LOCAL);
+        assert(f.getFeatureCount(NodeType.PARAMETER, NodeType.LOCAL) == 1);
+        f.incrementFeature(NodeType.PARAMETER, NodeType.LOCAL);
+        assert(f.getFeatureCount(NodeType.PARAMETER, NodeType.LOCAL) == 2);
         
         System.out.println(f.toString());
         
