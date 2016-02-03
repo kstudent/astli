@@ -43,7 +43,8 @@ dependencies {
     compile project(':dexlib2')
     compile depends.commons_cli
     compile depends.guava
-    compile "org.la4j:la4j:0.6.0"
+    compile 'org.la4j:la4j:0.6.0'
+    compile files('build/compile.lib/dx.jar')
     
     testCompile depends.junit
     testCompile project(':smali')
@@ -112,4 +113,8 @@ task copyTestTimeLibs(type: Copy) {
 
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'org.jf.baksmali.main'
+}
+
+test {
+    exclude 'org/androidlibid/proto/mainTest**'
 }

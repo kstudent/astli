@@ -20,4 +20,13 @@ public class mainTest {
         String arg[] = {"-y", appApkPath};
         main.main(arg); 
     }
+    
+    @Test
+    public void testFingerprintJAR() throws IOException {
+        String jarPath = "./src/test/resources/FingerprintJARTest/lib.jar";
+        File jarFile = new File(jarPath);
+        assert(jarFile.exists() && jarFile.canRead());
+        String arg[] = {"-z", jarPath};
+        main.main(arg); 
+    }
 }

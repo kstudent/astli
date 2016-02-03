@@ -51,7 +51,6 @@ import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
-import org.androidlibid.proto.ASTClassDefinition;
 import org.androidlibid.proto.ClassFingerprintingTask;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
@@ -146,7 +145,7 @@ public class baksmali {
         ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
-        if(options.aliFingerprintAPK) {
+        if(options.aliFingerprintAPK || options.aliFingerprintJAR) {
             for (final ClassDef classDef: classDefs) {
                 tasks.add(executor.submit(new ClassFingerprintingTask(classDef, options)));
             }

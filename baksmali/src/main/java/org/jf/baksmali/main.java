@@ -245,12 +245,12 @@ public class main {
                     assert false;
             }
         }
-            
+                    
         if (remainingArgs.length != 1) {
             usage();
             return;
         }
-
+        
         if (options.jobs <= 0) {
             options.jobs = Runtime.getRuntime().availableProcessors();
             if (options.jobs > 6) {
@@ -264,6 +264,12 @@ public class main {
         if (!dexFileFile.exists()) {
             System.err.println("Can't find the file " + inputDexFileName);
             System.exit(1);
+        }
+        
+        if (options.aliFingerprintJAR) {
+            String[] dxArgs = {"--dex", "--output=" + inputDexFileName + ".dex", inputDexFileName};
+            com.android.dx.command.Main.main(dxArgs);
+            dexFileFile = new File(inputDexFileName + ".dex");
         }
 
         //Read in and parse the dex file
