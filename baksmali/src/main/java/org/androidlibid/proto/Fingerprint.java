@@ -7,13 +7,21 @@ package org.androidlibid.proto;
 
 import java.util.Arrays;
 import java.util.List;
+import org.androidlibid.proto.ao.FingerprintEntity;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 public class Fingerprint {
 
-    private Vector vector;
     private String name;
+    private Vector vector;
+    private FingerprintEntity entity;
+
+    public Fingerprint(FingerprintEntity entity) {
+        this.vector = BasicVector.fromBinary(entity.getVector());
+        this.name   = entity.getName();
+        this.entity = entity;
+    }
     
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE;
@@ -36,7 +44,7 @@ public class Fingerprint {
         LONGEST_FEATURE = longestFeature;
     }
 
-    Fingerprint() {
+    public Fingerprint() {
         vector = new BasicVector(FEATURES.size());
     } 
     
@@ -71,6 +79,7 @@ public class Fingerprint {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
+        string.append(name).append(":\n");
         for (int i = 0; i < FEATURES.size(); i++) {
             if (vector.get(i) != 0.0) {
                 List<NodeType> feature = FEATURES.get(i);

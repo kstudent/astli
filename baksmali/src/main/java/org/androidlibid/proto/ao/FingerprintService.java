@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.java.ao.EntityManager;
+import org.androidlibid.proto.Fingerprint;
 import org.la4j.Vector;
 
 /**
@@ -33,8 +34,16 @@ public class FingerprintService {
         print.save();
         return print;
     }
-
-    public Iterable<FingerprintEntity> getFingerprints() {
+    
+    public FingerprintEntity saveFingerprint(Fingerprint fingerprint) throws SQLException {
+        FingerprintEntity entity = em.create(FingerprintEntity.class);
+        entity.setName(fingerprint.getName());
+        entity.setVector(fingerprint.getVector().toBinary());
+        entity.save();
+        return entity;
+    }
+    
+    public Iterable<FingerprintEntity> getFingerprintEntities() {
 
         return new Iterable<FingerprintEntity>() {
             @Override
@@ -49,7 +58,8 @@ public class FingerprintService {
                             prints = Arrays.asList(em.find(FingerprintEntity.class));
                             iterator = prints.iterator();
                         } catch (SQLException ex) {
-                            Logger.getLogger(FingerprintService.class.getName()).log(Level.SEVERE, "could not find FingerprintEntity class", ex);
+                            Logger.getLogger(FingerprintService.class.getName()).log(
+                                    Level.SEVERE, "could not find FingerprintEntity class", ex);
                         }
                     }
 
@@ -72,5 +82,4 @@ public class FingerprintService {
             }
         };
     }
-
 }

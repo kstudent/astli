@@ -13,7 +13,7 @@ public class mainTest {
     
     @Test
     public void testFingerprintAPK() throws IOException {
-        String appApkPath = "./src/test/resources/FingerprintAPKTest/app.apk";
+        String appApkPath = "./src/integration-test/resources/FingerprintAPKTest/app.apk";
         File appApk = new File(appApkPath);
         assert(appApk.exists() && appApk.canRead());
         
@@ -23,7 +23,7 @@ public class mainTest {
     
     @Test
     public void testFingerprintJAR() throws IOException {
-        String jarPath = "./src/test/resources/FingerprintJARTest/lib.jar";
+        String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
         String arg[] = {"-z", jarPath};

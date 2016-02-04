@@ -51,7 +51,10 @@ import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
+import net.java.ao.EntityManager;
 import org.androidlibid.proto.ClassFingerprintingTask;
+import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.ao.FingerprintServiceFactory;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class baksmali {
@@ -146,8 +149,9 @@ public class baksmali {
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
         if(options.aliFingerprintAPK || options.aliFingerprintJAR) {
+            FingerprintService service = FingerprintServiceFactory.createService();
             for (final ClassDef classDef: classDefs) {
-                tasks.add(executor.submit(new ClassFingerprintingTask(classDef, options)));
+                tasks.add(executor.submit(new ClassFingerprintingTask(classDef, options, service)));
             }
         } else {
             for (final ClassDef classDef: classDefs) {

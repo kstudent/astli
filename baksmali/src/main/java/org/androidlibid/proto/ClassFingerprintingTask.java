@@ -7,6 +7,8 @@ package org.androidlibid.proto;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import net.java.ao.EntityManager;
+import org.androidlibid.proto.ao.FingerprintService;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 
@@ -18,10 +20,12 @@ public class ClassFingerprintingTask implements Callable<Boolean>{
     
     private final ClassDef classDef;
     private final baksmaliOptions options;
+    private final FingerprintService service;
 
-    public ClassFingerprintingTask(ClassDef classDef, baksmaliOptions options) {
+    public ClassFingerprintingTask(ClassDef classDef, baksmaliOptions options, FingerprintService service) {
         this.classDef = classDef;
         this.options = options;
+        this.service = service;
     }
     
     @Override public Boolean call() throws Exception {
@@ -36,31 +40,8 @@ public class ClassFingerprintingTask implements Callable<Boolean>{
             classFingerprint.add(methodFingerprint);
         }
         
-        StringBuilder string = new StringBuilder();
-        string = string.append("class ")
-                        .append(classDef.getType())
-                        .append(" has this fingerprint:\n")
-                        .append(classFingerprint);
-        
-        synchronized (System.out) {
-            System.out.println(string.toString());
-        }
-
-
-        
-//        for(Node node : ast) {
-//            Fingerprint fingerprint = fp.createFingerprint(node);
-//            StringBuilder string = new StringBuilder();
-//            string = string.append("begin of fingerprint ")
-//                        .append(classDef.getType())
-//                        .append(": \n")
-//                        .append(fingerprint.toString())
-//                        .append("\n");
-//            
-//            synchronized (System.out) {
-//                System.out.println(string.toString());
-//            }
-//        }
+        classFingerprint.setName(classDef.getType());
+        service.saveFingerprint(classFingerprint);
         
         return true;
     }

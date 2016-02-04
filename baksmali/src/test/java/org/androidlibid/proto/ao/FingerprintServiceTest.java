@@ -60,7 +60,7 @@ public class FingerprintServiceTest {
         service.saveFingerprint(vector, "vector 3");
         
         int counter = 0;
-        for (FingerprintEntity entity : service.getFingerprints()) {
+        for (FingerprintEntity entity : service.getFingerprintEntities()) {
             System.out.println(entity.getName());
             counter ++;
         }
