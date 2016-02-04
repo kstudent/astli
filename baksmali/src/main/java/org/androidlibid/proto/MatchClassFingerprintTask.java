@@ -16,13 +16,13 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ClassFingerprintingTask implements Callable<Boolean>{
+public class MatchClassFingerprintTask implements Callable<Boolean>{
     
     private final ClassDef classDef;
     private final baksmaliOptions options;
     private final FingerprintService service;
 
-    public ClassFingerprintingTask(ClassDef classDef, baksmaliOptions options, FingerprintService service) {
+    public MatchClassFingerprintTask(ClassDef classDef, baksmaliOptions options, FingerprintService service) {
         this.classDef = classDef;
         this.options = options;
         this.service = service;
@@ -31,17 +31,24 @@ public class ClassFingerprintingTask implements Callable<Boolean>{
     @Override public Boolean call() throws Exception {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         List<Node> ast = classDefinition.createAST();
-        ASTToFingerprintTransformer fp = new ASTToFingerprintTransformer();
+        
+        ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
         Fingerprint classFingerprint = new Fingerprint();
         
         for(Node node : ast) {
-            Fingerprint methodFingerprint = fp.createFingerprint(node);
+            Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
             classFingerprint.add(methodFingerprint);
         }
         
-        classFingerprint.setName(classDef.getType());
-        service.saveFingerprint(classFingerprint);
+        FingerprintMatcher matcher = new FingerprintMatcher(service);
+        
+        System.out.println("Matches for " + classDef.getType());
+        
+        for(Fingerprint match : matcher.matchFingerprints(classFingerprint)) {
+            System.out.println(match);
+            System.out.println("Difference: " + match.euclideanDiff(classFingerprint));
+        }
         
         return true;
     }
