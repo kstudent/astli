@@ -31,7 +31,7 @@ public class FingerprinterTest {
         child3.addChild(child5);
         child3.addChild(child6);
         
-        Fingerprinter fingerPrinter = new Fingerprinter();
+        ASTToFingerprintTransformer fingerPrinter = new ASTToFingerprintTransformer();
         
         Fingerprint fingerprint = fingerPrinter.createFingerprint(root);
         

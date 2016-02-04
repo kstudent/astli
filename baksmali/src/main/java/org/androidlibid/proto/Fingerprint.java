@@ -13,6 +13,8 @@ import org.la4j.vector.dense.BasicVector;
 public class Fingerprint {
 
     private Vector vector;
+    private String name;
+    
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE;
     private static final FeatureGenerator FEATURE_GENERATOR;
@@ -65,7 +67,7 @@ public class Fingerprint {
     void add(Fingerprint that) {
         this.vector = this.vector.add(that.vector);
     }
-    
+
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
@@ -78,5 +80,25 @@ public class Fingerprint {
         }
         return string.toString();
     }
-        
+    
+    public double euclideanDiff(Fingerprint that) {
+        return vector.subtract(that.vector).euclideanNorm();
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Vector getVector() {
+        return vector;
+    }
+
+    public void setVector(Vector vector) {
+        this.vector = vector;
+    }
+    
 }

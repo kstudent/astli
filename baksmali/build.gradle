@@ -45,9 +45,14 @@ dependencies {
     compile depends.guava
     compile 'org.la4j:la4j:0.6.0'
     compile files('build/compile.lib/dx.jar')
+    compile 'net.java.dev.activeobjects:activeobjects:1.1.5'
+    
+    runtime 'org.slf4j:slf4j-simple:1.7.14'
+    runtime 'org.apache.derby:derby:10.12.1.1'
     
     testCompile depends.junit
     testCompile project(':smali')
+    testCompile 'net.java.dev.activeobjects:activeobjects-test:1.1.5'
 }
 
 processResources.inputs.property('version', version)

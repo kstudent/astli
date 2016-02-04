@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class Fingerprinter {
+public class ASTToFingerprintTransformer {
     
     public Fingerprint createFingerprint(Node root) {
         Fingerprint fingerprint = new Fingerprint();

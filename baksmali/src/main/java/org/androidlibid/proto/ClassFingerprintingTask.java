@@ -27,7 +27,7 @@ public class ClassFingerprintingTask implements Callable<Boolean>{
     @Override public Boolean call() throws Exception {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         List<Node> ast = classDefinition.createAST();
-        Fingerprinter fp = new Fingerprinter();
+        ASTToFingerprintTransformer fp = new ASTToFingerprintTransformer();
         
         Fingerprint classFingerprint = new Fingerprint();
         
