@@ -11,6 +11,8 @@ import net.java.ao.Entity;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
+
+//@Implementation(Fingerprint.class)
 public interface FingerprintEntity extends Entity {
 
     String getName();
