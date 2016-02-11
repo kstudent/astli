@@ -80,7 +80,10 @@ public class Fingerprint {
     public String toString() {
         StringBuilder string = new StringBuilder();
         string.append(name).append(":\n");
-        for (int i = 0; i < FEATURES.size(); i++) {
+        
+        int numEntries = Math.min(FEATURES.size(), vector.length());
+        
+        for (int i = 0; i < numEntries; i++) {
             if (vector.get(i) != 0.0) {
                 List<NodeType> feature = FEATURES.get(i);
                 String featureString = String.format("%-" + LONGEST_FEATURE + "s", feature.toString());
@@ -110,4 +113,7 @@ public class Fingerprint {
         this.vector = vector;
     }
     
+    public double euclideanNorm() {
+        return this.vector.euclideanNorm();
+    }
 }

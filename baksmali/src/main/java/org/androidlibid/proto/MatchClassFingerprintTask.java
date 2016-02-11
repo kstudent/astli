@@ -7,7 +7,6 @@ package org.androidlibid.proto;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import net.java.ao.EntityManager;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
@@ -34,20 +33,28 @@ public class MatchClassFingerprintTask implements Callable<Boolean>{
         
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        Fingerprint classFingerprint = new Fingerprint();
+        Fingerprint needle = new Fingerprint();
         
         for(Node node : ast) {
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
-            classFingerprint.add(methodFingerprint);
+            needle.add(methodFingerprint);
+        }
+        
+        if (needle.euclideanNorm() == 0.0d) {
+            System.out.println("No Match for " + classDef.getType() + " because too small :(");
         }
         
         FingerprintMatcher matcher = new FingerprintMatcher(service);
         
         System.out.println("Matches for " + classDef.getType());
         
-        for(Fingerprint match : matcher.matchFingerprints(classFingerprint)) {
-            System.out.println(match);
-            System.out.println("Difference: " + match.euclideanDiff(classFingerprint));
+        int i = 0; 
+        for(Fingerprint match : matcher.matchFingerprints(needle)) {
+            System.out.println("   " + match.getName() + " (" + match.euclideanDiff(needle) + ")");
+            if (i++ > 10) {
+                System.out.println("...");
+                break;
+            }
         }
         
         return true;

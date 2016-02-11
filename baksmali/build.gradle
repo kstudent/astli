@@ -69,6 +69,7 @@ dependencies {
     testCompile depends.junit
     testCompile project(':smali')
     testCompile 'net.java.dev.activeobjects:activeobjects-test:1.1.5'
+    testCompile "org.mockito:mockito-core:1.+"
 }
 
 processResources.inputs.property('version', version)

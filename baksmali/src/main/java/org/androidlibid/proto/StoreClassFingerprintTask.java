@@ -7,7 +7,6 @@ package org.androidlibid.proto;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import net.java.ao.EntityManager;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
@@ -34,14 +33,16 @@ public class StoreClassFingerprintTask implements Callable<Boolean>{
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
         Fingerprint classFingerprint = new Fingerprint();
+        classFingerprint.setName(classDef.getType());
         
         for(Node node : ast) {
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
             classFingerprint.add(methodFingerprint);
         }
         
-        classFingerprint.setName(classDef.getType());
-        service.saveFingerprint(classFingerprint);
+        if(classFingerprint.euclideanNorm() > 0.0d) {
+            service.saveFingerprint(classFingerprint);
+        }
         
         return true;
     }

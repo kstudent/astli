@@ -15,13 +15,13 @@ public class FingerprintMatcher {
 
 
     FingerprintService service; 
-    private double diffThreshold = 0.1d; 
+    private final double diffThreshold = 100000; 
 
     public FingerprintMatcher(FingerprintService service) {
         this.service = service;
     }
     
-    public List<Fingerprint> matchFingerprints(Fingerprint needle) {
+    public List<Fingerprint> matchFingerprints(final Fingerprint needle) {
         
         List<Fingerprint> matches = new ArrayList<>();
         
@@ -36,8 +36,12 @@ public class FingerprintMatcher {
         
         Collections.sort(matches, new Comparator<Fingerprint>() {
             @Override
-            public int compare(Fingerprint print, Fingerprint other) {
-                return (print.getVector().euclideanNorm() - other.getVector().euclideanNorm()) > 0 ? 1 : -1;
+            public int compare(Fingerprint that, Fingerprint other) {
+                double diffNeedleThat  = needle.euclideanDiff(that);
+                double diffNeedleOther = needle.euclideanDiff(other);
+                if (diffNeedleThat > diffNeedleOther) return  1;
+                if (diffNeedleThat < diffNeedleOther) return -1;
+                return 0;
             }
     
         }); 
