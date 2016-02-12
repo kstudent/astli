@@ -15,7 +15,7 @@ public class FingerprintMatcher {
 
 
     FingerprintService service; 
-    private final double diffThreshold = 100000; 
+    private final double diffThreshold = 100;
 
     public FingerprintMatcher(FingerprintService service) {
         this.service = service;

@@ -26,6 +26,14 @@ public class FingerprintService {
     public FingerprintService(EntityManager em) {
         this.em = em;
     }
+    
+    public void deleteAllFingerprints() throws SQLException {
+        em.deleteWithSQL(FingerprintEntity.class, "1 = 1");
+    }
+    
+    public int countFingerprints() throws SQLException {
+        return em.count(FingerprintEntity.class);
+    }
 
     public FingerprintEntity saveFingerprint(Vector vector, String name) throws SQLException {
         FingerprintEntity print = em.create(FingerprintEntity.class);

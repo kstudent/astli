@@ -61,12 +61,42 @@ public class FingerprintServiceTest {
         
         int counter = 0;
         for (FingerprintEntity entity : service.getFingerprintEntities()) {
-            System.out.println(entity.getName());
             counter ++;
         }
         
         assert(counter == 3);
     
+    }
+    
+    @Test
+    public void clearTestCountFingerprints() throws Exception {
+        FingerprintService service = new FingerprintService(em);
+        assert(service.countFingerprints() == 0);
+        
+        Vector vector = new BasicVector(5);
+        service.saveFingerprint(vector, "vector 1");
+        service.saveFingerprint(vector, "vector 2");
+        service.saveFingerprint(vector, "vector 3");
+        
+        assert(service.countFingerprints() == 3);
+    }
+    
+    @Test
+    public void clearTestDeleteAllFingerprints() throws Exception {
+        FingerprintService service = new FingerprintService(em);
+        
+        assert(em.count(FingerprintEntity.class) == 0);
+        
+        Vector vector = new BasicVector(5);
+        service.saveFingerprint(vector, "vector 1");
+        service.saveFingerprint(vector, "vector 2");
+        service.saveFingerprint(vector, "vector 3");
+        
+        assert(em.count(FingerprintEntity.class) == 3);
+        
+        service.deleteAllFingerprints();
+        
+        assert(em.count(FingerprintEntity.class) == 0);
     }
     
     public static final class FingerprintServiceTestDatabaseUpdater implements DatabaseUpdater

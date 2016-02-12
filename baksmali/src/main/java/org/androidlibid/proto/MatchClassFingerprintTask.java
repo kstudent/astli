@@ -42,6 +42,7 @@ public class MatchClassFingerprintTask implements Callable<Boolean>{
         
         if (needle.euclideanNorm() == 0.0d) {
             System.out.println("No Match for " + classDef.getType() + " because too small :(");
+            return true;
         }
         
         FingerprintMatcher matcher = new FingerprintMatcher(service);

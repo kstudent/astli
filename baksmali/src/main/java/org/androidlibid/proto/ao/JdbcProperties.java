@@ -9,7 +9,7 @@ package org.androidlibid.proto.ao;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-final class JdbcProperties {
+public class JdbcProperties {
     
     public final String url;
     public final String username;
