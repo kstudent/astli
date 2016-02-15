@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.androidlibid.proto.ao.FingerprintEntity;
 import org.androidlibid.proto.ao.FingerprintService;
 
@@ -21,13 +22,19 @@ public class FingerprintMatcher {
         this.service = service;
     }
     
-    public List<Fingerprint> matchFingerprints(final Fingerprint needle) {
+    public FingerprintMatcherResult matchFingerprints(final Fingerprint needle) {
         
         List<Fingerprint> matches = new ArrayList<>();
+        FingerprintMatcherResult result = new FingerprintMatcherResult();
         
         for(FingerprintEntity candidateEntity : service.getFingerprintEntities()) {
             
             Fingerprint candidate = new Fingerprint(candidateEntity);
+            
+            if(candidate.getName().equals(needle.getName())) {
+                result.setMatchByName(candidate);
+            }
+            
             if(needle.euclideanDiff(candidate) < diffThreshold) {
                 matches.add(candidate);
             }  
@@ -46,6 +53,33 @@ public class FingerprintMatcher {
     
         }); 
         
-        return matches; 
+        result.setMatchesByDistance(matches);
+        
+        return result; 
+    }
+    
+    public static class FingerprintMatcherResult {
+        private List<Fingerprint> matchesByDistance;
+        @Nullable
+        private Fingerprint matchByName;
+
+        public FingerprintMatcherResult() {
+        }
+
+        public List<Fingerprint> getMatchesByDistance() {
+            return matchesByDistance;
+        }
+
+        public void setMatchesByDistance(List<Fingerprint> matchesByDistance) {
+            this.matchesByDistance = matchesByDistance;
+        }
+
+        public Fingerprint getMatchByName() {
+            return matchByName;
+        }
+
+        public void setMatchByName(Fingerprint matchByName) {
+            this.matchByName = matchByName;
+        }
     }
 }

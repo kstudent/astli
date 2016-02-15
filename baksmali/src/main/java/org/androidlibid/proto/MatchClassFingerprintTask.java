@@ -15,7 +15,7 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchClassFingerprintTask implements Callable<Boolean>{
+public class MatchClassFingerprintTask implements Callable<FingerPrintMatchTaskResult>{
     
     private final ClassDef classDef;
     private final baksmaliOptions options;
@@ -27,7 +27,9 @@ public class MatchClassFingerprintTask implements Callable<Boolean>{
         this.service = service;
     }
     
-    @Override public Boolean call() throws Exception {
+    @Override public FingerPrintMatchTaskResult call() throws Exception {
+        String name = classDef.getType();
+        
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         List<Node> ast = classDefinition.createAST();
         
@@ -40,24 +42,45 @@ public class MatchClassFingerprintTask implements Callable<Boolean>{
             needle.add(methodFingerprint);
         }
         
+        needle.setName(name);
+        
         if (needle.euclideanNorm() == 0.0d) {
-            System.out.println("No Match for " + classDef.getType() + " because too small :(");
-            return true;
+            System.out.println(name + ": class length 0");
+            return FingerPrintMatchTaskResult.CLASS_LENGTH_0;
         }
         
         FingerprintMatcher matcher = new FingerprintMatcher(service);
         
-        System.out.println("Matches for " + classDef.getType());
+        FingerprintMatcher.FingerprintMatcherResult result = matcher.matchFingerprints(needle);
         
-        int i = 0; 
-        for(Fingerprint match : matcher.matchFingerprints(needle)) {
-            System.out.println("   " + match.getName() + " (" + match.euclideanDiff(needle) + ")");
-            if (i++ > 10) {
-                System.out.println("...");
-                break;
+        Fingerprint nameMatch = result.getMatchByName();
+        List<Fingerprint> matchesByDistance = result.getMatchesByDistance();
+
+        if(nameMatch == null) {
+            System.out.println(name + ": not mached by name");
+            return FingerPrintMatchTaskResult.NO_MATCH_BY_NAME;
+        } else {
+            
+            int i;
+            
+            for (i = 0; i < matchesByDistance.size(); i++) {
+                if(matchesByDistance.get(i).getName().equals(name)) {
+                    break;
+                }
+            }
+            
+            if(i == matchesByDistance.size()) {
+                System.out.println(name + ": not mached by distance.");
+                System.out.println(needle);
+                System.out.println(nameMatch);
+                return FingerPrintMatchTaskResult.NO_MATCH_BY_DISTANCE;
+            } else if(i > 0) {
+                System.out.println(name + ": found at position " + i);
+                return FingerPrintMatchTaskResult.NOT_PERFECT;
+            } else {
+//                System.out.println(name + ": found first.");
+                return FingerPrintMatchTaskResult.OK;
             }
         }
-        
-        return true;
     }
 }

@@ -9,6 +9,8 @@ import org.jf.baksmali.main;
 import org.junit.Assert;
 import org.junit.Test;
 import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.ao.FingerprintEntity;
+import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.JdbcProperties;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.androidlibid.proto.ao.FingerprintServiceFactory;
@@ -24,7 +26,8 @@ public class mainTest {
     @Test
     public void storeLibandMatchAPK() throws Exception {
         clearDB();
-        testFingerprintLibrary();
+        testFingerprintLibraries();
+        testPrintFingerprintsFromDB();
         testFingerprintApplication();
     }
     
@@ -37,19 +40,41 @@ public class mainTest {
         main.main(arg); 
     }
     
-    public void testFingerprintLibrary() throws IOException {
-        String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib.jar";
+    public void testFingerprintLibraries() throws IOException {
+        String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_core.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
         String arg[] = {"-z", jarPath};
         main.main(arg); 
+        jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_prov.jar";
+        jarFile = new File(jarPath);
+        assert(jarFile.exists() && jarFile.canRead());
+        String arg2[] = {"-z", jarPath};
+        main.main(arg2); 
     }
     
-    void clearDB() throws Exception {
+    public void clearDB() throws Exception {
         FingerprintService service = FingerprintServiceFactory.createService();
         System.out.println("Fingerprint.count(): " + service.countFingerprints());
         service.deleteAllFingerprints();
         System.out.println("... after deleting : " + service.countFingerprints());
     } 
+    
+    
+    public void testPrintFingerprintsFromDB() throws Exception {
+        FingerprintService service = FingerprintServiceFactory.createService();
+        
+        int counter = 0;
+        
+        System.out.println("---list-of-fingerprints---");
+        for(FingerprintEntity entity : service.getFingerprintEntities()) {
+            Fingerprint print = new Fingerprint(entity);
+            counter++;
+            System.out.println("  " + print.getName());
+        }
+        
+        System.out.println("amount of fingerprints: " + counter);
+        System.out.println("---end testPrintFingerprintsFromDB---");
+    }
     
 }

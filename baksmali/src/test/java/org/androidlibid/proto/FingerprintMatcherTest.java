@@ -73,7 +73,7 @@ public class FingerprintMatcherTest {
         Fingerprint needle = new Fingerprint(needleEntity);
         FingerprintMatcher matcher = new FingerprintMatcher(service);
                 
-        List<Fingerprint> matchedPrints = matcher.matchFingerprints(needle);
+        List<Fingerprint> matchedPrints = matcher.matchFingerprints(needle).getMatchesByDistance();
         
         double diffto0 = needle.euclideanDiff(matchedPrints.get(0));
         double diffto1 = needle.euclideanDiff(matchedPrints.get(1));
@@ -116,7 +116,7 @@ public class FingerprintMatcherTest {
         Fingerprint needle = new Fingerprint(needleEntity);
         FingerprintMatcher matcher = new FingerprintMatcher(service);
                 
-        List<Fingerprint> matchedPrints = matcher.matchFingerprints(needle);
+        List<Fingerprint> matchedPrints = matcher.matchFingerprints(needle).getMatchesByDistance();
         
         double diffto0 = needle.euclideanDiff(matchedPrints.get(0));
         double diffto1 = needle.euclideanDiff(matchedPrints.get(1));

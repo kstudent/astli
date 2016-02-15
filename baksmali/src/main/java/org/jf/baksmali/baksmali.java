@@ -48,10 +48,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.java.ao.EntityManager;
+import org.androidlibid.proto.FingerPrintMatchTaskResult;
 import org.androidlibid.proto.MatchClassFingerprintTask;
 import org.androidlibid.proto.StoreClassFingerprintTask;
 import org.androidlibid.proto.ao.FingerprintService;
@@ -145,31 +150,25 @@ public class baksmali {
         }
 
         final ClassFileNameHandler fileNameHandler = new ClassFileNameHandler(outputDirectoryFile, ".smali");
+        
+        if (options.aliFingerprintJAR) {
+            return storeLibraryFingerprints(classDefs, options);
+        }
+        
+        if (options.aliFingerprintAPK) {
+            return matchAPKsWithLibraryFingerprints(classDefs, options);
+        }
 
         ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
-        if(options.aliFingerprintJAR) {
-            FingerprintService service = FingerprintServiceFactory.createService();
-            for (final ClassDef classDef: classDefs) {
-                tasks.add(executor.submit(new StoreClassFingerprintTask(classDef, options, service)));
-            }
-        } else if(options.aliFingerprintAPK) {
-            FingerprintService service = FingerprintServiceFactory.createService();
-            for (final ClassDef classDef: classDefs) {
-                tasks.add(executor.submit(new MatchClassFingerprintTask(classDef, options, service)));
-            }
-            
-        } else {
-            for (final ClassDef classDef: classDefs) {
-                tasks.add(executor.submit(new Callable<Boolean>() {
-                    @Override public Boolean call() throws Exception {
-                        return disassembleClass(classDef, fileNameHandler, options);
-                    }
-                }));
-            }
+        for (final ClassDef classDef: classDefs) {
+            tasks.add(executor.submit(new Callable<Boolean>() {
+                @Override public Boolean call() throws Exception {
+                    return disassembleClass(classDef, fileNameHandler, options);
+                }
+            }));
         }
-        
 
         boolean errorOccurred = false;
         try {
@@ -271,5 +270,80 @@ public class baksmali {
             }
         }
         return true;
+    }
+
+    private static boolean storeLibraryFingerprints(List<? extends ClassDef> classDefs, baksmaliOptions options) {
+        
+        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
+        List<Future<Boolean>> tasks = Lists.newArrayList();
+
+        FingerprintService service = FingerprintServiceFactory.createService();
+        for (final ClassDef classDef: classDefs) {
+            tasks.add(executor.submit(new StoreClassFingerprintTask(classDef, options, service)));
+        }
+        boolean errorOccurred = false;
+        try {
+            for (Future<Boolean> task: tasks) {
+                while(true) {
+                    try {
+                        if (!task.get()) {
+                            errorOccurred = true;
+                        }
+                    } catch (InterruptedException ex) {
+                        continue;
+                    } catch (ExecutionException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    break;
+                }
+            }
+        } finally {
+            executor.shutdown();
+        }
+        return !errorOccurred;
+    }
+    
+    private static boolean matchAPKsWithLibraryFingerprints(List<? extends ClassDef> classDefs, baksmaliOptions options) {
+        
+//        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        List<Future<FingerPrintMatchTaskResult>> tasks = Lists.newArrayList();
+
+        FingerprintService service = FingerprintServiceFactory.createService();
+        for (final ClassDef classDef: classDefs) {
+            if (!classDef.getType().startsWith("Landroid/")) {
+                tasks.add(executor.submit(new MatchClassFingerprintTask(classDef, options, service)));
+            }
+        }
+
+        int count_total = 0;
+        Map<FingerPrintMatchTaskResult, Integer> stats = new HashMap<>();
+        for(FingerPrintMatchTaskResult key : FingerPrintMatchTaskResult.values()) {
+            stats.put(key, 0);
+        }
+        
+        try {
+            for (Future<FingerPrintMatchTaskResult> task: tasks) {
+                FingerPrintMatchTaskResult key = task.get();
+                stats.put(key, stats.get(key) + 1);
+                count_total++;
+            }
+        } catch (InterruptedException ex) {
+            Logger.getLogger(baksmali.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(baksmali.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            executor.shutdown();
+        }
+        
+        System.out.println("Stats: ");
+        System.out.println("Total: " + count_total);
+        
+        for(FingerPrintMatchTaskResult key : FingerPrintMatchTaskResult.values()) {
+            System.out.println(key.toString() + ": " + stats.get(key));
+        }
+        
+        return true;
+        
     }
 }
