@@ -59,8 +59,8 @@ import net.java.ao.EntityManager;
 import org.androidlibid.proto.FingerPrintMatchTaskResult;
 import org.androidlibid.proto.MatchClassFingerprintTask;
 import org.androidlibid.proto.StoreClassFingerprintTask;
-import org.androidlibid.proto.ao.FingerprintService;
-import org.androidlibid.proto.ao.FingerprintServiceFactory;
+import org.androidlibid.proto.ao.ClassEntityService;
+import org.androidlibid.proto.ao.ClassEntityServiceFactory;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class baksmali {
@@ -277,7 +277,7 @@ public class baksmali {
         ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
-        FingerprintService service = FingerprintServiceFactory.createService();
+        ClassEntityService service = ClassEntityServiceFactory.createService();
         for (final ClassDef classDef: classDefs) {
             tasks.add(executor.submit(new StoreClassFingerprintTask(classDef, options, service)));
         }
@@ -309,7 +309,7 @@ public class baksmali {
         ExecutorService executor = Executors.newFixedThreadPool(1);
         List<Future<FingerPrintMatchTaskResult>> tasks = Lists.newArrayList();
 
-        FingerprintService service = FingerprintServiceFactory.createService();
+        ClassEntityService service = ClassEntityServiceFactory.createService();
         for (final ClassDef classDef: classDefs) {
             if (!classDef.getType().startsWith("Landroid/")) {
                 tasks.add(executor.submit(new MatchClassFingerprintTask(classDef, options, service)));

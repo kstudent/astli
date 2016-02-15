@@ -7,19 +7,19 @@ package org.androidlibid.proto;
 
 import java.util.Arrays;
 import java.util.List;
-import org.androidlibid.proto.ao.FingerprintEntity;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
+import org.androidlibid.proto.ao.ClassEntity;
 
 public class Fingerprint {
 
     private String name;
     private Vector vector;
-    private FingerprintEntity entity;
+    private ClassEntity entity;
 
-    public Fingerprint(FingerprintEntity entity) {
+    public Fingerprint(ClassEntity entity) {
         this.vector = BasicVector.fromBinary(entity.getVector());
-        this.name   = entity.getName();
+        this.name   = entity.getClassName();
         this.entity = entity;
     }
     

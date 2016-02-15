@@ -12,15 +12,18 @@ import net.java.ao.Entity;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 
-//@Implementation(Fingerprint.class)
-public interface FingerprintEntity extends Entity {
+public interface ClassEntity extends Entity {
 
-    String getName();
+    String getClassName();
 
     byte[] getVector();
 
-    void setName(String name);
+    void setClassName(String name);
 
     void setVector(byte[] vector);
+    
+    public PackageEntity getParentPackage();
+    
+    public void setPackage(PackageEntity parentPackage);
     
 }

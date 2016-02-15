@@ -7,14 +7,14 @@ package org.androidlibid.proto;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.androidlibid.proto.ao.FingerprintEntity;
-import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.ao.ClassEntityService;
 import org.junit.Before;
 import org.junit.Test;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.androidlibid.proto.ao.ClassEntity;
 
 /**
  *
@@ -22,25 +22,25 @@ import static org.mockito.Mockito.when;
  */
 public class FingerprintMatcherTest {
     
-    List<FingerprintEntity> fingerprints;
-    FingerprintEntity entity1;
-    FingerprintEntity entity2;
-    FingerprintEntity entity3;
-    FingerprintEntity needleEntity;
-    FingerprintService service;
+    List<ClassEntity> fingerprints;
+    ClassEntity entity1;
+    ClassEntity entity2;
+    ClassEntity entity3;
+    ClassEntity needleEntity;
+    ClassEntityService service;
     
     @Before
     public void setUp() {
-        entity1 = mock(FingerprintEntity.class);
-        entity2 = mock(FingerprintEntity.class);
-        entity3 = mock(FingerprintEntity.class);
+        entity1 = mock(ClassEntity.class);
+        entity2 = mock(ClassEntity.class);
+        entity3 = mock(ClassEntity.class);
         fingerprints = new ArrayList<>();
         fingerprints.add(entity1);
         fingerprints.add(entity2);
         fingerprints.add(entity3);
-        service = mock(FingerprintService.class);
+        service = mock(ClassEntityService.class);
         when(service.getFingerprintEntities()).thenReturn(fingerprints);
-        needleEntity = mock(FingerprintEntity.class);
+        needleEntity = mock(ClassEntity.class);
     }
     
     @Test 
@@ -51,24 +51,28 @@ public class FingerprintMatcherTest {
         v1.set(1, 2.0);
         v1.set(2, 3.0);
         when(entity1.getVector()).thenReturn(v1.toBinary());
+        when(entity1.getClassName()).thenReturn("c1");
 
         Vector v2 = new BasicVector(3);
         v2.set(0, 1.0);
         v2.set(1, 2.0);
         v2.set(2, 4.0);
         when(entity2.getVector()).thenReturn(v2.toBinary());
+        when(entity2.getClassName()).thenReturn("c2");
 
         Vector v3 = new BasicVector(3);
         v3.set(0, 1.0);
         v3.set(1, 2.0);
         v3.set(2, 6.0);
         when(entity3.getVector()).thenReturn(v3.toBinary());
+        when(entity3.getClassName()).thenReturn("c3");
         
         Vector needleVector = new BasicVector(3);
         needleVector.set(0, 1.0);
         needleVector.set(1, 2.0);
         needleVector.set(2, 4.0);
         when(needleEntity.getVector()).thenReturn(needleVector.toBinary());
+        when(needleEntity.getClassName()).thenReturn("n1");
 
         Fingerprint needle = new Fingerprint(needleEntity);
         FingerprintMatcher matcher = new FingerprintMatcher(service);
@@ -94,24 +98,28 @@ public class FingerprintMatcherTest {
         v1.set(1, 2.0);
         v1.set(2, 3.0);
         when(entity1.getVector()).thenReturn(v1.toBinary());
+        when(entity1.getClassName()).thenReturn("c1");
 
         Vector v2 = new BasicVector(3);
         v2.set(0, 1.0);
         v2.set(1, 2.0);
         v2.set(2, 3.0);
         when(entity2.getVector()).thenReturn(v2.toBinary());
+        when(entity2.getClassName()).thenReturn("c2");
 
         Vector v3 = new BasicVector(3);
         v3.set(0, 1.0);
         v3.set(1, 2.0);
         v3.set(2, 3.0);
         when(entity3.getVector()).thenReturn(v3.toBinary());
+        when(entity3.getClassName()).thenReturn("c3");
         
         Vector needleVector = new BasicVector(3);
         needleVector.set(0, 1.0);
         needleVector.set(1, 2.0);
         needleVector.set(2, 3.0);
         when(needleEntity.getVector()).thenReturn(needleVector.toBinary());
+        when(needleEntity.getClassName()).thenReturn("n1");
 
         Fingerprint needle = new Fingerprint(needleEntity);
         FingerprintMatcher matcher = new FingerprintMatcher(service);

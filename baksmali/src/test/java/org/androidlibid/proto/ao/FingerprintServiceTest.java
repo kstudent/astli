@@ -36,23 +36,23 @@ public class FingerprintServiceTest {
     
     @Test 
     public void testSaveFingerprint() throws Exception {
-        assert(em.count(FingerprintEntity.class) == 0);
+        assert(em.count(ClassEntity.class) == 0);
         
-        FingerprintService service = new FingerprintService(em);
+        ClassEntityService service = new ClassEntityService(em);
         Vector vector = new BasicVector(5);
         service.saveFingerprint(vector, "vector 1");
-        assert(em.count(FingerprintEntity.class) == 1);
+        assert(em.count(ClassEntity.class) == 1);
         
         service.saveFingerprint(vector, "vector 2");
-        assert(em.count(FingerprintEntity.class) == 2);
+        assert(em.count(ClassEntity.class) == 2);
         
         service.saveFingerprint(vector, "vector 3");
-        assert(em.count(FingerprintEntity.class) == 3);
+        assert(em.count(ClassEntity.class) == 3);
     }
     
     @Test
     public void testIterateOverFingerprints() throws Exception {
-        FingerprintService service = new FingerprintService(em);
+        ClassEntityService service = new ClassEntityService(em);
 
         Vector vector = new BasicVector(5);
         service.saveFingerprint(vector, "vector 1");
@@ -60,7 +60,7 @@ public class FingerprintServiceTest {
         service.saveFingerprint(vector, "vector 3");
         
         int counter = 0;
-        for (FingerprintEntity entity : service.getFingerprintEntities()) {
+        for (ClassEntity entity : service.getFingerprintEntities()) {
             counter ++;
         }
         
@@ -70,7 +70,7 @@ public class FingerprintServiceTest {
     
     @Test
     public void clearTestCountFingerprints() throws Exception {
-        FingerprintService service = new FingerprintService(em);
+        ClassEntityService service = new ClassEntityService(em);
         assert(service.countFingerprints() == 0);
         
         Vector vector = new BasicVector(5);
@@ -83,20 +83,20 @@ public class FingerprintServiceTest {
     
     @Test
     public void clearTestDeleteAllFingerprints() throws Exception {
-        FingerprintService service = new FingerprintService(em);
+        ClassEntityService service = new ClassEntityService(em);
         
-        assert(em.count(FingerprintEntity.class) == 0);
+        assert(em.count(ClassEntity.class) == 0);
         
         Vector vector = new BasicVector(5);
         service.saveFingerprint(vector, "vector 1");
         service.saveFingerprint(vector, "vector 2");
         service.saveFingerprint(vector, "vector 3");
         
-        assert(em.count(FingerprintEntity.class) == 3);
+        assert(em.count(ClassEntity.class) == 3);
         
         service.deleteAllFingerprints();
         
-        assert(em.count(FingerprintEntity.class) == 0);
+        assert(em.count(ClassEntity.class) == 0);
     }
     
     public static final class FingerprintServiceTestDatabaseUpdater implements DatabaseUpdater
@@ -104,7 +104,7 @@ public class FingerprintServiceTest {
         @Override
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(FingerprintEntity.class);
+            entityManager.migrate(ClassEntity.class);
         }
     }
 }

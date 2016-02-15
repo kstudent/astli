@@ -19,54 +19,54 @@ import org.la4j.Vector;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class FingerprintService {
+public class ClassEntityService {
 
     private final EntityManager em;
 
-    public FingerprintService(EntityManager em) {
+    public ClassEntityService(EntityManager em) {
         this.em = em;
     }
     
     public void deleteAllFingerprints() throws SQLException {
-        em.deleteWithSQL(FingerprintEntity.class, "1 = 1");
+        em.deleteWithSQL(ClassEntity.class, "1 = 1");
     }
     
     public int countFingerprints() throws SQLException {
-        return em.count(FingerprintEntity.class);
+        return em.count(ClassEntity.class);
     }
 
-    public FingerprintEntity saveFingerprint(Vector vector, String name) throws SQLException {
-        FingerprintEntity print = em.create(FingerprintEntity.class);
-        print.setName(name);
+    public ClassEntity saveFingerprint(Vector vector, String name) throws SQLException {
+        ClassEntity print = em.create(ClassEntity.class);
+        print.setClassName(name);
         print.setVector(vector.toBinary());
         print.save();
         return print;
     }
     
-    public FingerprintEntity saveFingerprint(Fingerprint fingerprint) throws SQLException {
-        FingerprintEntity entity = em.create(FingerprintEntity.class);
-        entity.setName(fingerprint.getName());
+    public ClassEntity saveFingerprint(Fingerprint fingerprint) throws SQLException {
+        ClassEntity entity = em.create(ClassEntity.class);
+        entity.setClassName(fingerprint.getName());
         entity.setVector(fingerprint.getVector().toBinary());
         entity.save();
         return entity;
     }
     
-    public Iterable<FingerprintEntity> getFingerprintEntities() {
+    public Iterable<ClassEntity> getFingerprintEntities() {
 
-        return new Iterable<FingerprintEntity>() {
+        return new Iterable<ClassEntity>() {
             @Override
-            public Iterator<FingerprintEntity> iterator() {
-                return new Iterator<FingerprintEntity>() {
+            public Iterator<ClassEntity> iterator() {
+                return new Iterator<ClassEntity>() {
 
-                    private List<FingerprintEntity> prints;
-                    private Iterator<FingerprintEntity> iterator;
+                    private List<ClassEntity> prints;
+                    private Iterator<ClassEntity> iterator;
 
                     {
                         try {
-                            prints = Arrays.asList(em.find(FingerprintEntity.class));
+                            prints = Arrays.asList(em.find(ClassEntity.class));
                             iterator = prints.iterator();
                         } catch (SQLException ex) {
-                            Logger.getLogger(FingerprintService.class.getName()).log(
+                            Logger.getLogger(ClassEntityService.class.getName()).log(
                                     Level.SEVERE, "could not find FingerprintEntity class", ex);
                         }
                     }
@@ -77,7 +77,7 @@ public class FingerprintService {
                     }
 
                     @Override
-                    public FingerprintEntity next() {
+                    public ClassEntity next() {
                         return iterator.next();
                     }
 
