@@ -5,6 +5,7 @@
  */
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.ast.NodeType;
 import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
 import java.util.List;

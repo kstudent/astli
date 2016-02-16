@@ -4,8 +4,6 @@ import org.jf.baksmali.baksmaliOptions;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import org.androidlibid.proto.Node;
-import org.androidlibid.proto.NodeType;
 
 public class ASTRegisterNodeCreator {
     @Nonnull private final baksmaliOptions options;

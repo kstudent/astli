@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.androidlibid.proto;
+package org.androidlibid.proto.ast;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

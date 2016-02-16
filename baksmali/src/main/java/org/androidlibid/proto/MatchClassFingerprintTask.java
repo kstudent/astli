@@ -5,6 +5,7 @@
  */
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.ast.Node;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import java.util.List;

@@ -3,8 +3,6 @@ package org.androidlibid.proto.ast;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import org.androidlibid.proto.NodeType;
-import org.androidlibid.proto.NodeType;
 
 /**
  *

@@ -15,6 +15,7 @@
  */
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.ast.NodeType;
 import org.junit.Test;
 
 /**

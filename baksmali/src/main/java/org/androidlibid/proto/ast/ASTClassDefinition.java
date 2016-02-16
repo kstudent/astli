@@ -34,7 +34,6 @@ import org.jf.dexlib2.iface.*;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
-import org.androidlibid.proto.Node;
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.util.IndentingWriter;
 

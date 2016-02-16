@@ -60,8 +60,6 @@ import org.jf.util.SparseIntArray;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
-import org.androidlibid.proto.Node;
-import org.androidlibid.proto.NodeType;
 import org.jf.baksmali.Adaptors.BlankMethodItem;
 import org.jf.baksmali.Adaptors.CatchMethodItem;
 import org.jf.baksmali.Adaptors.ClassDefinition;

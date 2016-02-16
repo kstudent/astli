@@ -8,8 +8,6 @@ package org.androidlibid.proto.ast;
 import java.util.LinkedList;
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.Node;
-import org.androidlibid.proto.NodeType;
 
 /**
  *
