@@ -17,7 +17,7 @@ import org.junit.Test;
 public class ASTToFingerprintTransformerTest {
     
     @Test
-    public void testFingerprinter() {
+    public void testASTToFingerprintTransformer() {
     
         Node root   = new Node(NodeType.METHOD);
         Node child1 = new Node(NodeType.ARGUMENT);
