@@ -13,17 +13,20 @@ import net.java.ao.OneToMany;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 
-public interface PackageEntity extends Entity {
+public interface LibraryEntity extends Entity {
+    
+    String getGroupId();
+    void setGroupId(String groupID);
+    
+    String getArtifactId();
+    void setArtifactId(String artifactID);
 
-    String getPackageName();
-    void setPackageName(String name);
+    String getVersion();
+    void setVersion(String version);
 
     byte[] getVector();
     void setVector(byte[] vector);
     
-    LibraryEntity getParentLibrary();
-    void setParentLibrary(LibraryEntity parent);
-    
     @OneToMany
-    public ClassEntity[] getClasses();
+    public PackageEntity[] getPackages();
 }

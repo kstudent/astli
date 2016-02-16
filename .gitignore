@@ -1,5 +1,6 @@
 /.gradle
 /baksmali/build
+/baksmali/output
 /dexlib/build
 /dexlib2/build
 /dexlib2/accessorTestGenerator/build

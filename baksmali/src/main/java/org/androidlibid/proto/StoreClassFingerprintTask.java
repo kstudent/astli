@@ -18,7 +18,7 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class StoreClassFingerprintTask implements Callable<Boolean>{
+public class StoreClassFingerprintTask implements Callable<Boolean> {
     
     private final ClassDef classDef;
     private final baksmaliOptions options;
