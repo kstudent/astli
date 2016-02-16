@@ -15,6 +15,7 @@
  */
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

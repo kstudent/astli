@@ -26,7 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.androidlibid.proto;
+package org.androidlibid.proto.ast;
 
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
@@ -34,6 +34,7 @@ import org.jf.dexlib2.iface.*;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
+import org.androidlibid.proto.Node;
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.util.IndentingWriter;
 

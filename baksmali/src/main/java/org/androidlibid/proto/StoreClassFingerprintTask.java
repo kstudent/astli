@@ -5,6 +5,8 @@
  */
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
+import org.androidlibid.proto.ast.ASTClassDefinition;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.androidlibid.proto.ao.ClassEntityService;

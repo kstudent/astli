@@ -5,6 +5,7 @@
  */
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.junit.Test;
 
 /**

@@ -5,6 +5,7 @@
  */
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
 import java.util.List;
 import org.la4j.Vector;
@@ -48,11 +49,11 @@ public class Fingerprint {
         vector = new BasicVector(FEATURES.size());
     } 
     
-    void incrementFeature(NodeType... dimension) {
+    public void incrementFeature(NodeType... dimension) {
         Fingerprint.this.incrementFeature(Arrays.asList(dimension));
     }
 
-    void incrementFeature(List<NodeType> dimension) {
+    public void incrementFeature(List<NodeType> dimension) {
         int index = FEATURES.indexOf(dimension);
         if(index == -1) {
             throw new IllegalArgumentException("Dimension not found");
@@ -60,11 +61,11 @@ public class Fingerprint {
         vector.set(index, vector.get(index) + 1);
     }
     
-    double getFeatureCount(NodeType... feature) {
+    public double getFeatureCount(NodeType... feature) {
         return Fingerprint.this.getFeatureCount(Arrays.asList(feature));
     }
     
-    double getFeatureCount(List<NodeType> feature) {
+    public double getFeatureCount(List<NodeType> feature) {
         int index = FEATURES.indexOf(feature);
         if(index == -1) {
             throw new IllegalArgumentException("Dimension not found");
@@ -72,7 +73,7 @@ public class Fingerprint {
         return vector.get(index);
     }
 
-    void add(Fingerprint that) {
+    public void add(Fingerprint that) {
         this.vector = this.vector.add(that.vector);
     }
 
