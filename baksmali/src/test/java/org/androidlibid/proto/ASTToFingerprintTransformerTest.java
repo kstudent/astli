@@ -14,7 +14,7 @@ import org.junit.Test;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class FingerprinterTest {
+public class ASTToFingerprintTransformerTest {
     
     @Test
     public void testFingerprinter() {

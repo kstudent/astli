@@ -151,3 +151,7 @@ task integrationTest(type: Test) {
     outputs.upToDateWhen { false }
     testLogging{ showStandardStreams = true }
 }
+
+test {
+    exclude 'org/androidlibid/proto/integration/**'    
+}   

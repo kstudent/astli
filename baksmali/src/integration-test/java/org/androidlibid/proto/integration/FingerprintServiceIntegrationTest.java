@@ -3,9 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.androidlibid.proto.ao;
+package org.androidlibid.proto.integration;
 
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.ao.ClassEntity;
+import org.androidlibid.proto.ao.ClassEntityService;
+import org.androidlibid.proto.ao.ClassEntityServiceFactory;
 import org.junit.Test;
 
 /**
@@ -14,16 +17,16 @@ import org.junit.Test;
  */
 public class FingerprintServiceIntegrationTest {
     
-    private FingerprintService service; 
+    private ClassEntityService service; 
     
     @Test
     public void testRetrieveAllFingerprints() {
         
-        service = FingerprintServiceFactory.createService();
+        service = ClassEntityServiceFactory.createService();
         
         int counter = 0;
         
-        for(FingerprintEntity entity : service.getFingerprintEntities()) {
+        for(ClassEntity entity : service.getFingerprintEntities()) {
             Fingerprint print = new Fingerprint(entity);
             counter++;
             System.out.println(print);

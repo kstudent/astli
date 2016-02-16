@@ -1,4 +1,4 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.integration;
 
 import com.android.dex.util.FileUtils;
 import java.io.File;
@@ -8,12 +8,11 @@ import java.util.Properties;
 import org.jf.baksmali.main;
 import org.junit.Assert;
 import org.junit.Test;
-import org.androidlibid.proto.ao.FingerprintService;
-import org.androidlibid.proto.ao.FingerprintEntity;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.ao.ClassEntity;
+import org.androidlibid.proto.ao.ClassEntityService;
+import org.androidlibid.proto.ao.ClassEntityServiceFactory;
 import org.androidlibid.proto.ao.JdbcProperties;
-import org.androidlibid.proto.ao.FingerprintService;
-import org.androidlibid.proto.ao.FingerprintServiceFactory;
 import org.junit.Test;
 
 
@@ -54,7 +53,7 @@ public class mainTest {
     }
     
     public void clearDB() throws Exception {
-        FingerprintService service = FingerprintServiceFactory.createService();
+        ClassEntityService service = ClassEntityServiceFactory.createService();
         System.out.println("Fingerprint.count(): " + service.countFingerprints());
         service.deleteAllFingerprints();
         System.out.println("... after deleting : " + service.countFingerprints());
@@ -62,12 +61,12 @@ public class mainTest {
     
     
     public void testPrintFingerprintsFromDB() throws Exception {
-        FingerprintService service = FingerprintServiceFactory.createService();
+        ClassEntityService service = ClassEntityServiceFactory.createService();
         
         int counter = 0;
         
         System.out.println("---list-of-fingerprints---");
-        for(FingerprintEntity entity : service.getFingerprintEntities()) {
+        for(ClassEntity entity : service.getFingerprintEntities()) {
             Fingerprint print = new Fingerprint(entity);
             counter++;
             System.out.println("  " + print.getName());
