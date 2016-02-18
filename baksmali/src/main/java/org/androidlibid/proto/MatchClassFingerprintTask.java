@@ -10,7 +10,7 @@ import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.androidlibid.proto.ao.ClassEntityService;
+import org.androidlibid.proto.ao.EntityService;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 
@@ -22,9 +22,9 @@ public class MatchClassFingerprintTask implements Callable<FingerPrintMatchTaskR
     
     private final ClassDef classDef;
     private final baksmaliOptions options;
-    private final ClassEntityService service;
+    private final EntityService service;
 
-    public MatchClassFingerprintTask(ClassDef classDef, baksmaliOptions options, ClassEntityService service) {
+    public MatchClassFingerprintTask(ClassDef classDef, baksmaliOptions options, EntityService service) {
         this.classDef = classDef;
         this.options = options;
         this.service = service;

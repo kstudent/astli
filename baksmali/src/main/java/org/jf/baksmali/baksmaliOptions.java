@@ -79,6 +79,7 @@ public class baksmaliOptions {
     public boolean normalizeVirtualMethods = false;
     public boolean aliFingerprintAPK = false;
     public boolean aliFingerprintJAR = false;
+    public String mvnIdentifier = "";
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;
     public int registerInfo = 0;

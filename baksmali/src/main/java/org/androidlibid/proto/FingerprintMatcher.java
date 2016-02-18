@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.androidlibid.proto.ao.ClassEntityService;
+import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.ClassEntity;
 
 /**
@@ -15,10 +15,10 @@ import org.androidlibid.proto.ao.ClassEntity;
 public class FingerprintMatcher {
 
 
-    ClassEntityService service; 
+    EntityService service; 
     private final double diffThreshold = 100;
 
-    public FingerprintMatcher(ClassEntityService service) {
+    public FingerprintMatcher(EntityService service) {
         this.service = service;
     }
     

@@ -198,8 +198,8 @@ public class main {
                     options.aliFingerprintAPK = true;
                     break;
                 case 'z':
+                    options.mvnIdentifier = commandLine.getOptionValue('z');
                     options.aliFingerprintJAR = true;
-                    break;
                 case 'X':
                     options.experimental = true;
                     break;
@@ -390,6 +390,8 @@ public class main {
                 .create("y");
 
         Option aliFingerprintJAR = OptionBuilder.withLongOpt("ali-fingerprint-jar")
+                .hasArg()
+                .withArgName("GROUP_ID:ARTIFACT_ID:VERSION")
                 .withDescription("create fingerprint of a library (.jar)")
                 .create("z");
         

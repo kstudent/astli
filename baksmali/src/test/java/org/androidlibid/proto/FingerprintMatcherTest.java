@@ -7,7 +7,7 @@ package org.androidlibid.proto;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.androidlibid.proto.ao.ClassEntityService;
+import org.androidlibid.proto.ao.EntityService;
 import org.junit.Before;
 import org.junit.Test;
 import org.la4j.Vector;
@@ -27,7 +27,7 @@ public class FingerprintMatcherTest {
     ClassEntity entity2;
     ClassEntity entity3;
     ClassEntity needleEntity;
-    ClassEntityService service;
+    EntityService service;
     
     @Before
     public void setUp() {
@@ -38,7 +38,7 @@ public class FingerprintMatcherTest {
         fingerprints.add(entity1);
         fingerprints.add(entity2);
         fingerprints.add(entity3);
-        service = mock(ClassEntityService.class);
+        service = mock(EntityService.class);
         when(service.getFingerprintEntities()).thenReturn(fingerprints);
         needleEntity = mock(ClassEntity.class);
     }

@@ -15,15 +15,9 @@ import net.java.ao.OneToMany;
 
 public interface LibraryEntity extends Entity {
     
-    String getGroupId();
-    void setGroupId(String groupID);
+    String getMvnIdentifier();
+    void setMvnIdentifier(String mvnIdentifier);
     
-    String getArtifactId();
-    void setArtifactId(String artifactID);
-
-    String getVersion();
-    void setVersion(String version);
-
     byte[] getVector();
     void setVector(byte[] vector);
     

@@ -6,24 +6,24 @@
 package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nullable;
 import net.java.ao.EntityManager;
-import org.androidlibid.proto.Fingerprint;
-import org.la4j.Vector;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ClassEntityService {
+public class EntityService {
 
     private final EntityManager em;
 
-    public ClassEntityService(EntityManager em) {
+    public EntityService(EntityManager em) {
         this.em = em;
     }
     
@@ -35,21 +35,15 @@ public class ClassEntityService {
         return em.count(ClassEntity.class);
     }
 
-    public ClassEntity saveFingerprint(Vector vector, String name) throws SQLException {
+    public ClassEntity saveFingerprint(byte[] vector, String className, String packageName, String mvnIdentifier) throws SQLException {
         ClassEntity print = em.create(ClassEntity.class);
-        print.setClassName(name);
-        print.setVector(vector.toBinary());
+        print.setClassName(className);
+        print.setVector(vector);
+//        print.setPackage(findPackageByName(packageName));
         print.save();
         return print;
     }
     
-    public ClassEntity saveFingerprint(Fingerprint fingerprint) throws SQLException {
-        ClassEntity entity = em.create(ClassEntity.class);
-        entity.setClassName(fingerprint.getName());
-        entity.setVector(fingerprint.getVector().toBinary());
-        entity.save();
-        return entity;
-    }
     
     public Iterable<ClassEntity> getFingerprintEntities() {
 
@@ -66,7 +60,7 @@ public class ClassEntityService {
                             prints = Arrays.asList(em.find(ClassEntity.class));
                             iterator = prints.iterator();
                         } catch (SQLException ex) {
-                            Logger.getLogger(ClassEntityService.class.getName()).log(
+                            Logger.getLogger(EntityService.class.getName()).log(
                                     Level.SEVERE, "could not find FingerprintEntity class", ex);
                         }
                     }
@@ -89,5 +83,21 @@ public class ClassEntityService {
                 };
             }
         };
+    }
+
+    public @Nullable PackageEntity findPackageByNameAndLib(String packageName, LibraryEntity library) throws SQLException {
+        
+        PackageEntity[] packageEntities = em.find(PackageEntity.class, "PACKAGE_NAME = ? AND PARENT_LIBRARY_ID = ?", packageName, library.getID());
+        
+        if (packageEntities.length > 1) {
+            throw new SQLWarning("Multiple Packages with the same Package / Library Identifier");
+        }
+        
+        if(packageEntities.length == 0) {
+            return null;
+        }
+        
+        else return packageEntities[0];
+        
     }
 }

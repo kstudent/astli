@@ -1,18 +1,12 @@
 package org.androidlibid.proto.integration;
 
-import com.android.dex.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import org.jf.baksmali.main;
-import org.junit.Assert;
-import org.junit.Test;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.ClassEntity;
-import org.androidlibid.proto.ao.ClassEntityService;
-import org.androidlibid.proto.ao.ClassEntityServiceFactory;
-import org.androidlibid.proto.ao.JdbcProperties;
+import org.androidlibid.proto.ao.EntityService;
+import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
 
 
@@ -43,17 +37,17 @@ public class mainTest {
         String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_core.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
-        String arg[] = {"-z", jarPath};
+        String arg[] = {"-z", "com.madgag.spongycastle:core:1.54.0.0", jarPath};
         main.main(arg); 
         jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_prov.jar";
         jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
-        String arg2[] = {"-z", jarPath};
+        String arg2[] = {"-z", "com.madgag.spongycastle:prov:1.54.0.0", jarPath};
         main.main(arg2); 
     }
     
     public void clearDB() throws Exception {
-        ClassEntityService service = ClassEntityServiceFactory.createService();
+        EntityService service = EntityServiceFactory.createService();
         System.out.println("Fingerprint.count(): " + service.countFingerprints());
         service.deleteAllFingerprints();
         System.out.println("... after deleting : " + service.countFingerprints());
@@ -61,7 +55,7 @@ public class mainTest {
     
     
     public void testPrintFingerprintsFromDB() throws Exception {
-        ClassEntityService service = ClassEntityServiceFactory.createService();
+        EntityService service = EntityServiceFactory.createService();
         
         int counter = 0;
         

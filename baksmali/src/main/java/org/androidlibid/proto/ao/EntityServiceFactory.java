@@ -17,7 +17,7 @@ import net.java.ao.builder.EntityManagerBuilder;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ClassEntityServiceFactory {
+public class EntityServiceFactory {
 
     private static EntityManager entityManager = null;
     
@@ -25,7 +25,7 @@ public class ClassEntityServiceFactory {
     //which can be troublesome for concurrency. (reason for sharing: tried to
     //solve the SQLException on em.migrate(), but didnt work)
     //@TODO Evaluate if this works with concurrency
-    public static ClassEntityService createService() {
+    public static EntityService createService() {
 
         if(entityManager == null) {
             JdbcProperties jdbcProperties = jdbcProperties();
@@ -40,15 +40,15 @@ public class ClassEntityServiceFactory {
                 entityManager.migrate(ClassEntity.class);
             } catch (Exception e) {
                 //ou nou...
-                Logger.getLogger(ClassEntityServiceFactory.class.getName()).log(Level.SEVERE, "entityManager.migrate... again...");
+                Logger.getLogger(EntityServiceFactory.class.getName()).log(Level.SEVERE, "entityManager.migrate... again...");
             }
         }
 
-        return new ClassEntityService(entityManager);
+        return new EntityService(entityManager);
     }
     
     private static JdbcProperties jdbcProperties() {
-        final InputStream is = ClassEntityService.class.getResourceAsStream("/db.properties");
+        final InputStream is = EntityService.class.getResourceAsStream("/db.properties");
         if (is == null) {
             throw new RuntimeException("Unable to locate db.properties");
         }

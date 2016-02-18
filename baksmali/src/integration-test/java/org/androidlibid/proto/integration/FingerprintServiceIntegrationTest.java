@@ -7,8 +7,8 @@ package org.androidlibid.proto.integration;
 
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.ClassEntity;
-import org.androidlibid.proto.ao.ClassEntityService;
-import org.androidlibid.proto.ao.ClassEntityServiceFactory;
+import org.androidlibid.proto.ao.EntityService;
+import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
 
 /**
@@ -17,12 +17,12 @@ import org.junit.Test;
  */
 public class FingerprintServiceIntegrationTest {
     
-    private ClassEntityService service; 
+    private EntityService service; 
     
     @Test
     public void testRetrieveAllFingerprints() {
         
-        service = ClassEntityServiceFactory.createService();
+        service = EntityServiceFactory.createService();
         
         int counter = 0;
         

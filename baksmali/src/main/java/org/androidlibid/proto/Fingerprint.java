@@ -17,12 +17,10 @@ public class Fingerprint {
 
     private String name;
     private Vector vector;
-    private ClassEntity entity;
 
     public Fingerprint(ClassEntity entity) {
         this.vector = BasicVector.fromBinary(entity.getVector());
         this.name   = entity.getClassName();
-        this.entity = entity;
     }
     
     private static final List<List<NodeType>> FEATURES;

@@ -10,7 +10,7 @@ import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.androidlibid.proto.ao.ClassEntityService;
+import org.androidlibid.proto.ao.EntityService;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 
@@ -18,13 +18,13 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class StoreClassFingerprintTask implements Callable<Boolean> {
+public class StoreFingerprintTask implements Callable<Boolean> {
     
     private final ClassDef classDef;
     private final baksmaliOptions options;
-    private final ClassEntityService service;
+    private final EntityService service;
 
-    public StoreClassFingerprintTask(ClassDef classDef, baksmaliOptions options, ClassEntityService service) {
+    public StoreFingerprintTask(ClassDef classDef, baksmaliOptions options, EntityService service) {
         this.classDef = classDef;
         this.options = options;
         this.service = service;
@@ -36,17 +36,25 @@ public class StoreClassFingerprintTask implements Callable<Boolean> {
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
         Fingerprint classFingerprint = new Fingerprint();
-        classFingerprint.setName(classDef.getType());
         
+        String className        = classDef.getType();
+        String packageName = extractPackageName(className);
+        String mvnIdentifier = options.mvnIdentifier;
+                
         for(Node node : ast) {
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
             classFingerprint.add(methodFingerprint);
         }
         
         if(classFingerprint.euclideanNorm() > 0.0d) {
-            service.saveFingerprint(classFingerprint);
+            service.saveFingerprint(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
         }
         
         return true;
     }
+    
+    public String extractPackageName(String className) {
+        return className.substring(1, className.lastIndexOf("/"));
+    }
+    
 }
