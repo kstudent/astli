@@ -70,7 +70,7 @@ dependencies {
 //    testCompile 'net.java.dev.activeobjects:activeobjects-test:1.1.5'
     
     runtime 'org.slf4j:slf4j-simple:1.7.14'
-    runtime 'org.apache.derby:derby:10.12.1.1'
+    runtime 'org.hsqldb:hsqldb:2.3.3'
     
     testCompile depends.junit
     testCompile project(':smali')

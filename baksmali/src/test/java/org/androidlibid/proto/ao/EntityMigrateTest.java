@@ -11,7 +11,7 @@ import net.java.ao.RawEntity;
 import net.java.ao.test.converters.NameConverters;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
-import net.java.ao.test.jdbc.DerbyEmbedded;
+import net.java.ao.test.jdbc.Hsql;
 import net.java.ao.test.jdbc.Jdbc;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Test;
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(EntityMigrateTest.MyDatabaseUpdater.class)
-@Jdbc(DerbyEmbedded.class)  
+@Jdbc(Hsql.class)  
 @NameConverters
 public class EntityMigrateTest {
     
