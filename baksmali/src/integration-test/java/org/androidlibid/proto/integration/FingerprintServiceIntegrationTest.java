@@ -6,7 +6,7 @@
 package org.androidlibid.proto.integration;
 
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.ao.ClassEntity;
+import org.androidlibid.proto.ao.Class;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class FingerprintServiceIntegrationTest {
         
         int counter = 0;
         
-        for(ClassEntity entity : service.getFingerprintEntities()) {
+        for(Class entity : service.getFingerprintEntities()) {
             Fingerprint print = new Fingerprint(entity);
             counter++;
             System.out.println(print);

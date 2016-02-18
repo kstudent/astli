@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import org.jf.baksmali.main;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.ao.ClassEntity;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
+import org.androidlibid.proto.ao.Class;
 
 
 /**
@@ -60,7 +60,7 @@ public class mainTest {
         int counter = 0;
         
         System.out.println("---list-of-fingerprints---");
-        for(ClassEntity entity : service.getFingerprintEntities()) {
+        for(Class entity : service.getFingerprintEntities()) {
             Fingerprint print = new Fingerprint(entity);
             counter++;
             System.out.println("  " + print.getName());

@@ -11,14 +11,14 @@ import java.util.Arrays;
 import java.util.List;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
-import org.androidlibid.proto.ao.ClassEntity;
+import org.androidlibid.proto.ao.Class;
 
 public class Fingerprint {
 
     private String name;
     private Vector vector;
 
-    public Fingerprint(ClassEntity entity) {
+    public Fingerprint(Class entity) {
         this.vector = BasicVector.fromBinary(entity.getVector());
         this.name   = entity.getClassName();
     }

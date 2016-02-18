@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.ao.EntityService;
-import org.androidlibid.proto.ao.ClassEntity;
+import org.androidlibid.proto.ao.Class;
 
 /**
  *
@@ -27,7 +27,7 @@ public class FingerprintMatcher {
         List<Fingerprint> matches = new ArrayList<>();
         FingerprintMatcherResult result = new FingerprintMatcherResult();
         
-        for(ClassEntity candidateEntity : service.getFingerprintEntities()) {
+        for(Class candidateEntity : service.getFingerprintEntities()) {
             
             Fingerprint candidate = new Fingerprint(candidateEntity);
             

@@ -39,8 +39,8 @@ public class EntityMigrateTest {
         @Override
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(ClassEntity.class);
-            entityManager.migrate(LibraryEntity.class);
+            entityManager.migrate(Class.class);
+            entityManager.migrate(Library.class);
         }
     }
 }

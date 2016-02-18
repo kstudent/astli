@@ -14,7 +14,7 @@ import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.androidlibid.proto.ao.ClassEntity;
+import org.androidlibid.proto.ao.Class;
 
 /**
  *
@@ -22,25 +22,25 @@ import org.androidlibid.proto.ao.ClassEntity;
  */
 public class FingerprintMatcherTest {
     
-    List<ClassEntity> fingerprints;
-    ClassEntity entity1;
-    ClassEntity entity2;
-    ClassEntity entity3;
-    ClassEntity needleEntity;
+    List<Class> fingerprints;
+    Class entity1;
+    Class entity2;
+    Class entity3;
+    Class needleEntity;
     EntityService service;
     
     @Before
     public void setUp() {
-        entity1 = mock(ClassEntity.class);
-        entity2 = mock(ClassEntity.class);
-        entity3 = mock(ClassEntity.class);
+        entity1 = mock(Class.class);
+        entity2 = mock(Class.class);
+        entity3 = mock(Class.class);
         fingerprints = new ArrayList<>();
         fingerprints.add(entity1);
         fingerprints.add(entity2);
         fingerprints.add(entity3);
         service = mock(EntityService.class);
         when(service.getFingerprintEntities()).thenReturn(fingerprints);
-        needleEntity = mock(ClassEntity.class);
+        needleEntity = mock(Class.class);
     }
     
     @Test 

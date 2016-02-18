@@ -6,21 +6,24 @@
 package org.androidlibid.proto.ao;
 
 import net.java.ao.Entity;
-import net.java.ao.OneToMany;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 
-public interface LibraryEntity extends Entity {
-    
-    String getMvnIdentifier();
-    void setMvnIdentifier(String mvnIdentifier);
-    
+public interface Class extends Entity {
+
+    String getClassName();
+
     byte[] getVector();
+
+    void setClassName(String name);
+
     void setVector(byte[] vector);
     
-    @OneToMany
-    public PackageEntity[] getPackages();
+    public Package getParentPackage();
+    
+    public void setPackage(Package parentPackage);
+    
 }

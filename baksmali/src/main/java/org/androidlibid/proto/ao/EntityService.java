@@ -28,18 +28,18 @@ public class EntityService {
     }
     
     public void deleteAllFingerprints() throws SQLException {
-        em.deleteWithSQL(ClassEntity.class, "1 = 1");
+        em.deleteWithSQL(Class.class, "1 = 1");
     }
     
     public int countFingerprints() throws SQLException {
-        return em.count(ClassEntity.class);
+        return em.count(Class.class);
     }
 
-    public ClassEntity saveFingerprint(byte[] vector, String className, 
+    public Class saveFingerprint(byte[] vector, String className, 
             String packageName, String mvnIdentifier) throws SQLException {
-        ClassEntity print = em.create(ClassEntity.class);
-        LibraryEntity lib  = saveLibrary(mvnIdentifier);
-        PackageEntity pckg = savePackage(packageName, lib);
+        Class print = em.create(Class.class);
+        Library lib  = saveLibrary(mvnIdentifier);
+        Package pckg = savePackage(packageName, lib);
         
         print.setClassName(className);
         print.setVector(vector);
@@ -50,19 +50,19 @@ public class EntityService {
     }
     
     
-    public Iterable<ClassEntity> getFingerprintEntities() {
+    public Iterable<Class> getFingerprintEntities() {
 
-        return new Iterable<ClassEntity>() {
+        return new Iterable<Class>() {
             @Override
-            public Iterator<ClassEntity> iterator() {
-                return new Iterator<ClassEntity>() {
+            public Iterator<Class> iterator() {
+                return new Iterator<Class>() {
 
-                    private List<ClassEntity> prints;
-                    private Iterator<ClassEntity> iterator;
+                    private List<Class> prints;
+                    private Iterator<Class> iterator;
 
                     {
                         try {
-                            prints = Arrays.asList(em.find(ClassEntity.class));
+                            prints = Arrays.asList(em.find(Class.class));
                             iterator = prints.iterator();
                         } catch (SQLException ex) {
                             Logger.getLogger(EntityService.class.getName()).log(
@@ -76,7 +76,7 @@ public class EntityService {
                     }
 
                     @Override
-                    public ClassEntity next() {
+                    public Class next() {
                         return iterator.next();
                     }
 
@@ -90,10 +90,10 @@ public class EntityService {
         };
     }
 
-    public @Nullable PackageEntity findPackageByNameAndLib(
-            String packageName, LibraryEntity library) throws SQLException {
+    public @Nullable Package findPackageByNameAndLib(
+            String packageName, Library library) throws SQLException {
         
-        PackageEntity[] packageEntities = em.find(PackageEntity.class, 
+        Package[] packageEntities = em.find(Package.class, 
                 "PACKAGE_NAME = ? AND PARENT_LIBRARY_ID = ?", 
                 packageName, library.getID());
         
@@ -110,11 +110,11 @@ public class EntityService {
         
     }
 
-    public PackageEntity savePackage(String packageName, LibraryEntity lib) throws SQLException {
-        PackageEntity entity = findPackageByNameAndLib(packageName, lib);
+    public Package savePackage(String packageName, Library lib) throws SQLException {
+        Package entity = findPackageByNameAndLib(packageName, lib);
         
         if (entity == null) {
-            entity = em.create(PackageEntity.class);
+            entity = em.create(Package.class);
             entity.setPackageName(packageName);
             entity.setParentLibrary(lib);
             entity.save();
@@ -123,10 +123,10 @@ public class EntityService {
         return entity;
     }
 
-    public @Nullable LibraryEntity findLibraryByMvnIdentifier(String mvnIdentifier) 
+    public @Nullable Library findLibraryByMvnIdentifier(String mvnIdentifier) 
             throws SQLException {
         
-        LibraryEntity[] libraries = em.find(LibraryEntity.class, 
+        Library[] libraries = em.find(Library.class, 
                 "MVN_IDENTIFIER = ?", mvnIdentifier);
         
         if (libraries.length > 1) {
@@ -141,12 +141,12 @@ public class EntityService {
         return libraries[0];
     }
 
-    public LibraryEntity saveLibrary(String mvnIdentifier) throws SQLException {
+    public Library saveLibrary(String mvnIdentifier) throws SQLException {
         
-        LibraryEntity entity = findLibraryByMvnIdentifier(mvnIdentifier);
+        Library entity = findLibraryByMvnIdentifier(mvnIdentifier);
         
         if (entity == null) {
-            entity = em.create(LibraryEntity.class);
+            entity = em.create(Library.class);
             entity.setMvnIdentifier(mvnIdentifier);
             entity.save();
         }

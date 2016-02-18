@@ -32,18 +32,18 @@ public class EntityServiceClassTest {
     
     @Test 
     public void testSaveFingerprint() throws Exception {
-        assert(em.count(ClassEntity.class) == 0);
+        assert(em.count(Class.class) == 0);
         
         EntityService service = new EntityService(em);
         Vector vector = new BasicVector(5);
         service.saveFingerprint(vector.toBinary(), "vector 1", "", "");
-        assert(em.count(ClassEntity.class) == 1);
+        assert(em.count(Class.class) == 1);
         
         service.saveFingerprint(vector.toBinary(), "vector 2", "", "");
-        assert(em.count(ClassEntity.class) == 2);
+        assert(em.count(Class.class) == 2);
         
         service.saveFingerprint(vector.toBinary(), "vector 3", "", "");
-        assert(em.count(ClassEntity.class) == 3);
+        assert(em.count(Class.class) == 3);
     }
     
     @Test
@@ -56,7 +56,7 @@ public class EntityServiceClassTest {
         service.saveFingerprint(vector.toBinary(), "vector 3", "", "");
         
         int counter = 0;
-        for (ClassEntity entity : service.getFingerprintEntities()) {
+        for (Class entity : service.getFingerprintEntities()) {
             counter ++;
         }
         
@@ -81,18 +81,18 @@ public class EntityServiceClassTest {
     public void testDeleteAllFingerprints() throws Exception {
         EntityService service = new EntityService(em);
         
-        assert(em.count(ClassEntity.class) == 0);
+        assert(em.count(Class.class) == 0);
         
         Vector vector = new BasicVector(5);
         service.saveFingerprint(vector.toBinary(), "vector 1", "", "");
         service.saveFingerprint(vector.toBinary(), "vector 2", "", "");
         service.saveFingerprint(vector.toBinary(), "vector 3", "", "");
         
-        assert(em.count(ClassEntity.class) == 3);
+        assert(em.count(Class.class) == 3);
         
         service.deleteAllFingerprints();
         
-        assert(em.count(ClassEntity.class) == 0);
+        assert(em.count(Class.class) == 0);
     }
     
     public static final class FingerprintServiceTestDatabaseUpdater implements DatabaseUpdater
@@ -100,7 +100,7 @@ public class EntityServiceClassTest {
         @Override
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(ClassEntity.class, PackageEntity.class, LibraryEntity.class);
+            entityManager.migrate(Class.class, Package.class, Library.class);
         }
     }
 }
