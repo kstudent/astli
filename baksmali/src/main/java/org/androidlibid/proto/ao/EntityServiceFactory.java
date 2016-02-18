@@ -7,9 +7,8 @@ package org.androidlibid.proto.ao;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.java.ao.EntityManager;
 import net.java.ao.builder.EntityManagerBuilder;
 
@@ -18,31 +17,18 @@ import net.java.ao.builder.EntityManagerBuilder;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 public class EntityServiceFactory {
-
-    private static EntityManager entityManager = null;
     
-    //so. here the em instance is shared accorss service instances, 
-    //which can be troublesome for concurrency. (reason for sharing: tried to
-    //solve the SQLException on em.migrate(), but didnt work)
-    //@TODO Evaluate if this works with concurrency
-    public static EntityService createService() {
+    public static EntityService createService() throws SQLException {
 
-        if(entityManager == null) {
-            JdbcProperties jdbcProperties = jdbcProperties();
+        JdbcProperties jdbcProperties = jdbcProperties();
 
-            entityManager = EntityManagerBuilder
-                    .url(jdbcProperties.url)
-                    .username(jdbcProperties.username)
-                    .password(jdbcProperties.passord)
-                    .auto().build();
+        EntityManager entityManager = EntityManagerBuilder
+                .url(jdbcProperties.url)
+                .username(jdbcProperties.username)
+                .password(jdbcProperties.passord)
+                .auto().build();
 
-            try {
-                entityManager.migrate(ClassEntity.class);
-            } catch (Exception e) {
-                //ou nou...
-                Logger.getLogger(EntityServiceFactory.class.getName()).log(Level.SEVERE, "entityManager.migrate... again...");
-            }
-        }
+        entityManager.migrate(ClassEntity.class);
 
         return new EntityService(entityManager);
     }

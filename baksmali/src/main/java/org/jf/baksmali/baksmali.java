@@ -48,6 +48,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -276,10 +277,19 @@ public class baksmali {
         ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         List<Future<Boolean>> tasks = Lists.newArrayList();
 
-        EntityService service = EntityServiceFactory.createService();
+        EntityService service;
+        try {
+            service = EntityServiceFactory.createService();
+        } catch (SQLException ex) {
+            Logger.getLogger(baksmali.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        
+        
         for (final ClassDef classDef: classDefs) {
             tasks.add(executor.submit(new StoreFingerprintTask(classDef, options, service)));
         }
+        
         boolean errorOccurred = false;
         try {
             for (Future<Boolean> task: tasks) {
@@ -308,7 +318,14 @@ public class baksmali {
         ExecutorService executor = Executors.newFixedThreadPool(1);
         List<Future<FingerPrintMatchTaskResult>> tasks = Lists.newArrayList();
 
-        EntityService service = EntityServiceFactory.createService();
+        EntityService service;
+        try {
+            service = EntityServiceFactory.createService();
+        } catch (SQLException ex) {
+            Logger.getLogger(baksmali.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        
         for (final ClassDef classDef: classDefs) {
             if (!classDef.getType().startsWith("Landroid/")) {
                 tasks.add(executor.submit(new MatchClassFingerprintTask(classDef, options, service)));
