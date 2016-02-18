@@ -20,7 +20,7 @@ public class FingerprintServiceIntegrationTest {
     private EntityService service; 
     
     @Test
-    public void testRetrieveAllFingerprints() {
+    public void testRetrieveAllFingerprints() throws Exception {
         
         service = EntityServiceFactory.createService();
         

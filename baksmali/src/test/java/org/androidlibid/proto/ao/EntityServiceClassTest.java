@@ -23,10 +23,10 @@ import org.la4j.vector.dense.BasicVector;
  */
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(EntityServiceTest.FingerprintServiceTestDatabaseUpdater.class)
+@Data(EntityServiceClassTest.FingerprintServiceTestDatabaseUpdater.class)
 @NameConverters
 @Jdbc(Hsql.class)
-public class EntityServiceTest {
+public class EntityServiceClassTest {
     
     private EntityManager em;
     

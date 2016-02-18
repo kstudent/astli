@@ -27,10 +27,10 @@ import org.junit.runner.RunWith;
  */
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(EntityServicePackageFinderTest.MyDatabaseUpdater.class)
+@Data(EntityServicePackageTest.MyDatabaseUpdater.class)
 @NameConverters
 @Jdbc(Hsql.class)
-public class EntityServicePackageFinderTest {
+public class EntityServicePackageTest {
     
     private EntityManager em;
     private LibraryEntity lib1;
@@ -105,12 +105,41 @@ public class EntityServicePackageFinderTest {
         service.findPackageByNameAndLib("package1", lib1);
     }
     
+    @Test
+    public void testSavePackage() throws Exception {
+        EntityService service = new EntityService(em);
+        
+        String packageName = "package3";
+        PackageEntity pckg = service.savePackage(packageName, lib1);
+        
+        assert(pckg != null);
+        assert(packageName.equals(pckg.getPackageName()));
+        assert(em.find(PackageEntity.class, 
+                "PACKAGE_NAME = ? AND PARENT_LIBRARY_ID = ?", 
+                packageName, lib1.getID()).length == 1);
+        
+    }
+
+    @Test
+    public void testSavePackageThatAlreadyExists() throws Exception {
+        EntityService service = new EntityService(em);
+        
+        String packageName = "package1";
+        PackageEntity pckg = service.savePackage(packageName, lib1);
+        
+        assert(pckg != null);
+        assert(packageName.equals(pckg.getPackageName()));
+        assert(em.find(PackageEntity.class, 
+                "PACKAGE_NAME = ? AND PARENT_LIBRARY_ID = ?", 
+                packageName, lib1.getID()).length == 1);
+    }
+    
     public static final class MyDatabaseUpdater implements DatabaseUpdater
     {
         @Override
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(ClassEntity.class, PackageEntity.class, LibraryEntity.class);
+            entityManager.migrate(PackageEntity.class);
         }
     }
 }

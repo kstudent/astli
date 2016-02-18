@@ -35,12 +35,17 @@ public class EntityService {
         return em.count(ClassEntity.class);
     }
 
-    public ClassEntity saveFingerprint(byte[] vector, String className, String packageName, String mvnIdentifier) throws SQLException {
+    public ClassEntity saveFingerprint(byte[] vector, String className, 
+            String packageName, String mvnIdentifier) throws SQLException {
         ClassEntity print = em.create(ClassEntity.class);
+        LibraryEntity lib  = saveLibrary(mvnIdentifier);
+        PackageEntity pckg = savePackage(packageName, lib);
+        
         print.setClassName(className);
         print.setVector(vector);
-//        print.setPackage(findPackageByName(packageName));
+        print.setPackage(pckg);
         print.save();
+
         return print;
     }
     
@@ -85,19 +90,68 @@ public class EntityService {
         };
     }
 
-    public @Nullable PackageEntity findPackageByNameAndLib(String packageName, LibraryEntity library) throws SQLException {
+    public @Nullable PackageEntity findPackageByNameAndLib(
+            String packageName, LibraryEntity library) throws SQLException {
         
-        PackageEntity[] packageEntities = em.find(PackageEntity.class, "PACKAGE_NAME = ? AND PARENT_LIBRARY_ID = ?", packageName, library.getID());
+        PackageEntity[] packageEntities = em.find(PackageEntity.class, 
+                "PACKAGE_NAME = ? AND PARENT_LIBRARY_ID = ?", 
+                packageName, library.getID());
         
         if (packageEntities.length > 1) {
-            throw new SQLWarning("Multiple Packages with the same Package / Library Identifier");
+            throw new SQLWarning("Multiple Packages with the same Package /"
+                    + " Library Identifier found. Database inconsitent?");
         }
         
         if(packageEntities.length == 0) {
             return null;
         }
         
-        else return packageEntities[0];
+        return packageEntities[0];
         
     }
+
+    public PackageEntity savePackage(String packageName, LibraryEntity lib) throws SQLException {
+        PackageEntity entity = findPackageByNameAndLib(packageName, lib);
+        
+        if (entity == null) {
+            entity = em.create(PackageEntity.class);
+            entity.setPackageName(packageName);
+            entity.setParentLibrary(lib);
+            entity.save();
+        }
+        
+        return entity;
+    }
+
+    public @Nullable LibraryEntity findLibraryByMvnIdentifier(String mvnIdentifier) 
+            throws SQLException {
+        
+        LibraryEntity[] libraries = em.find(LibraryEntity.class, 
+                "MVN_IDENTIFIER = ?", mvnIdentifier);
+        
+        if (libraries.length > 1) {
+            throw new SQLWarning("Multiple Packages with the same MVN Identifier"
+                    + " found. Database inconsitent?");
+        }
+        
+        if(libraries.length == 0) {
+            return null;
+        }
+        
+        return libraries[0];
+    }
+
+    public LibraryEntity saveLibrary(String mvnIdentifier) throws SQLException {
+        
+        LibraryEntity entity = findLibraryByMvnIdentifier(mvnIdentifier);
+        
+        if (entity == null) {
+            entity = em.create(LibraryEntity.class);
+            entity.setMvnIdentifier(mvnIdentifier);
+            entity.save();
+        }
+        
+        return entity;
+    }
+
 }
