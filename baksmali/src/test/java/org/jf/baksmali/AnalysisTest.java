@@ -33,7 +33,6 @@ package org.jf.baksmali;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import junit.framework.Assert;
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.analysis.ClassPath;
@@ -50,6 +49,7 @@ import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
+import org.junit.Assert;
 
 public class AnalysisTest {
 

@@ -37,6 +37,7 @@ public class EntityMigrateTest {
     public static final class MyDatabaseUpdater implements DatabaseUpdater
     {
         @Override
+        @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
             entityManager.migrate(Class.class);

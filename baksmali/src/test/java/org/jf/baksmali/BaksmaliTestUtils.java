@@ -32,7 +32,6 @@
 package org.jf.baksmali;
 
 import com.google.common.io.ByteStreams;
-import junit.framework.Assert;
 
 import org.antlr.runtime.RecognitionException;
 import org.jf.baksmali.Adaptors.ClassDefinition;
@@ -46,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
+import org.junit.Assert;
 
 public class BaksmaliTestUtils {
     public static void assertSmaliCompiledEquals(String source, String expected,

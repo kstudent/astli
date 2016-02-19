@@ -99,6 +99,7 @@ public class EntityServiceClassTest {
     public static final class FingerprintServiceTestDatabaseUpdater implements DatabaseUpdater
     {
         @Override
+        @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
             entityManager.migrate(Class.class, Package.class, Library.class);

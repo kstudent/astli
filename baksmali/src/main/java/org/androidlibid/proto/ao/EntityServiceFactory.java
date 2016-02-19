@@ -18,6 +18,7 @@ import net.java.ao.builder.EntityManagerBuilder;
  */
 public class EntityServiceFactory {
     
+    @SuppressWarnings("unchecked")
     public static EntityService createService() throws SQLException {
 
         JdbcProperties jdbcProperties = jdbcProperties();

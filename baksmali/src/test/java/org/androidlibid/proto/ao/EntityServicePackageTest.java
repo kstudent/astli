@@ -137,6 +137,7 @@ public class EntityServicePackageTest {
     public static final class MyDatabaseUpdater implements DatabaseUpdater
     {
         @Override
+        @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
             entityManager.migrate(Library.class, Package.class, Class.class);
