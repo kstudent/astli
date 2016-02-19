@@ -57,8 +57,9 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.androidlibid.proto.FingerPrintMatchTaskResult;
+import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.MatchClassFingerprintTask;
-import org.androidlibid.proto.StoreFingerprintTask;
+import org.androidlibid.proto.StoreClassFingerprintTask;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
@@ -275,7 +276,7 @@ public class baksmali {
     private static boolean storeLibraryFingerprints(List<? extends ClassDef> classDefs, baksmaliOptions options) {
         
         ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
-        List<Future<Boolean>> tasks = Lists.newArrayList();
+        List<Future<Fingerprint>> tasks = Lists.newArrayList();
 
         EntityService service;
         try {
@@ -287,23 +288,21 @@ public class baksmali {
         
         
         for (final ClassDef classDef: classDefs) {
-            tasks.add(executor.submit(new StoreFingerprintTask(classDef, options, service)));
+            String name = classDef.getType();
+            if(name.startsWith("Lorg/spongycastle/crypto/")) {
+               tasks.add(executor.submit(new StoreClassFingerprintTask(classDef, options, service)));
+            }
         }
         
         boolean errorOccurred = false;
         try {
-            for (Future<Boolean> task: tasks) {
-                while(true) {
-                    try {
-                        if (!task.get()) {
-                            errorOccurred = true;
-                        }
-                    } catch (InterruptedException ex) {
-                        continue;
-                    } catch (ExecutionException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    break;
+            for (Future<Fingerprint> task: tasks) {
+                try {
+                    task.get();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(baksmali.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(baksmali.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         } finally {

@@ -6,6 +6,7 @@
 package org.androidlibid.proto.ao;
 
 import net.java.ao.EntityManager;
+import net.java.ao.schema.IndexNameConverter;
 import net.java.ao.test.converters.NameConverters;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -36,13 +37,13 @@ public class EntityServiceClassTest {
         
         EntityService service = new EntityService(em);
         Vector vector = new BasicVector(5);
-        service.saveFingerprint(vector.toBinary(), "vector 1", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 1", "", "");
         assert(em.count(Class.class) == 1);
         
-        service.saveFingerprint(vector.toBinary(), "vector 2", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 2", "", "");
         assert(em.count(Class.class) == 2);
         
-        service.saveFingerprint(vector.toBinary(), "vector 3", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 3", "", "");
         assert(em.count(Class.class) == 3);
     }
     
@@ -51,12 +52,12 @@ public class EntityServiceClassTest {
         EntityService service = new EntityService(em);
 
         Vector vector = new BasicVector(5);
-        service.saveFingerprint(vector.toBinary(), "vector 1", "", "");
-        service.saveFingerprint(vector.toBinary(), "vector 2", "", "");
-        service.saveFingerprint(vector.toBinary(), "vector 3", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 1", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 2", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 3", "", "");
         
         int counter = 0;
-        for (Class entity : service.getFingerprintEntities()) {
+        for (Class entity : service.getClassFingerprintEntities()) {
             counter ++;
         }
         
@@ -67,14 +68,14 @@ public class EntityServiceClassTest {
     @Test
     public void testCountFingerprints() throws Exception {
         EntityService service = new EntityService(em);
-        assert(service.countFingerprints() == 0);
+        assert(service.countClassFingerprints() == 0);
         
         Vector vector = new BasicVector(5);
-        service.saveFingerprint(vector.toBinary(), "vector 1", "", "");
-        service.saveFingerprint(vector.toBinary(), "vector 2", "", "");
-        service.saveFingerprint(vector.toBinary(), "vector 3", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 1", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 2", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 3", "", "");
         
-        assert(service.countFingerprints() == 3);
+        assert(service.countClassFingerprints() == 3);
     }
     
     @Test
@@ -84,13 +85,13 @@ public class EntityServiceClassTest {
         assert(em.count(Class.class) == 0);
         
         Vector vector = new BasicVector(5);
-        service.saveFingerprint(vector.toBinary(), "vector 1", "", "");
-        service.saveFingerprint(vector.toBinary(), "vector 2", "", "");
-        service.saveFingerprint(vector.toBinary(), "vector 3", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 1", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 2", "", "");
+        service.saveClassFingerprint(vector.toBinary(), "vector 3", "", "");
         
         assert(em.count(Class.class) == 3);
         
-        service.deleteAllFingerprints();
+        service.truncateTables();
         
         assert(em.count(Class.class) == 0);
     }

@@ -1,26 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.androidlibid.proto;
 
 import org.androidlibid.proto.ast.NodeType;
 import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
 import java.util.List;
+import org.androidlibid.proto.ao.VectorEntity;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
-import org.androidlibid.proto.ao.Class;
 
 public class Fingerprint {
 
     private String name;
     private Vector vector;
 
-    public Fingerprint(Class entity) {
+    public Fingerprint(VectorEntity entity) {
         this.vector = BasicVector.fromBinary(entity.getVector());
-        this.name   = entity.getClassName();
+        this.name   = entity.getName();
     }
     
     private static final List<List<NodeType>> FEATURES;

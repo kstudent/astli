@@ -1,5 +1,6 @@
 package org.androidlibid.proto;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,12 +23,12 @@ public class FingerprintMatcher {
         this.service = service;
     }
     
-    public FingerprintMatcherResult matchFingerprints(final Fingerprint needle) {
+    public FingerprintMatcherResult matchFingerprints(final Fingerprint needle) throws SQLException {
         
         List<Fingerprint> matches = new ArrayList<>();
         FingerprintMatcherResult result = new FingerprintMatcherResult();
         
-        for(Class candidateEntity : service.getFingerprintEntities()) {
+        for(Class candidateEntity : service.getClassFingerprintEntities()) {
             
             Fingerprint candidate = new Fingerprint(candidateEntity);
             

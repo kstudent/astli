@@ -18,27 +18,28 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class StoreFingerprintTask implements Callable<Boolean> {
+public class StoreClassFingerprintTask implements Callable<Fingerprint> {
     
     private final ClassDef classDef;
     private final baksmaliOptions options;
     private final EntityService service;
 
-    public StoreFingerprintTask(ClassDef classDef, baksmaliOptions options, EntityService service) {
+    public StoreClassFingerprintTask(ClassDef classDef, baksmaliOptions options, EntityService service) {
         this.classDef = classDef;
         this.options = options;
         this.service = service;
     }
     
-    @Override public Boolean call() throws Exception {
+    @Override public Fingerprint call() throws Exception {
+        
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         List<Node> ast = classDefinition.createAST();
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
         Fingerprint classFingerprint = new Fingerprint();
         
-        String className        = classDef.getType();
-        String packageName = extractPackageName(className);
+        String className     = classDef.getType();
+        String packageName   = extractPackageName(className);
         String mvnIdentifier = options.mvnIdentifier;
                 
         for(Node node : ast) {
@@ -47,10 +48,11 @@ public class StoreFingerprintTask implements Callable<Boolean> {
         }
         
         if(classFingerprint.euclideanNorm() > 0.0d) {
-            service.saveFingerprint(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
+            service.saveClassFingerprint(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
         }
         
-        return true;
+        return classFingerprint;
+        
     }
     
     public String extractPackageName(String className) {

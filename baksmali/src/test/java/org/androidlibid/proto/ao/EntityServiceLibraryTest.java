@@ -43,12 +43,12 @@ public class EntityServiceLibraryTest {
     @Before 
     public void setUp() throws SQLException {
         lib1 = em.create(Library.class);
-        lib1.setMvnIdentifier("group:artifact:1.0");
+        lib1.setName("group:artifact:1.0");
         lib1.setVector(bytes);
         lib1.save();
         
         lib2 = em.create(Library.class);
-        lib2.setMvnIdentifier("group:artifact:2.0");
+        lib2.setName("group:artifact:2.0");
         lib2.setVector(bytes);
         lib2.save();
     }
@@ -76,7 +76,7 @@ public class EntityServiceLibraryTest {
         EntityService service = new EntityService(em);
          
         Library anotherLib2 = em.create(Library.class);
-        anotherLib2.setMvnIdentifier("group:artifact:2.0");
+        anotherLib2.setName("group:artifact:2.0");
         anotherLib2.setVector(bytes);
         anotherLib2.save();
 
@@ -91,7 +91,7 @@ public class EntityServiceLibraryTest {
         String mvnIdentifier = "group:new-artifact:2.0"; 
         Library newLibrary = service.saveLibrary(mvnIdentifier);
         
-        assert(newLibrary.getMvnIdentifier().equals(mvnIdentifier));
+        assert(newLibrary.getName().equals(mvnIdentifier));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class EntityServiceLibraryTest {
         
         service.saveLibrary(mvnIdentifier);
         
-        assert(em.find(Library.class, "MVN_IDENTIFIER = ?", mvnIdentifier).length == 1);
+        assert(em.find(Library.class, "NAME = ?", mvnIdentifier).length == 1);
         
     }
     

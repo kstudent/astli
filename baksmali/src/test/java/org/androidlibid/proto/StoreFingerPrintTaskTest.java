@@ -24,7 +24,7 @@ public class StoreFingerPrintTaskTest {
         baksmaliOptions options    = Mockito.mock(baksmaliOptions.class);
         EntityService service = Mockito.mock(EntityService.class);
         
-        StoreFingerprintTask task = new StoreFingerprintTask(classDef, options, service);
+        StoreClassFingerprintTask task = new StoreClassFingerprintTask(classDef, options, service);
         String className = "Ltld/domain/subdomain/project/package/ClassName;";
                 
         String packageName = task.extractPackageName(className);

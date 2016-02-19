@@ -20,7 +20,7 @@ public class mainTest {
     public void storeLibandMatchAPK() throws Exception {
         clearDB();
         testFingerprintLibraries();
-        testPrintFingerprintsFromDB();
+        testListPrintFingerprintsFromDB();
         testFingerprintApplication();
     }
     
@@ -48,19 +48,22 @@ public class mainTest {
     
     public void clearDB() throws Exception {
         EntityService service = EntityServiceFactory.createService();
-        System.out.println("Fingerprint.count(): " + service.countFingerprints());
-        service.deleteAllFingerprints();
-        System.out.println("... after deleting : " + service.countFingerprints());
+        System.out.println("Fingerprint.count(): " + service.countClassFingerprints());
+        service.truncateTables();
+        System.out.println("... after deleting : " + service.countClassFingerprints());
     } 
     
-    
-    public void testPrintFingerprintsFromDB() throws Exception {
+    public void testListPrintFingerprintsFromDB() throws Exception {
         EntityService service = EntityServiceFactory.createService();
         
         int counter = 0;
         
         System.out.println("---list-of-fingerprints---");
-        for(Class entity : service.getFingerprintEntities()) {
+        for(Class entity : service.getClassFingerprintEntities()) {
+            
+            assert(entity != null);
+            assert(entity.getVector() != null);
+            
             Fingerprint print = new Fingerprint(entity);
             counter++;
             System.out.println("  " + print.getName());

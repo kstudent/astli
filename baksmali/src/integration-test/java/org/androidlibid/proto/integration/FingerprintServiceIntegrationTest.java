@@ -26,7 +26,7 @@ public class FingerprintServiceIntegrationTest {
         
         int counter = 0;
         
-        for(Class entity : service.getFingerprintEntities()) {
+        for(Class entity : service.getClassFingerprintEntities()) {
             Fingerprint print = new Fingerprint(entity);
             counter++;
             System.out.println(print);

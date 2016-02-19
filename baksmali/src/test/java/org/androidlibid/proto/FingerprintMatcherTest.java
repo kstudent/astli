@@ -5,6 +5,7 @@
  */
 package org.androidlibid.proto;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.androidlibid.proto.ao.EntityService;
@@ -30,7 +31,7 @@ public class FingerprintMatcherTest {
     EntityService service;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         entity1 = mock(Class.class);
         entity2 = mock(Class.class);
         entity3 = mock(Class.class);
@@ -39,40 +40,40 @@ public class FingerprintMatcherTest {
         fingerprints.add(entity2);
         fingerprints.add(entity3);
         service = mock(EntityService.class);
-        when(service.getFingerprintEntities()).thenReturn(fingerprints);
+        when(service.getClassFingerprintEntities()).thenReturn(fingerprints);
         needleEntity = mock(Class.class);
     }
     
     @Test 
-    public void testMatchSortedFingerprint() {
+    public void testMatchSortedFingerprint() throws SQLException {
         
         Vector v1 = new BasicVector(3);
         v1.set(0, 1.0);
         v1.set(1, 2.0);
         v1.set(2, 3.0);
         when(entity1.getVector()).thenReturn(v1.toBinary());
-        when(entity1.getClassName()).thenReturn("c1");
+        when(entity1.getName()).thenReturn("c1");
 
         Vector v2 = new BasicVector(3);
         v2.set(0, 1.0);
         v2.set(1, 2.0);
         v2.set(2, 4.0);
         when(entity2.getVector()).thenReturn(v2.toBinary());
-        when(entity2.getClassName()).thenReturn("c2");
+        when(entity2.getName()).thenReturn("c2");
 
         Vector v3 = new BasicVector(3);
         v3.set(0, 1.0);
         v3.set(1, 2.0);
         v3.set(2, 6.0);
         when(entity3.getVector()).thenReturn(v3.toBinary());
-        when(entity3.getClassName()).thenReturn("c3");
+        when(entity3.getName()).thenReturn("c3");
         
         Vector needleVector = new BasicVector(3);
         needleVector.set(0, 1.0);
         needleVector.set(1, 2.0);
         needleVector.set(2, 4.0);
         when(needleEntity.getVector()).thenReturn(needleVector.toBinary());
-        when(needleEntity.getClassName()).thenReturn("n1");
+        when(needleEntity.getName()).thenReturn("n1");
 
         Fingerprint needle = new Fingerprint(needleEntity);
         FingerprintMatcher matcher = new FingerprintMatcher(service);
@@ -92,34 +93,34 @@ public class FingerprintMatcherTest {
     }
     
     @Test 
-    public void testMatchEqualFingerprints() {
+    public void testMatchEqualFingerprints() throws SQLException {
         Vector v1 = new BasicVector(3);
         v1.set(0, 1.0);
         v1.set(1, 2.0);
         v1.set(2, 3.0);
         when(entity1.getVector()).thenReturn(v1.toBinary());
-        when(entity1.getClassName()).thenReturn("c1");
+        when(entity1.getName()).thenReturn("c1");
 
         Vector v2 = new BasicVector(3);
         v2.set(0, 1.0);
         v2.set(1, 2.0);
         v2.set(2, 3.0);
         when(entity2.getVector()).thenReturn(v2.toBinary());
-        when(entity2.getClassName()).thenReturn("c2");
+        when(entity2.getName()).thenReturn("c2");
 
         Vector v3 = new BasicVector(3);
         v3.set(0, 1.0);
         v3.set(1, 2.0);
         v3.set(2, 3.0);
         when(entity3.getVector()).thenReturn(v3.toBinary());
-        when(entity3.getClassName()).thenReturn("c3");
+        when(entity3.getName()).thenReturn("c3");
         
         Vector needleVector = new BasicVector(3);
         needleVector.set(0, 1.0);
         needleVector.set(1, 2.0);
         needleVector.set(2, 3.0);
         when(needleEntity.getVector()).thenReturn(needleVector.toBinary());
-        when(needleEntity.getClassName()).thenReturn("n1");
+        when(needleEntity.getName()).thenReturn("n1");
 
         Fingerprint needle = new Fingerprint(needleEntity);
         FingerprintMatcher matcher = new FingerprintMatcher(service);

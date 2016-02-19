@@ -45,24 +45,24 @@ public class EntityServicePackageTest {
     @Before 
     public void setUp() throws SQLException {
         lib1 = em.create(Library.class);
-        lib1.setMvnIdentifier("group:artifact:1.0");
+        lib1.setName("group:artifact:1.0");
         lib1.setVector(bytes);
         lib1.save();
         
         lib2 = em.create(Library.class);
-        lib2.setMvnIdentifier("group:artifact:2.0");
+        lib2.setName("group:artifact:2.0");
         lib2.setVector(bytes);
         lib2.save();
         
         package1 = em.create(Package.class);
-        package1.setPackageName("package1");
-        package1.setParentLibrary(lib1);
+        package1.setName("package1");
+        package1.setLibrary(lib1);
         package1.setVector(bytes);
         package1.save();
         
         package2 = em.create(Package.class);
-        package2.setPackageName("package2");
-        package2.setParentLibrary(lib1);
+        package2.setName("package2");
+        package2.setLibrary(lib1);
         package2.setVector(bytes);
         package2.save();
     }
@@ -96,8 +96,8 @@ public class EntityServicePackageTest {
         EntityService service = new EntityService(em);
          
         Package anotherPackage1 = em.create(Package.class);
-        anotherPackage1.setPackageName("package1");
-        anotherPackage1.setParentLibrary(lib1);
+        anotherPackage1.setName("package1");
+        anotherPackage1.setLibrary(lib1);
         anotherPackage1.setVector(bytes);
         anotherPackage1.save();
 
@@ -113,9 +113,9 @@ public class EntityServicePackageTest {
         Package pckg = service.savePackage(packageName, lib1);
         
         assert(pckg != null);
-        assert(packageName.equals(pckg.getPackageName()));
+        assert(packageName.equals(pckg.getName()));
         assert(em.find(Package.class, 
-                "PACKAGE_NAME = ? AND PARENT_LIBRARY_ID = ?", 
+                "NAME = ? AND LIBRARY_ID = ?", 
                 packageName, lib1.getID()).length == 1);
         
     }
@@ -128,9 +128,9 @@ public class EntityServicePackageTest {
         Package pckg = service.savePackage(packageName, lib1);
         
         assert(pckg != null);
-        assert(packageName.equals(pckg.getPackageName()));
+        assert(packageName.equals(pckg.getName()));
         assert(em.find(Package.class, 
-                "PACKAGE_NAME = ? AND PARENT_LIBRARY_ID = ?", 
+                "NAME = ? AND LIBRARY_ID = ?", 
                 packageName, lib1.getID()).length == 1);
     }
     
@@ -139,7 +139,7 @@ public class EntityServicePackageTest {
         @Override
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(Package.class);
+            entityManager.migrate(Library.class, Package.class, Class.class);
         }
     }
 }
