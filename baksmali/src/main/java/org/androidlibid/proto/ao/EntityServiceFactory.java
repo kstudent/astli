@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.androidlibid.proto.ao;
 
 import java.io.IOException;
@@ -11,12 +6,20 @@ import java.sql.SQLException;
 import java.util.Properties;
 import net.java.ao.EntityManager;
 import net.java.ao.builder.EntityManagerBuilder;
+import org.androidlibid.proto.Fingerprint;
+import org.la4j.vector.dense.BasicVector;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 public class EntityServiceFactory {
+    
+    private static final byte[] ZERO_BYTES;
+    
+    static {
+        ZERO_BYTES = new BasicVector(Fingerprint.getFeaturesSize()).toBinary();
+    }
     
     @SuppressWarnings("unchecked")
     public static EntityService createService() throws SQLException {
@@ -31,7 +34,7 @@ public class EntityServiceFactory {
 
         entityManager.migrate(Class.class, Package.class, Library.class);
 
-        return new EntityService(entityManager);
+        return new EntityService(entityManager, ZERO_BYTES);
     }
     
     private static JdbcProperties jdbcProperties() {

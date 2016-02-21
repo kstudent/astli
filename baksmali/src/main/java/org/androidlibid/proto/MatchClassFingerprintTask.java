@@ -38,14 +38,12 @@ public class MatchClassFingerprintTask implements Callable<FingerPrintMatchTaskR
         
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        Fingerprint needle = new Fingerprint();
+        Fingerprint needle = new Fingerprint(name);
         
         for(Node node : ast) {
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
             needle.add(methodFingerprint);
         }
-        
-        needle.setName(name);
         
         if (needle.euclideanNorm() == 0.0d) {
             System.out.println(name + ": class length 0");

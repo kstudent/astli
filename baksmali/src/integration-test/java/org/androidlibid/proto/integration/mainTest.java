@@ -15,7 +15,7 @@ import org.androidlibid.proto.ao.Class;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 public class mainTest {
-    
+        
     @Test
     public void storeLibandMatchAPK() throws Exception {
         clearDB();
@@ -48,9 +48,9 @@ public class mainTest {
     
     public void clearDB() throws Exception {
         EntityService service = EntityServiceFactory.createService();
-        System.out.println("Fingerprint.count(): " + service.countClassFingerprints());
+        System.out.println("Fingerprint.count(): " + service.countClasses());
         service.truncateTables();
-        System.out.println("... after deleting : " + service.countClassFingerprints());
+        System.out.println("... after deleting : " + service.countClasses());
     } 
     
     public void testListPrintFingerprintsFromDB() throws Exception {
@@ -59,7 +59,7 @@ public class mainTest {
         int counter = 0;
         
         System.out.println("---list-of-fingerprints---");
-        for(Class entity : service.getClassFingerprintEntities()) {
+        for(Class entity : service.getClasses()) {
             
             assert(entity != null);
             assert(entity.getVector() != null);

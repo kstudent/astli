@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.androidlibid.proto;
 
 import org.androidlibid.proto.ast.Node;
@@ -18,7 +13,7 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class StoreClassFingerprintTask implements Callable<Fingerprint> {
+public class StoreClassFingerprintTask implements Callable<Void> {
     
     private final ClassDef classDef;
     private final baksmaliOptions options;
@@ -30,17 +25,17 @@ public class StoreClassFingerprintTask implements Callable<Fingerprint> {
         this.service = service;
     }
     
-    @Override public Fingerprint call() throws Exception {
+    @Override public Void call() throws Exception {
         
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         List<Node> ast = classDefinition.createAST();
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        Fingerprint classFingerprint = new Fingerprint();
-        
         String className     = classDef.getType();
         String packageName   = extractPackageName(className);
         String mvnIdentifier = options.mvnIdentifier;
+
+        Fingerprint classFingerprint = new Fingerprint(className);
                 
         for(Node node : ast) {
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
@@ -48,10 +43,10 @@ public class StoreClassFingerprintTask implements Callable<Fingerprint> {
         }
         
         if(classFingerprint.euclideanNorm() > 0.0d) {
-            service.saveClassFingerprint(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
+            service.saveClass(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
         }
         
-        return classFingerprint;
+        return null;
         
     }
     

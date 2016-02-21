@@ -15,8 +15,13 @@
  */
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.ao.VectorEntity;
 import org.androidlibid.proto.ast.NodeType;
+import org.junit.Before;
 import org.junit.Test;
+import org.la4j.Vector;
+import org.la4j.vector.dense.BasicVector;
+import org.mockito.Mockito;
 
 /**
  *
@@ -24,10 +29,20 @@ import org.junit.Test;
  */
 public class FingerprintTest {
 
+    private VectorEntity vector;
+
+    @Before
+    public void setUp() {
+        vector = Mockito.mock(VectorEntity.class);
+        Mockito.when(vector.getName()).thenReturn("vector x");
+    }
+    
     @Test
     public void testFingerprint() {
-        Fingerprint f = new Fingerprint();
-        
+                
+        Mockito.when(vector.getVector()).thenReturn(null);
+                
+        Fingerprint f = new Fingerprint(vector);
         
         assert(f.getFeatureCount(NodeType.METHOD) == 0);
         f.incrementFeature(NodeType.METHOD);
@@ -55,9 +70,35 @@ public class FingerprintTest {
     }
     
     @Test
+    public void testFingerprintWithNullVectorEntity() {
+        Mockito.when(vector.getVector()).thenReturn(null);
+        Fingerprint f = new Fingerprint(vector);
+        Vector fvector = f.getVector();
+        assert(fvector.length() == Fingerprint.getFeaturesSize());
+    }
+
+    @Test
+    public void testFingerprintWithPredefinedSize() {
+        int predefinedSize = 79;
+        BasicVector predefinedVector = new BasicVector(predefinedSize);
+        
+        Mockito.when(vector.getVector()).thenReturn(predefinedVector.toBinary());
+        Fingerprint f = new Fingerprint(vector);
+        
+        Vector fvector = f.getVector();
+                
+        assert(fvector.length() == predefinedSize);
+        assert(fvector.length() != Fingerprint.getFeaturesSize());
+        assert(predefinedSize   != Fingerprint.getFeaturesSize());
+    }
+    
+    @Test
     public void testAdd() {
-        Fingerprint f1 = new Fingerprint();
-        Fingerprint f2 = new Fingerprint();
+        Mockito.when(vector.getVector()).thenReturn(null);
+        Fingerprint f = new Fingerprint(vector);
+        
+        Fingerprint f1 = new Fingerprint(vector);
+        Fingerprint f2 = new Fingerprint(vector);
         assert(f1.getFeatureCount(NodeType.METHOD) == 0);
         f1.incrementFeature(NodeType.METHOD);
         assert(f1.getFeatureCount(NodeType.METHOD) == 1);

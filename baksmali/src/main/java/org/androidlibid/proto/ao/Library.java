@@ -1,6 +1,5 @@
 package org.androidlibid.proto.ao;
 
-import net.java.ao.Entity;
 import net.java.ao.OneToMany;
 
 /**

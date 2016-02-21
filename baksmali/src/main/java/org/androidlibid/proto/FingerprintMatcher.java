@@ -28,20 +28,27 @@ public class FingerprintMatcher {
         List<Fingerprint> matches = new ArrayList<>();
         FingerprintMatcherResult result = new FingerprintMatcherResult();
         
-        for(Class candidateEntity : service.getClassFingerprintEntities()) {
-            
+        for(Class candidateEntity : service.getClasses()) {
+
             Fingerprint candidate = new Fingerprint(candidateEntity);
-            
+
+//            if(candidate.getName() == null || needle.getName() == null) {
+//                throw new IllegalStateException("Somethings fishy");
+//            }
+            if(candidate.getName() == null) {
+                throw new RuntimeException("No name vector in database found... why?");
+            }
+
             if(candidate.getName().equals(needle.getName())) {
                 result.setMatchByName(candidate);
             }
-            
+
             if(needle.euclideanDiff(candidate) < diffThreshold) {
                 matches.add(candidate);
             }  
-            
+
         }
-        
+                
         Collections.sort(matches, new Comparator<Fingerprint>() {
             @Override
             public int compare(Fingerprint that, Fingerprint other) {

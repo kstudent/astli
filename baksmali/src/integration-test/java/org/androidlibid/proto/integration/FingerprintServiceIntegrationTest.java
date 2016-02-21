@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.androidlibid.proto.integration;
 
 import org.androidlibid.proto.Fingerprint;
@@ -26,7 +21,7 @@ public class FingerprintServiceIntegrationTest {
         
         int counter = 0;
         
-        for(Class entity : service.getClassFingerprintEntities()) {
+        for(Class entity : service.getClasses()) {
             Fingerprint print = new Fingerprint(entity);
             counter++;
             System.out.println(print);

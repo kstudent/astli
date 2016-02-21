@@ -14,9 +14,30 @@ public class Fingerprint {
     private Vector vector;
 
     public Fingerprint(VectorEntity entity) {
-        this.vector = BasicVector.fromBinary(entity.getVector());
-        this.name   = entity.getName();
+        byte[] byteVector = entity.getVector();
+        String entityName = entity.getName();
+        
+        if(byteVector == null) {
+            this.vector = new BasicVector(FEATURES.size());
+        } else {
+            this.vector = BasicVector.fromBinary(byteVector); 
+        }
+        
+        if(entityName == null) {
+            this.name = "";
+        } else {
+            this.name = entityName;
+        }
     }
+    
+    public Fingerprint(String name) {
+        vector = new BasicVector(FEATURES.size());
+        this.name = name;
+    }
+    
+    public Fingerprint() {
+        this("");
+    } 
     
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE;
@@ -39,9 +60,9 @@ public class Fingerprint {
         LONGEST_FEATURE = longestFeature;
     }
 
-    public Fingerprint() {
-        vector = new BasicVector(FEATURES.size());
-    } 
+    public static int getFeaturesSize() {
+        return FEATURES.size();
+    }
     
     public void incrementFeature(NodeType... dimension) {
         Fingerprint.this.incrementFeature(Arrays.asList(dimension));

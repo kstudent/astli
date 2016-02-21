@@ -1,14 +1,8 @@
 package org.androidlibid.proto.ao;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 import java.sql.SQLException;
 import net.java.ao.EntityManager;
+import net.java.ao.schema.CamelCaseFieldNameConverter;
 import net.java.ao.test.converters.NameConverters;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -20,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.la4j.vector.dense.BasicVector;
 
 /**
  *
@@ -28,35 +23,38 @@ import org.junit.runner.RunWith;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(EntityServiceLibraryTest.MyDatabaseUpdater.class)
-@NameConverters
+@NameConverters(field = CamelCaseFieldNameConverter.class)
 @Jdbc(Hsql.class)
 public class EntityServiceLibraryTest {
     
     private EntityManager em;
     private Library lib1;
     private Library lib2;
-    private byte[] bytes = {};
+    private byte[] zeroBytes;
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
+    private EntityService service;
     
     @Before 
     public void setUp() throws SQLException {
+        zeroBytes = new BasicVector(1).toBinary();
+        
         lib1 = em.create(Library.class);
         lib1.setName("group:artifact:1.0");
-        lib1.setVector(bytes);
+        lib1.setVector(zeroBytes);
         lib1.save();
         
         lib2 = em.create(Library.class);
         lib2.setName("group:artifact:2.0");
-        lib2.setVector(bytes);
+        lib2.setVector(zeroBytes);
         lib2.save();
+        
+        service = new EntityService(em, zeroBytes);
     }
     
     @Test
     public void testDontFindNonExistingLibrary() throws Exception {
-        EntityService service = new EntityService(em);
-        
         Library result = service.findLibraryByMvnIdentifier("groupX:artifact:1.0");
         
         assert(result == null);
@@ -64,8 +62,6 @@ public class EntityServiceLibraryTest {
     
     @Test
     public void testFindExistingLibrary() throws Exception {
-        EntityService service = new EntityService(em);
-        
         Library result = service.findLibraryByMvnIdentifier("group:artifact:1.0");
 
         assert(lib1.equals(result));
@@ -73,11 +69,9 @@ public class EntityServiceLibraryTest {
     
     @Test
     public void testThrowExceptionWhenMultipleLibrariesWithSameIdentifierFound() throws Exception {
-        EntityService service = new EntityService(em);
-         
         Library anotherLib2 = em.create(Library.class);
         anotherLib2.setName("group:artifact:2.0");
-        anotherLib2.setVector(bytes);
+        anotherLib2.setVector(zeroBytes);
         anotherLib2.save();
 
         exception.expect(SQLException.class);
@@ -86,8 +80,6 @@ public class EntityServiceLibraryTest {
     
     @Test
     public void testStoreLibrary() throws Exception {
-        EntityService service = new EntityService(em);
-        
         String mvnIdentifier = "group:new-artifact:2.0"; 
         Library newLibrary = service.saveLibrary(mvnIdentifier);
         
@@ -96,7 +88,6 @@ public class EntityServiceLibraryTest {
 
     @Test
     public void testStoreLibraryThatAlreadyExists() throws Exception {
-        EntityService service = new EntityService(em);
         
         String mvnIdentifier = "group:artifact:1.0"; 
         

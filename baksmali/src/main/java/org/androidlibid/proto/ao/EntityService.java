@@ -14,9 +14,11 @@ import net.java.ao.EntityManager;
 public class EntityService {
 
     private final EntityManager em;
-
-    public EntityService(EntityManager em) {
+    private final byte[] defaultVector;
+    
+    public EntityService(EntityManager em, byte[] defaultVector) {
         this.em = em;
+        this.defaultVector = defaultVector;
     }
     
     public void truncateTables() throws SQLException {
@@ -25,13 +27,12 @@ public class EntityService {
         em.deleteWithSQL(Library.class, "1 = 1");
     }
     
-    public int countClassFingerprints() throws SQLException {
+    public int countClasses() throws SQLException {
         return em.count(Class.class);
     }
 
-    public synchronized Class saveClassFingerprint(byte[] vector, String className, 
-            String packageName, String mvnIdentifier) throws SQLException {
-        System.out.println("doing " + className);
+    public synchronized Class saveClass(byte[] vector, String className, 
+        String packageName, String mvnIdentifier) throws SQLException {
 
         Class print = em.create(Class.class);
         Library lib  = saveLibrary(mvnIdentifier);
@@ -41,20 +42,23 @@ public class EntityService {
         print.setVector(vector);
         print.setPackage(pckg);
         print.save();
-        System.out.println("done  " + className);
 
         return print;
     }
     
-    public List<Class> getClassFingerprintEntities() throws SQLException {
+    public List<Class> getClasses() throws SQLException {
         return Arrays.asList(em.find(Class.class));
+    }
+    
+    public List<Library> getLibraries() throws SQLException {
+        return Arrays.asList(em.find(Library.class));
     }
 
     public @Nullable Package findPackageByNameAndLib(
             String packageName, Library library) throws SQLException {
         
         Package[] packageEntities = em.find(Package.class, 
-                "NAME = ? AND LIBRARY_ID = ?", 
+                "NAME = ? AND LIBRARYID = ?", 
                 packageName, library.getID());
         
         if (packageEntities.length > 1) {
@@ -77,6 +81,7 @@ public class EntityService {
             entity = em.create(Package.class);
             entity.setName(packageName);
             entity.setLibrary(lib);
+            entity.setVector(defaultVector);
             entity.save();
         }
         
@@ -108,10 +113,10 @@ public class EntityService {
         if (entity == null) {
             entity = em.create(Library.class);
             entity.setName(mvnIdentifier);
+            entity.setVector(defaultVector);
             entity.save();
         }
         
         return entity;
     }
-
 }
