@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.ao.EntityService;
-import org.androidlibid.proto.ao.Class;
+import org.androidlibid.proto.ao.VectorEntity;
 
 /**
  *
@@ -15,28 +15,26 @@ import org.androidlibid.proto.ao.Class;
  */
 public class FingerprintMatcher {
 
-
     EntityService service; 
-    private final double diffThreshold = 100;
+    private final double diffThreshold;
 
-    public FingerprintMatcher(EntityService service) {
-        this.service = service;
+    public FingerprintMatcher(double diffThreshold) {
+        this.diffThreshold = diffThreshold;
     }
     
-    public FingerprintMatcherResult matchFingerprints(final Fingerprint needle) throws SQLException {
+    public Result matchFingerprints(
+            final List<VectorEntity> haystack, 
+            final Fingerprint needle) throws SQLException {
         
         List<Fingerprint> matches = new ArrayList<>();
-        FingerprintMatcherResult result = new FingerprintMatcherResult();
+        Result result = new Result();
         
-        for(Class candidateEntity : service.getClasses()) {
+        for(VectorEntity candidateEntity : haystack) {
 
             Fingerprint candidate = new Fingerprint(candidateEntity);
 
-//            if(candidate.getName() == null || needle.getName() == null) {
-//                throw new IllegalStateException("Somethings fishy");
-//            }
             if(candidate.getName() == null) {
-                throw new RuntimeException("No name vector in database found... why?");
+                throw new RuntimeException("Database contains vector with name == null... why?");
             }
 
             if(candidate.getName().equals(needle.getName())) {
@@ -66,12 +64,12 @@ public class FingerprintMatcher {
         return result; 
     }
     
-    public static class FingerprintMatcherResult {
+    public static class Result {
         private List<Fingerprint> matchesByDistance;
         @Nullable
         private Fingerprint matchByName;
 
-        public FingerprintMatcherResult() {
+        public Result() {
         }
 
         public List<Fingerprint> getMatchesByDistance() {

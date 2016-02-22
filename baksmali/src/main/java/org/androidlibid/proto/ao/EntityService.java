@@ -50,6 +50,10 @@ public class EntityService {
         return Arrays.asList(em.find(Class.class));
     }
     
+    public List<Package> getPackages() throws SQLException {
+        return Arrays.asList(em.find(Package.class));
+    }
+    
     public List<Library> getLibraries() throws SQLException {
         return Arrays.asList(em.find(Library.class));
     }

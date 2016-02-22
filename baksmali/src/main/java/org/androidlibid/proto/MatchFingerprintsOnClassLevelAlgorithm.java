@@ -26,12 +26,12 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
+public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgorithm {
 
     private final List<? extends ClassDef> classDefs;
     private final baksmaliOptions options;
 
-    public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
+    public MatchFingerprintsOnClassLevelAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options = options;
         this.classDefs = classDefs;
     }

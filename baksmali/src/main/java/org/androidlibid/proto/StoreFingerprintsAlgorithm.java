@@ -58,6 +58,10 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         try {
             while (count++ < classDefs.size()) {
                 completionService.take();
+                
+                if(count % 20 == 0) {
+                    System.out.println(((float)(count) / classDefs.size()) * 100 + "%"); 
+                }
             }
         } finally {
             executor.shutdown();
@@ -65,31 +69,37 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     }
 
     private void generateLibAndPackageFingerprints() throws SQLException {
-        for(Library lib : service.getLibraries()) {
-            
-            Fingerprint libFingerprint = new Fingerprint(lib);
-            
-            //could go multithread
-            for(Package pckg : lib.getPackages()) {
-                Fingerprint pckgFingerprint = new Fingerprint(pckg);
-                
-                for(Class clazz : pckg.getClasses()) {
-                    Fingerprint clazzFingerprint = new Fingerprint(clazz);
-                    
-                    pckgFingerprint.add(clazzFingerprint);
-                }
-                
-                pckg.setVector(pckgFingerprint.getVector().toBinary());
-                pckg.save();
-                
-                libFingerprint.add(pckgFingerprint);
-                System.out.println("updated " + pckgFingerprint);
-            }
-            
-            lib.setVector(libFingerprint.getVector().toBinary());
-            lib.save();
-            System.out.println("updated " + libFingerprint);
+        String libname = options.mvnIdentifier; 
+        Library lib = service.findLibraryByMvnIdentifier(libname);
+        
+        if(lib == null) {
+            throw new RuntimeException("The Library " + libname + " could not be found.");
         }
+            
+        Fingerprint libFingerprint = new Fingerprint(lib);
+        
+        if(libFingerprint.euclideanNorm() > 0.0d) {
+            throw new RuntimeException("The Library " + libname + " already has a fingerprint.");
+        }
+
+        //could go multithread
+        for(Package pckg : lib.getPackages()) {
+            Fingerprint pckgFingerprint = new Fingerprint(pckg);
+
+            for(Class clazz : pckg.getClasses()) {
+                Fingerprint clazzFingerprint = new Fingerprint(clazz);
+
+                pckgFingerprint.add(clazzFingerprint);
+            }
+
+            pckg.setVector(pckgFingerprint.getVector().toBinary());
+            pckg.save();
+
+            libFingerprint.add(pckgFingerprint);
+        }
+
+        lib.setVector(libFingerprint.getVector().toBinary());
+        lib.save();
     }
     
     

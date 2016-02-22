@@ -85,6 +85,47 @@ public class EntityServiceClassTest {
         
     }
     
+    @Test 
+    public void testSaveFingerprintsWithDifferentLibs() throws Exception {
+        
+        String packageName   = "Lorg.lib.package";
+        String lib1Identifier = "libGroupId:libArtifactId1:0.1";
+        String lib2Identifier = "libGroupId:libArtifactId2:0.1";
+        String className = "class";
+        
+        assert(em.count(Class.class)   == 0);
+        assert(em.count(Library.class) == 0);
+        assert(em.count(Package.class) == 0);
+        
+        Vector vector = new BasicVector(5);
+        EntityService service = new EntityService(em, vector.toBinary());
+        
+        service.saveClass(vector.toBinary(), className, packageName, lib1Identifier);
+        service.saveClass(vector.toBinary(), className, packageName, lib2Identifier);
+        
+        Class[] classes = em.find(Class.class, "NAME = ?", className);
+        assert(classes.length == 2);
+        assert(classes[0].getName() != null);
+        assert(classes[0].getName().equals(className));
+        assert(classes[0].getVector() != null);
+        
+        Package[] packages = em.find(Package.class, "NAME = ?", packageName);
+        assert(packages.length == 2);
+        assert(packages[0].getName() != null);
+        assert(packages[0].getName().equals(packageName));
+        assert(packages[0].getVector() != null);
+        
+        Library[] libs = em.find(Library.class, "NAME = ?", lib1Identifier);
+        assert(libs.length == 1);
+        
+        libs = em.find(Library.class, "NAME = ?", lib2Identifier);
+        assert(libs.length == 1);
+        
+        assert(em.count(Class.class)   == 2);
+        assert(em.count(Library.class) == 2);
+        assert(em.count(Package.class) == 2);
+    }
+    
     @Test
     public void testIterateOverFingerprints() throws Exception {
         Vector vector = new BasicVector(5);

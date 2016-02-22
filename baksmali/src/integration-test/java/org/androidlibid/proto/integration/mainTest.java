@@ -2,12 +2,14 @@ package org.androidlibid.proto.integration;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import org.jf.baksmali.main;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
 import org.androidlibid.proto.ao.Class;
+import org.androidlibid.proto.ao.Package;
 
 
 /**
@@ -19,8 +21,8 @@ public class mainTest {
     @Test
     public void storeLibandMatchAPK() throws Exception {
         clearDB();
-        testFingerprintLibraries();
-        testListPrintFingerprintsFromDB();
+        testStoreFingerprintLibraries();
+        testListClassFingerprintsFromDB();
         testFingerprintApplication();
     }
     
@@ -33,7 +35,7 @@ public class mainTest {
         main.main(arg); 
     }
     
-    public void testFingerprintLibraries() throws IOException {
+    public void testStoreFingerprintLibraries() throws IOException {
         String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_core.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
@@ -53,12 +55,12 @@ public class mainTest {
         System.out.println("... after deleting : " + service.countClasses());
     } 
     
-    public void testListPrintFingerprintsFromDB() throws Exception {
+    public void testListClassFingerprintsFromDB() throws Exception {
         EntityService service = EntityServiceFactory.createService();
         
         int counter = 0;
         
-        System.out.println("---list-of-fingerprints---");
+        System.out.println("---list-of-class-fingerprints---");
         for(Class entity : service.getClasses()) {
             
             assert(entity != null);
@@ -69,8 +71,26 @@ public class mainTest {
             System.out.println("  " + print.getName());
         }
         
-        System.out.println("amount of fingerprints: " + counter);
-        System.out.println("---end testPrintFingerprintsFromDB---");
+        System.out.println("amount of classes: " + counter);
+    }
+
+    private void testListPackageFingerprintsFromDB() throws SQLException {
+        EntityService service = EntityServiceFactory.createService();
+        
+        int counter = 0;
+        
+        System.out.println("---list-of-package-fingerprints---");
+        for(Package entity : service.getPackages()) {
+            
+            assert(entity != null);
+            assert(entity.getVector() != null);
+            
+            Fingerprint print = new Fingerprint(entity);
+            counter++;
+            System.out.println("  " + print.getName());
+        }
+        
+        System.out.println("amount of packages: " + counter);
     }
     
 }

@@ -16,6 +16,7 @@ import org.la4j.vector.dense.BasicVector;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.androidlibid.proto.ao.Class;
+import org.androidlibid.proto.ao.VectorEntity;
 
 /**
  *
@@ -23,7 +24,7 @@ import org.androidlibid.proto.ao.Class;
  */
 public class FingerprintMatcherTest {
     
-    private List<Class> fingerprints;
+    private List<VectorEntity> fingerprints;
     private Class entity1;
     private Class entity2;
     private Class entity3;
@@ -67,8 +68,6 @@ public class FingerprintMatcherTest {
         fingerprints.add(entity1);
         fingerprints.add(entity2);
         fingerprints.add(entity3);
-        service = mock(EntityService.class);
-        when(service.getClasses()).thenReturn(fingerprints);
         
         needleVector = new BasicVector(3);
         needleVector.set(0, 1.0);
@@ -80,13 +79,13 @@ public class FingerprintMatcherTest {
         when(needleEntity.getName()).thenReturn("n1");
         
         needle = new Fingerprint(needleEntity);
-        matcher = new FingerprintMatcher(service);
+        matcher = new FingerprintMatcher(100.0d);
     }
     
     @Test 
     public void testMatchSortedFingerprint() throws SQLException {
         
-        List<Fingerprint> matchedPrints = matcher.matchFingerprints(needle).getMatchesByDistance();
+        List<Fingerprint> matchedPrints = matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
         
         double diffto0 = needle.euclideanDiff(matchedPrints.get(0));
         double diffto1 = needle.euclideanDiff(matchedPrints.get(1));
@@ -111,7 +110,7 @@ public class FingerprintMatcherTest {
         when(entity2.getVector()).thenReturn(v1.toBinary());
         when(entity3.getVector()).thenReturn(v1.toBinary());
         
-        List<Fingerprint> matchedPrints = matcher.matchFingerprints(needle).getMatchesByDistance();
+        List<Fingerprint> matchedPrints = matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
         
         double diffto0 = needle.euclideanDiff(matchedPrints.get(0));
         double diffto1 = needle.euclideanDiff(matchedPrints.get(1));

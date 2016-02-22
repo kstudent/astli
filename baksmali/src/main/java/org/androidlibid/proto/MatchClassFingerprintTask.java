@@ -1,16 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.androidlibid.proto;
 
+import java.util.ArrayList;
 import org.androidlibid.proto.ast.Node;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.androidlibid.proto.ao.EntityService;
+import org.androidlibid.proto.ao.VectorEntity;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 
@@ -50,9 +47,11 @@ public class MatchClassFingerprintTask implements Callable<FingerPrintMatchTaskR
             return FingerPrintMatchTaskResult.CLASS_LENGTH_0;
         }
         
-        FingerprintMatcher matcher = new FingerprintMatcher(service);
+        FingerprintMatcher matcher = new FingerprintMatcher(100.0d);
         
-        FingerprintMatcher.FingerprintMatcherResult result = matcher.matchFingerprints(needle);
+        List<VectorEntity> classes = new ArrayList<VectorEntity>(service.getClasses());
+        
+        FingerprintMatcher.Result result = matcher.matchFingerprints(classes, needle);
         
         Fingerprint nameMatch = result.getMatchByName();
         List<Fingerprint> matchesByDistance = result.getMatchesByDistance();
