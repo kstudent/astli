@@ -27,22 +27,29 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
     private final List<? extends ClassDef> classDefs;
     private final baksmaliOptions options;
     private EntityService service; 
+    private Map<String, String> mappings;
     
     public MatchFingerprintsOnPackageLevelAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options = options;
         this.classDefs = classDefs;
+        mappings = new HashMap<>();
     }
     @Override
     public boolean run() {
         try {
             service = EntityServiceFactory.createService();
             
+            if(options.isObfuscated) {
+                ProGuardMappingFileParser parser = new ProGuardMappingFileParser(); 
+                mappings = parser.parseMappingFile(options.mappingFile);
+            }
+            
             String packageOld = "";
             List<Fingerprint> packagePrints = new LinkedList<>(); 
             Fingerprint currentPackageFingerprint = new Fingerprint();
             
             for(ClassDef def : classDefs) {
-                String packageNew = extractPackageName(def.getType());
+                String packageNew = translateName(extractPackageName(def.getType()));
                 
                 if(!packageNew.equals(packageOld)) {
                     packagePrints.add(currentPackageFingerprint);
@@ -90,8 +97,9 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
         return true;
     }
     
-    public String extractPackageName(String className) {
-        return className.substring(1, className.lastIndexOf("/"));
+    private String extractPackageName(String className) {
+        className = className.substring(1, className.lastIndexOf("/"));
+        return className.replace('/', '.');
     }
 
     private Fingerprint transformClassDefToFingerprint(ClassDef classDef) throws IOException {
@@ -99,7 +107,7 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
         List<Node> ast = classDefinition.createAST();
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        String className     = classDef.getType();
+        String className = translateName(classDef.getType());
 
         Fingerprint classFingerprint = new Fingerprint(className);
                 
@@ -155,5 +163,12 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
                 return FingerPrintMatchTaskResult.OK;
             }
         }
+    }
+
+    private String translateName(String obfuscatedName) {
+        if(options.isObfuscated && mappings.get(obfuscatedName) != null) {
+            return mappings.get(obfuscatedName);
+        }
+        return obfuscatedName;
     }
 }

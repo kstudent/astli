@@ -17,16 +17,24 @@ import org.androidlibid.proto.ao.Package;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 public class mainTest {
-        
+    
     @Test
     public void storeLibandMatchAPK() throws Exception {
         clearDB();
-        testStoreFingerprintLibraries();
-        testListClassFingerprintsFromDB();
-        testFingerprintApplication();
+        testStoreFingerprintLibSpongyCore();
+        testStoreFingerprintLibSpongyProv();
+        testFindLibrariesOfAPK();
     }
     
-    public void testFingerprintApplication() throws IOException {
+    @Test
+    public void storeLibandMatchAPKLvl() throws Exception {
+        clearDB();
+        testStoreFingerprintLibSpongyCore();
+        testStoreFingerprintLibSpongyProv();
+        testFindLibrariesOfAPKLvl(1);
+    }
+    
+    public void testFindLibrariesOfAPK() throws IOException {
         String appApkPath = "./src/integration-test/resources/FingerprintAPKTest/app.apk";
         File appApk = new File(appApkPath);
         assert(appApk.exists() && appApk.canRead());
@@ -34,18 +42,34 @@ public class mainTest {
         String arg[] = {"-y", appApkPath};
         main.main(arg); 
     }
+
+    public void testFindLibrariesOfAPKLvl(int lvl) throws IOException {
+        String appApkPath     =  "./src/integration-test/resources/FingerprintAPKTest/app.obflvl" + lvl + ".apk";
+        String mappingFilePath = "./src/integration-test/resources/MappingFiles/mapping.obflvl"   + lvl + ".txt";
+        
+        File appApk = new File(appApkPath);
+        assert(appApk.exists() && appApk.canRead());
+        File mappingFile = new File(mappingFilePath);
+        assert(mappingFile.exists() && mappingFile.canRead());
+        
+        String arg[] = {"-y", appApkPath, "-Z", mappingFilePath};
+        main.main(arg); 
+    }
     
-    public void testStoreFingerprintLibraries() throws IOException {
+    public void testStoreFingerprintLibSpongyCore() throws IOException {
         String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_core.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
         String arg[] = {"-z", "com.madgag.spongycastle:core:1.54.0.0", jarPath};
         main.main(arg); 
-        jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_prov.jar";
-        jarFile = new File(jarPath);
+    }
+
+    public void testStoreFingerprintLibSpongyProv() throws IOException {
+        String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_prov.jar";
+        File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
-        String arg2[] = {"-z", "com.madgag.spongycastle:prov:1.54.0.0", jarPath};
-        main.main(arg2); 
+        String arg[] = {"-z", "com.madgag.spongycastle:prov:1.54.0.0", jarPath};
+        main.main(arg); 
     }
     
     public void clearDB() throws Exception {

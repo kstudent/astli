@@ -80,6 +80,8 @@ public class baksmaliOptions {
     public boolean aliFingerprintAPK = false;
     public boolean aliFingerprintJAR = false;
     public String mvnIdentifier = "";
+    public boolean isObfuscated = false;
+    public String mappingFile = "";
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;
     public int registerInfo = 0;

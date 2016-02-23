@@ -18,17 +18,20 @@ import org.mockito.Mockito;
 public class StoreFingerPrintTaskTest {
     
     @Test
-    public void testExtractPackageName() throws Exception {
+    public void testTransformNames() throws Exception {
         
         ClassDef classDef          = Mockito.mock(ClassDef.class);
         baksmaliOptions options    = Mockito.mock(baksmaliOptions.class);
         EntityService service = Mockito.mock(EntityService.class);
         
         StoreClassFingerprintTask task = new StoreClassFingerprintTask(classDef, options, service);
-        String className = "Ltld/domain/subdomain/project/package/ClassName;";
-                
-        String packageName = task.extractPackageName(className);
-        assert(packageName.equals("tld/domain/subdomain/project/package"));
+        String rawClassName = "Ltld/domain/subdomain/project/package/ClassName;";
+        
+        String cleanedClassName = task.transformClassName(rawClassName);
+        assert(cleanedClassName.equals("tld.domain.subdomain.project.package.ClassName"));
+        
+        String cleanedPackageName = task.extractPackageName(cleanedClassName);
+        assert(cleanedPackageName.equals("tld.domain.subdomain.project.package"));
     }
     
 }

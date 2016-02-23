@@ -31,7 +31,7 @@ public class StoreClassFingerprintTask implements Callable<Void> {
         List<Node> ast = classDefinition.createAST();
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        String className     = classDef.getType();
+        String className     = transformClassName(classDef.getType());
         String packageName   = extractPackageName(className);
         String mvnIdentifier = options.mvnIdentifier;
 
@@ -47,11 +47,15 @@ public class StoreClassFingerprintTask implements Callable<Void> {
         }
         
         return null;
-        
     }
     
     public String extractPackageName(String className) {
-        return className.substring(1, className.lastIndexOf("/"));
+        return className.substring(0, className.lastIndexOf("."));
+    }
+
+    public String transformClassName(String className) {
+        className = className.replace('/', '.');
+        return className.substring(1, className.length() - 1);
     }
     
 }

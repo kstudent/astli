@@ -76,7 +76,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             throw new RuntimeException("The Library " + libname + " could not be found.");
         }
             
-        Fingerprint libFingerprint = new Fingerprint(lib);
+        Fingerprint libFingerprint = new Fingerprint(lib);  
         
         if(libFingerprint.euclideanNorm() > 0.0d) {
             throw new RuntimeException("The Library " + libname + " already has a fingerprint.");

@@ -200,6 +200,9 @@ public class main {
                 case 'z':
                     options.mvnIdentifier = commandLine.getOptionValue('z');
                     options.aliFingerprintJAR = true;
+                case 'Z':
+                    options.mappingFile = commandLine.getOptionValue('Z');
+                    options.isObfuscated = true;
                 case 'X':
                     options.experimental = true;
                     break;
@@ -385,15 +388,23 @@ public class main {
                         "odex file")
                 .create("x");
         
-        Option aliFingerprintAPK = OptionBuilder.withLongOpt("ali-fingerprint-apk")
-                .withDescription("create fingerprints of an android app (.apk)")
+        Option aliFingerprintAPK = OptionBuilder.withLongOpt("ali-apk")
+                .withDescription("try to identify libraries in an android app (.apk)")
                 .create("y");
 
-        Option aliFingerprintJAR = OptionBuilder.withLongOpt("ali-fingerprint-jar")
+        Option aliFingerprintJAR = OptionBuilder.withLongOpt("ali-jar")
                 .hasArg()
                 .withArgName("GROUP_ID:ARTIFACT_ID:VERSION")
-                .withDescription("create fingerprint of a library (.jar)")
+                .withDescription("fingerprint a library (.jar) and store to database")
                 .create("z");
+        
+        Option verifyObfuscationWithMapping = OptionBuilder.withLongOpt("verify-obfuscation-with-mapping-file")
+                .hasArg()
+                .withArgName("mapping-file")
+                .withDescription("uses the given proguard mapping file to verify"
+                        + " the quality of the matching algorithm (can only be "
+                        + "used together with --ali-apk option)")
+                .create("Z");
         
         Option experimentalOption = OptionBuilder.withLongOpt("experimental")
                 .withDescription("enable experimental opcodes to be disassembled, even if they aren't necessarily supported in the Android runtime yet")
@@ -522,6 +533,7 @@ public class main {
         basicOptions.addOption(deodexerantOption);
         basicOptions.addOption(aliFingerprintAPK);
         basicOptions.addOption(aliFingerprintJAR);
+        basicOptions.addOption(verifyObfuscationWithMapping);
         basicOptions.addOption(experimentalOption);
         basicOptions.addOption(useLocalsOption);
         basicOptions.addOption(sequentialLabelsOption);
