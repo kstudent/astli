@@ -3,9 +3,11 @@ package org.androidlibid.proto.ao;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.java.ao.EntityManager;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -56,6 +58,16 @@ public class EntityService {
     
     public List<Library> getLibraries() throws SQLException {
         return Arrays.asList(em.find(Library.class));
+    }
+    
+    public List<Package> getPackagesWithLevel(int level) throws SQLException {
+        List<Package> packages = new LinkedList<>();
+        for(Package pckg : em.find(Package.class)) {
+            if (StringUtils.countMatches(pckg.getName(), ".") == level) {
+                packages.add(pckg);
+            } 
+        }
+        return packages;
     }
 
     public @Nullable Package findPackageByNameAndLib(

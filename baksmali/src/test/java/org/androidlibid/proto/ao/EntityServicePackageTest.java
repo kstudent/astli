@@ -1,6 +1,7 @@
 package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
+import java.util.List;
 import net.java.ao.EntityManager;
 import net.java.ao.schema.CamelCaseFieldNameConverter;
 import net.java.ao.test.converters.NameConverters;
@@ -122,6 +123,45 @@ public class EntityServicePackageTest {
                 "NAME = ? AND LIBRARYID = ?", 
                 packageName, lib1.getID()).length == 1);
     }
+    
+    @Test
+    public void getLibrariesWithLevel() throws Exception {
+        
+        Package pckg1 = em.create(Package.class);
+        pckg1.setName("org.package.test");
+        pckg1.setLibrary(lib1);
+        pckg1.setVector(zeroBytes);
+        pckg1.save();
+        
+        Package pckg2 = em.create(Package.class);
+        pckg2.setName("org.package.test.subpackage1");
+        pckg2.setLibrary(lib1);
+        pckg2.setVector(zeroBytes);
+        pckg2.save();
+        
+        Package pckg3 = em.create(Package.class);
+        pckg3.setName("org.package.test.subpackage2");
+        pckg3.setLibrary(lib1);
+        pckg3.setVector(zeroBytes);
+        pckg3.save();
+        
+        List<Package> pckgs;
+        
+        pckgs = service.getPackagesWithLevel(0);
+        assert(pckgs.size() == 2);
+        
+        pckgs = service.getPackagesWithLevel(1);
+        assert(pckgs.isEmpty());
+        
+        pckgs = service.getPackagesWithLevel(2);
+        assert(pckgs.size() == 1);
+        assert(pckgs.get(0).equals(pckg1));
+        
+        pckgs = service.getPackagesWithLevel(3);
+        assert(pckgs.size() == 2);
+        
+    }
+    
     
     public static final class MyDatabaseUpdater implements DatabaseUpdater
     {
