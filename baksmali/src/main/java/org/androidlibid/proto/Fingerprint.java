@@ -14,9 +14,30 @@ public class Fingerprint {
 
     private String name;
     private Vector vector;
-    
     private List<Fingerprint> children = new LinkedList<>();
     private VectorEntity entity;
+    
+    private static final List<List<NodeType>> FEATURES;
+    private static final int LONGEST_FEATURE;
+    private static final FeatureGenerator FEATURE_GENERATOR;
+    
+    static {
+        FEATURE_GENERATOR = new FeatureGenerator();
+        FEATURES = FEATURE_GENERATOR.generateVerticalFeatures();
+        FEATURES.addAll(FEATURE_GENERATOR.generateHorizontalFeatures());
+        int longestFeature = 0; 
+        for(List<NodeType> feature : FEATURES){
+            int featureLength = 0;
+            for(NodeType type : feature) {
+                featureLength += type.getName().length() + 2;
+            }
+            if(featureLength > longestFeature) {
+                longestFeature = featureLength;
+            }
+        }
+        LONGEST_FEATURE = longestFeature;
+    }
+    
 
     public Fingerprint(VectorEntity entity) {
         byte[] byteVector = entity.getVector();
@@ -44,27 +65,6 @@ public class Fingerprint {
     public Fingerprint() {
         this("");
     } 
-    
-    private static final List<List<NodeType>> FEATURES;
-    private static final int LONGEST_FEATURE;
-    private static final FeatureGenerator FEATURE_GENERATOR;
-    
-    static {
-        FEATURE_GENERATOR = new FeatureGenerator();
-        FEATURES = FEATURE_GENERATOR.generateVerticalFeatures();
-        FEATURES.addAll(FEATURE_GENERATOR.generateHorizontalFeatures());
-        int longestFeature = 0; 
-        for(List<NodeType> feature : FEATURES){
-            int featureLength = 0;
-            for(NodeType type : feature) {
-                featureLength += type.getName().length() + 2;
-            }
-            if(featureLength > longestFeature) {
-                longestFeature = featureLength;
-            }
-        }
-        LONGEST_FEATURE = longestFeature;
-    }
 
     public static int getFeaturesSize() {
         return FEATURES.size();

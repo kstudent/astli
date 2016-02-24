@@ -9,7 +9,7 @@ package org.androidlibid.proto;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public enum FingerPrintMatchTaskResult {
+public enum FingerprintMatchTaskResult {
     OK,
     NOT_PERFECT,
     NO_MATCH_BY_NAME,

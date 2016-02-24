@@ -2,6 +2,8 @@ package org.androidlibid.proto;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,9 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
     private EntityService service; 
     private Map<String, String> mappings;
     private final ASTToFingerprintTransformer ast2fpt;
+    NumberFormat frmt = new DecimalFormat("#0.00");  
+    
+    private double totalDiffToFirstMatch = 0.0d;
     
     public MatchFingerprintsOnPackageLevelAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options = options;
@@ -98,7 +103,11 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
                 System.out.println(key.toString() + ": " + stats.get(key));
             }
             
+            int amountFirstMatches = stats.get(FingerprintMatchTaskResult.OK);
             
+            if(amountFirstMatches > 0) {
+                System.out.println("avg diff on first machted: " +  frmt.format(totalDiffToFirstMatch / amountFirstMatches));
+            }
         } catch (SQLException ex) {
             Logger.getLogger(MatchFingerprintsOnPackageLevelAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -165,12 +174,12 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
                         System.out.println("    [...was null]");
                 }
                 
-                System.out.println("diff: " + needle.euclideanDiff(nameMatch));
+                System.out.println("diff: " + frmt.format(needle.euclideanDiff(nameMatch)));
                 
                 System.out.println("closer matches:");
                 for(int j = 0; j < i; j++) {
                     System.out.println(matchesByDistance.get(j).getName() + " ("
-                            + needle.euclideanDiff(matchesByDistance.get(j)) + ")");
+                            + frmt.format(needle.euclideanDiff(matchesByDistance.get(j))) + ")");
                 }
                 
                 if(i == matchesByDistance.size()) {
@@ -183,6 +192,18 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
                     return FingerprintMatchTaskResult.NOT_PERFECT;
                 } 
             } else {
+                double diff = needle.euclideanDiff(nameMatch);
+                totalDiffToFirstMatch += diff;
+                System.out.println(packageName + ": machted correctly with diff: " + frmt.format(diff) );
+                System.out.print("    Diff to next in lines: " );
+                
+                int counter = 0;
+                for (Fingerprint matchByDistance : matchesByDistance) {
+                    System.out.print(frmt.format(needle.euclideanDiff(matchByDistance)) + ", ");
+                    if(counter++ > 10) break;
+                } 
+                System.out.print("\n");
+                
                 return FingerprintMatchTaskResult.OK;
             }
         }
