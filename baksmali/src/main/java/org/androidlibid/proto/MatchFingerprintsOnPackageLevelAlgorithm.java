@@ -12,12 +12,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.Package;
-import org.androidlibid.proto.ao.Class;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ao.VectorEntity;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.Node;
+import org.apache.commons.lang.StringUtils;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 
@@ -53,7 +53,8 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
             
             Map<String, Fingerprint> packagePrints = generatePackagePrints(); 
             
-            Map<FingerprintMatchTaskResult, Integer> stats = matchPackagePrints(packagePrints);
+//            Map<FingerprintMatchTaskResult, Integer> stats = matchPackagePrints(packagePrints);
+            Map<FingerprintMatchTaskResult, Integer> stats = matchPackageOverClassPrints(packagePrints);
             
             System.out.println("Stats: ");
             for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
@@ -110,24 +111,8 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
                 System.out.println("Needle: ");
                 System.out.println(needle);
                 
-                System.out.println("Needle Classes: ");
-                for(Fingerprint clazz : needle.getChildren()) {
-                    System.out.println("    " + clazz.getName());
-                }
-                System.out.println("");
-                
                 System.out.println("Match By Name: ");
                 System.out.println(nameMatch);
-                
-                System.out.println("Match By Name Children:");
-                Package nameMatchPackage = (Package) nameMatch.getEntity();
-                if(nameMatchPackage != null) {
-                    for(Class clazz : nameMatchPackage.getClasses()) {
-                        System.out.println("    " + clazz.getName());
-                    }
-                } else {
-                        System.out.println("    [...was null]");
-                }
                 
                 System.out.println("diff: " + frmt.format(needle.euclideanDiff(nameMatch)));
                 
@@ -220,18 +205,52 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
         List<VectorEntity> haystackEntities = new ArrayList<VectorEntity>(service.findPackages());
         List<Fingerprint>  haystack  = new ArrayList<>(haystackEntities.size());
         for(VectorEntity v : haystackEntities) {
-            haystack.add(new Fingerprint(v));
-        }
+                    haystack.add(new Fingerprint(v));
+                }
 
-
+        
         for(Fingerprint needle : packagePrints.values()) {
-
+            
             if(needle.getName().startsWith("android")) continue;
             if(needle.getName().equals("")) continue;
-
+        
             FingerprintMatcher.Result matches = matcher.matchFingerprints(haystack, needle);
             FingerprintMatchTaskResult result = evaluateResult(needle, matches);
             stats.put(result, stats.get(result) + 1);
+        }
+        
+        return stats;
+    }   
+    
+    private Map<FingerprintMatchTaskResult, Integer> matchPackageOverClassPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
+        
+        Map<FingerprintMatchTaskResult, Integer> stats = new HashMap<>();
+        for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
+            stats.put(key, 0);
+        }
+        
+        FingerprintMatcher matcher = new FingerprintMatcher(1000);
+
+        for(Fingerprint packageNeedle : packagePrints.values()) {
+            
+            if(packageNeedle.getName().startsWith("android")) continue;
+            if(packageNeedle.getName().equals("")) continue;
+            
+            int level = StringUtils.countMatches(packageNeedle.getName(), ".");
+            
+            List<Fingerprint> haystack = new ArrayList<>();
+            
+            for (Package pckg : service.findPackagesByDepth(level)) {
+                for(VectorEntity v : pckg.getClasses()) {
+                    haystack.add(new Fingerprint(v));
+                }
+            }
+
+            for (Fingerprint needle : packageNeedle.getChildren()) {
+                FingerprintMatcher.Result matches = matcher.matchFingerprints(haystack, needle);
+                FingerprintMatchTaskResult result = evaluateResult(needle, matches);
+                stats.put(result, stats.get(result) + 1);
+            }
         }
         
         return stats;
