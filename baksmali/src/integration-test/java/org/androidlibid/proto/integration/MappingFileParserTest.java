@@ -1,7 +1,6 @@
 package org.androidlibid.proto.integration;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
 import org.androidlibid.proto.ProGuardMappingFileParser;
@@ -19,10 +18,10 @@ public class MappingFileParserTest {
         ProGuardMappingFileParser parser = new ProGuardMappingFileParser();
         Map<String, String> mapping = parser.parseMappingFile(mappingFile);
         
-        assert(mapping.get("a.a.b.k.m") != null);
-        assert(mapping.get("a.a.b.k.m").equals("org.spongycastle.crypto.macs.SipHash"));
+        assert(mapping.get("a.a.a.a.a.a") != null);
+        assert(mapping.get("a.a.a.a.a.a").equals("org.spongycastle.jcajce.provider.config.ConfigurableProvider"));
         assert(mapping.size() > 0);
-        assert(mapping.get("a.a.b.k") != null);
-        assert(mapping.get("a.a.b.k").equals("org.spongycastle.crypto.macs"));
+        assert(mapping.get("a.a.a.a.a") != null);
+        assert(mapping.get("a.a.a.a.a").equals("org.spongycastle.jcajce.provider.config"));
     }
 }
