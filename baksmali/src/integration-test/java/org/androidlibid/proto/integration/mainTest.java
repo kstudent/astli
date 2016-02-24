@@ -18,7 +18,7 @@ import org.androidlibid.proto.ao.Package;
  */
 public class mainTest {
     
-    @Test
+//    @Test
     public void storeLibandMatchAPK() throws Exception {
         clearDB();
         testStoreFingerprintLibSpongyCore();
@@ -28,22 +28,23 @@ public class mainTest {
     
     @Test
     public void storeLibandMatchAPKLvl() throws Exception {
-        clearDB();
-        testStoreFingerprintLibSpongyCore();
-        testStoreFingerprintLibSpongyProv();
-        testFindLibrariesOfAPKLvl(1);
+//        clearDB();
+//        testStoreFingerprintLibSpongyCore();
+//        testStoreFingerprintLibSpongyProv();
+        testFindLibrariesOfAPKLvl(3 );
     }
     
     public void testFindLibrariesOfAPK() throws IOException {
         String appApkPath = "./src/integration-test/resources/FingerprintAPKTest/app.apk";
         File appApk = new File(appApkPath);
-        assert(appApk.exists() && appApk.canRead());
+            assert(appApk.exists() && appApk.canRead());
         
         String arg[] = {"-y", appApkPath};
         main.main(arg); 
     }
 
     public void testFindLibrariesOfAPKLvl(int lvl) throws IOException {
+        System.out.println("analyzing lvl " + lvl);
         String appApkPath     =  "./src/integration-test/resources/FingerprintAPKTest/app.obflvl" + lvl + ".apk";
         String mappingFilePath = "./src/integration-test/resources/MappingFiles/mapping.obflvl"   + lvl + ".txt";
         
