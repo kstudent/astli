@@ -120,9 +120,14 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
 
             FingerprintMatcher matcher = new FingerprintMatcher(100.0d);
 
-            List<VectorEntity> classes = new ArrayList<VectorEntity>(service.getClasses());
+            List<VectorEntity> classEntities = new ArrayList<VectorEntity>(service.getClasses());
+            List<Fingerprint>  classFingerprints  = new ArrayList<>(classEntities.size());
+            
+            for(VectorEntity v : classEntities) {
+                classFingerprints.add(new Fingerprint(v));
+            }
 
-            FingerprintMatcher.Result result = matcher.matchFingerprints(classes, needle);
+            FingerprintMatcher.Result result = matcher.matchFingerprints(classFingerprints, needle);
 
             Fingerprint nameMatch = result.getMatchByName();
             List<Fingerprint> matchesByDistance = result.getMatchesByDistance();

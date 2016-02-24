@@ -76,7 +76,14 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
             }
             
             FingerprintMatcher matcher = new FingerprintMatcher(1000);
-            List<VectorEntity> haystack = new ArrayList<VectorEntity>(service.getPackages());
+            List<VectorEntity> haystackEntities = new ArrayList<VectorEntity>(service.getPackages());
+            
+            List<Fingerprint>  haystack  = new ArrayList<>(haystackEntities.size());
+            
+            for(VectorEntity v : haystackEntities) {
+                haystack.add(new Fingerprint(v));
+            }
+            
             int countTotal = 0;
             
             Map<FingerprintMatchTaskResult, Integer> stats = new HashMap<>();

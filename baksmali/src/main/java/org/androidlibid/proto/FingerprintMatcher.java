@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.ao.EntityService;
-import org.androidlibid.proto.ao.VectorEntity;
 
 /**
  *
@@ -23,15 +22,13 @@ public class FingerprintMatcher {
     }
     
     public Result matchFingerprints(
-            final List<VectorEntity> haystack, 
+            final List<Fingerprint> haystack, 
             final Fingerprint needle) throws SQLException {
         
         List<Fingerprint> matches = new ArrayList<>();
         Result result = new Result();
         
-        for(VectorEntity candidateEntity : haystack) {
-
-            Fingerprint candidate = new Fingerprint(candidateEntity);
+        for(Fingerprint candidate : haystack) {
 
             if(candidate.getName() == null) {
                 throw new RuntimeException("Database contains vector with name == null... why?");

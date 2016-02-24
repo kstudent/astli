@@ -24,12 +24,11 @@ import org.androidlibid.proto.ao.VectorEntity;
  */
 public class FingerprintMatcherTest {
     
-    private List<VectorEntity> fingerprints;
+    private List<Fingerprint>  fingerprints;
     private Class entity1;
     private Class entity2;
     private Class entity3;
     private Class needleEntity;
-    private EntityService service;
     private Fingerprint needle;
     private FingerprintMatcher matcher;
     private BasicVector v3;
@@ -64,10 +63,6 @@ public class FingerprintMatcherTest {
         when(entity3.getVector()).thenReturn(v3.toBinary());
         when(entity3.getName()).thenReturn("c3");
         
-        fingerprints = new ArrayList<>();
-        fingerprints.add(entity1);
-        fingerprints.add(entity2);
-        fingerprints.add(entity3);
         
         needleVector = new BasicVector(3);
         needleVector.set(0, 1.0);
@@ -85,6 +80,11 @@ public class FingerprintMatcherTest {
     @Test 
     public void testMatchSortedFingerprint() throws SQLException {
         
+        fingerprints = new ArrayList<>();
+        fingerprints.add(new Fingerprint(entity1));
+        fingerprints.add(new Fingerprint(entity2));
+        fingerprints.add(new Fingerprint(entity3));
+        
         List<Fingerprint> matchedPrints = matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
         
         double diffto0 = needle.euclideanDiff(matchedPrints.get(0));
@@ -101,7 +101,6 @@ public class FingerprintMatcherTest {
     
     @Test 
     public void testMatchEqualFingerprints() throws SQLException {
-        
         v1.set(0, 1.0);
         v1.set(1, 2.0);
         v1.set(2, 3.0);
@@ -109,6 +108,11 @@ public class FingerprintMatcherTest {
         when(entity1.getVector()).thenReturn(v1.toBinary());
         when(entity2.getVector()).thenReturn(v1.toBinary());
         when(entity3.getVector()).thenReturn(v1.toBinary());
+        
+        fingerprints = new ArrayList<>();
+        fingerprints.add(new Fingerprint(entity1));
+        fingerprints.add(new Fingerprint(entity2));
+        fingerprints.add(new Fingerprint(entity3));
         
         List<Fingerprint> matchedPrints = matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
         
