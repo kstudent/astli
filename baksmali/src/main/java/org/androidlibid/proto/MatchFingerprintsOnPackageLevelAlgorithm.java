@@ -27,21 +27,20 @@ import org.jf.dexlib2.iface.ClassDef;
  */
 public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlgorithm {
 
+    private EntityService service; 
+    private Map<String, String> mappings = new HashMap<>();
     private final List<? extends ClassDef> classDefs;
     private final baksmaliOptions options;
-    private EntityService service; 
-    private Map<String, String> mappings;
-    private final ASTToFingerprintTransformer ast2fpt;
-    NumberFormat frmt = new DecimalFormat("#0.00");  
+    private final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
+    private final NumberFormat frmt = new DecimalFormat("#0.00");  
     
     private double totalDiffToFirstMatch = 0.0d;
     
     public MatchFingerprintsOnPackageLevelAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options = options;
         this.classDefs = classDefs;
-        this.mappings = new HashMap<>();
-        this.ast2fpt = new ASTToFingerprintTransformer();
     }
+    
     @Override
     public boolean run() {
         try {
@@ -52,60 +51,11 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
                 mappings = parser.parseMappingFile(options.mappingFile);
             }
             
-            Map<String, Fingerprint> packagePrints = new HashMap<>();
+            Map<String, Fingerprint> packagePrints = generatePackagePrints(); 
             
-            for(ClassDef def : classDefs) {
-                String obfClassName = transformClassName(def.getType());
-                String className =    translateName(obfClassName);
-                String packageName =  extractPackageName(className);
-                
-                Fingerprint classFingerprint = transformClassDefToFingerprint(def);
-                classFingerprint.setName(className);
-                
-                Fingerprint packageFingerprint;
-                
-                if(packagePrints.containsKey(packageName)) {
-                    packageFingerprint = packagePrints.get(packageName);
-                } else {
-                    packageFingerprint = new Fingerprint(packageName);
-                    packagePrints.put(packageName, packageFingerprint);
-                }
-            
-                packageFingerprint.add(classFingerprint);
-                packageFingerprint.addChild(classFingerprint);
-            }
-            
-            FingerprintMatcher matcher = new FingerprintMatcher(1000);
-            List<VectorEntity> haystackEntities = new ArrayList<VectorEntity>(service.findPackages());
-            
-            List<Fingerprint>  haystack  = new ArrayList<>(haystackEntities.size());
-            
-            for(VectorEntity v : haystackEntities) {
-                haystack.add(new Fingerprint(v));
-            }
-            
-            int countTotal = 0;
-            
-            Map<FingerprintMatchTaskResult, Integer> stats = new HashMap<>();
-            for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
-                stats.put(key, 0);
-            }
-            
-            for(Fingerprint needle : packagePrints.values()) {
-                
-                //TODO: is this neccessary? are there 3party libst that start with android?
-                if(needle.getName().startsWith("android")) continue;
-                if(needle.getName().equals("")) continue;
-                
-                FingerprintMatcher.Result matches = matcher.matchFingerprints(haystack, needle);
-                FingerprintMatchTaskResult result = evaluateResult(needle, matches);
-                stats.put(result, stats.get(result) + 1);
-                countTotal++;
-            }
+            Map<FingerprintMatchTaskResult, Integer> stats = matchPackagePrints(packagePrints);
             
             System.out.println("Stats: ");
-            System.out.println("Total: " + countTotal);
-
             for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
                 System.out.println(key.toString() + ": " + stats.get(key));
             }
@@ -115,9 +65,7 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
             if(amountFirstMatches > 0) {
                 System.out.println("avg diff on first machted: " +  frmt.format(totalDiffToFirstMatch / amountFirstMatches));
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(MatchFingerprintsOnPackageLevelAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (SQLException | IOException ex) {
             Logger.getLogger(MatchFingerprintsOnPackageLevelAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
@@ -230,5 +178,62 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
     public String transformClassName(String className) {
         className = className.replace('/', '.');
         return className.substring(1, className.length() - 1);
+    }
+
+    private Map<String, Fingerprint> generatePackagePrints() throws IOException {
+        
+        Map<String, Fingerprint> packagePrints = new HashMap<>();
+            
+        for(ClassDef def : classDefs) {
+            String obfClassName = transformClassName(def.getType());
+            String className =    translateName(obfClassName);
+            String packageName =  extractPackageName(className);
+
+            Fingerprint classFingerprint = transformClassDefToFingerprint(def);
+            classFingerprint.setName(className);
+
+            Fingerprint packageFingerprint;
+
+            if(packagePrints.containsKey(packageName)) {
+                packageFingerprint = packagePrints.get(packageName);
+            } else {
+                packageFingerprint = new Fingerprint(packageName);
+                packagePrints.put(packageName, packageFingerprint);
+            }
+
+            packageFingerprint.add(classFingerprint);
+            packageFingerprint.addChild(classFingerprint);
+        }
+
+        return packagePrints;
+    }
+
+    private Map<FingerprintMatchTaskResult, Integer> matchPackagePrints(Map<String, Fingerprint> packagePrints) throws SQLException {
+        
+        Map<FingerprintMatchTaskResult, Integer> stats = new HashMap<>();
+        for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
+            stats.put(key, 0);
+        }
+        
+        FingerprintMatcher matcher = new FingerprintMatcher(1000);
+
+        List<VectorEntity> haystackEntities = new ArrayList<VectorEntity>(service.findPackages());
+        List<Fingerprint>  haystack  = new ArrayList<>(haystackEntities.size());
+        for(VectorEntity v : haystackEntities) {
+            haystack.add(new Fingerprint(v));
+        }
+
+
+        for(Fingerprint needle : packagePrints.values()) {
+
+            if(needle.getName().startsWith("android")) continue;
+            if(needle.getName().equals("")) continue;
+
+            FingerprintMatcher.Result matches = matcher.matchFingerprints(haystack, needle);
+            FingerprintMatchTaskResult result = evaluateResult(needle, matches);
+            stats.put(result, stats.get(result) + 1);
+        }
+        
+        return stats;
     }
 }
