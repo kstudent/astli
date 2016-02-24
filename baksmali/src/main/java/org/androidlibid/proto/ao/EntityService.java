@@ -29,10 +29,6 @@ public class EntityService {
         em.deleteWithSQL(Library.class, "1 = 1");
     }
     
-    public int countClasses() throws SQLException {
-        return em.count(Class.class);
-    }
-
     public synchronized Class saveClass(byte[] vector, String className, 
         String packageName, String mvnIdentifier) throws SQLException {
 
@@ -48,19 +44,47 @@ public class EntityService {
         return print;
     }
     
-    public List<Class> getClasses() throws SQLException {
+    public Package savePackage(String packageName, Library lib) throws SQLException {
+        Package entity = findPackageByNameAndLib(packageName, lib);
+        
+        if (entity == null) {
+            entity = em.create(Package.class);
+            entity.setName(packageName);
+            entity.setLibrary(lib);
+            entity.setVector(defaultVector);
+            entity.save();
+        }
+        
+        return entity;
+    }
+    
+    public Library saveLibrary(String mvnIdentifier) throws SQLException {
+        
+        Library entity = findLibraryByMvnIdentifier(mvnIdentifier);
+        
+        if (entity == null) {
+            entity = em.create(Library.class);
+            entity.setName(mvnIdentifier);
+            entity.setVector(defaultVector);
+            entity.save();
+        }
+        
+        return entity;
+    }
+
+    public int countClasses() throws SQLException {
+        return em.count(Class.class);
+    }    
+
+    public List<Class> findClasses() throws SQLException {
         return Arrays.asList(em.find(Class.class));
     }
     
-    public List<Package> getPackages() throws SQLException {
+    public List<Package> findPackages() throws SQLException {
         return Arrays.asList(em.find(Package.class));
     }
     
-    public List<Library> getLibraries() throws SQLException {
-        return Arrays.asList(em.find(Library.class));
-    }
-    
-    public List<Package> getPackagesWithLevel(int level) throws SQLException {
+    public List<Package> findPackagesByDepth(int level) throws SQLException {
         List<Package> packages = new LinkedList<>();
         for(Package pckg : em.find(Package.class)) {
             if (StringUtils.countMatches(pckg.getName(), ".") == level) {
@@ -90,19 +114,10 @@ public class EntityService {
         
     }
 
-    public Package savePackage(String packageName, Library lib) throws SQLException {
-        Package entity = findPackageByNameAndLib(packageName, lib);
-        
-        if (entity == null) {
-            entity = em.create(Package.class);
-            entity.setName(packageName);
-            entity.setLibrary(lib);
-            entity.setVector(defaultVector);
-            entity.save();
-        }
-        
-        return entity;
+    public List<Library> findLibraries() throws SQLException {
+        return Arrays.asList(em.find(Library.class));
     }
+    
 
     public @Nullable Library findLibraryByMvnIdentifier(String mvnIdentifier) 
             throws SQLException {
@@ -120,19 +135,5 @@ public class EntityService {
         }
         
         return libraries[0];
-    }
-
-    public Library saveLibrary(String mvnIdentifier) throws SQLException {
-        
-        Library entity = findLibraryByMvnIdentifier(mvnIdentifier);
-        
-        if (entity == null) {
-            entity = em.create(Library.class);
-            entity.setName(mvnIdentifier);
-            entity.setVector(defaultVector);
-            entity.save();
-        }
-        
-        return entity;
     }
 }

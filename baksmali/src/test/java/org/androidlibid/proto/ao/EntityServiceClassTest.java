@@ -137,7 +137,7 @@ public class EntityServiceClassTest {
         service.saveClass(vector.toBinary(), "vector 3", "", "");
         
         int counter = 0;
-        for (Class entity : service.getClasses()) {
+        for (Class entity : service.findClasses()) {
             counter ++;
         }
         

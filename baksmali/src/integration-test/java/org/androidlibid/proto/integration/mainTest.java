@@ -85,7 +85,7 @@ public class mainTest {
         int counter = 0;
         
         System.out.println("---list-of-class-fingerprints---");
-        for(Class entity : service.getClasses()) {
+        for(Class entity : service.findClasses()) {
             
             assert(entity != null);
             assert(entity.getVector() != null);
@@ -104,7 +104,7 @@ public class mainTest {
         int counter = 0;
         
         System.out.println("---list-of-package-fingerprints---");
-        for(Package entity : service.getPackages()) {
+        for(Package entity : service.findPackages()) {
             
             assert(entity != null);
             assert(entity.getVector() != null);

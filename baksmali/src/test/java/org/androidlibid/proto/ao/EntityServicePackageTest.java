@@ -125,7 +125,7 @@ public class EntityServicePackageTest {
     }
     
     @Test
-    public void getLibrariesWithLevel() throws Exception {
+    public void testFindLibrariesByDepth() throws Exception {
         
         Package pckg1 = em.create(Package.class);
         pckg1.setName("org.package.test");
@@ -147,17 +147,17 @@ public class EntityServicePackageTest {
         
         List<Package> pckgs;
         
-        pckgs = service.getPackagesWithLevel(0);
+        pckgs = service.findPackagesByDepth(0);
         assert(pckgs.size() == 2);
         
-        pckgs = service.getPackagesWithLevel(1);
+        pckgs = service.findPackagesByDepth(1);
         assert(pckgs.isEmpty());
         
-        pckgs = service.getPackagesWithLevel(2);
+        pckgs = service.findPackagesByDepth(2);
         assert(pckgs.size() == 1);
         assert(pckgs.get(0).equals(pckg1));
         
-        pckgs = service.getPackagesWithLevel(3);
+        pckgs = service.findPackagesByDepth(3);
         assert(pckgs.size() == 2);
         
     }
