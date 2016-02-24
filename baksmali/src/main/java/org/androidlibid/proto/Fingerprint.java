@@ -3,7 +3,9 @@ package org.androidlibid.proto;
 import org.androidlibid.proto.ast.NodeType;
 import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.androidlibid.proto.ao.VectorEntity;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
@@ -12,6 +14,9 @@ public class Fingerprint {
 
     private String name;
     private Vector vector;
+    
+    private List<Fingerprint> children = new LinkedList<>();
+    private VectorEntity entity;
 
     public Fingerprint(VectorEntity entity) {
         byte[] byteVector = entity.getVector();
@@ -28,6 +33,7 @@ public class Fingerprint {
         } else {
             this.name = entityName;
         }
+        this.entity = entity;
     }
     
     public Fingerprint(String name) {
@@ -131,5 +137,17 @@ public class Fingerprint {
     
     public double euclideanNorm() {
         return this.vector.euclideanNorm();
+    }
+    
+    List<Fingerprint> getChildren() {
+        return children;
+    }
+
+    void addChild(Fingerprint child) {
+        this.children.add(child);
+    }
+
+    @Nullable VectorEntity getEntity() {
+        return entity;
     }
 }
