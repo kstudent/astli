@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
     
     private Fingerprint transformClassDefToFingerprint(ClassDef classDef) throws IOException {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
-        List<Node> ast = classDefinition.createAST();
+        Collection<Node> ast = classDefinition.createAST();
         
         Fingerprint classFingerprint = new Fingerprint();
                 

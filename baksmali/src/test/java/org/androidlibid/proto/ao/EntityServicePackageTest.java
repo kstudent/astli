@@ -169,7 +169,7 @@ public class EntityServicePackageTest {
         @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(Library.class, Package.class, Class.class);
+            entityManager.migrate(Library.class, Package.class, Clazz.class);
         }
     }
 }

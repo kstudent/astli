@@ -8,8 +8,8 @@ import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
-import org.androidlibid.proto.ao.Class;
 import org.androidlibid.proto.ao.Package;
+import org.androidlibid.proto.ao.Clazz;
 
 
 /**
@@ -86,7 +86,7 @@ public class mainTest {
         int counter = 0;
         
         System.out.println("---list-of-class-fingerprints---");
-        for(Class entity : service.findClasses()) {
+        for(Clazz entity : service.findClasses()) {
             
             assert(entity != null);
             assert(entity.getVector() != null);

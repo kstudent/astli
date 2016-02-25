@@ -64,16 +64,22 @@ public class ASTClassDefinition implements ClassDefinition {
         return validationErrors;
     }
 
-    public List<Node> createAST() throws IOException {
-        
-        List<Node> ast = createDirectMethodsAST(); 
-        ast.addAll(createvirtualMethodsAST());
+    public Collection<Node> createAST() throws IOException {
+        Collection<Node> ast = createDirectMethodsAST(); 
+        ast.addAll(createVirtualMethodsAST());
         return ast;
     }
 
-    private List<Node> createDirectMethodsAST() throws IOException {
+    public Map<String, Node> createASTwithNames() throws IOException {
+        Map<String, Node> astwithnames = createDirectMethodsASTwithNames();
+        astwithnames.putAll(createVirtualMethodsASTwithNames());
+        return astwithnames;
+    }
+    
 
-        List<Node> methodASTs = new LinkedList<>();
+    private Map<String, Node> createDirectMethodsASTwithNames() throws IOException {
+
+        Map<String, Node> methodASTs = new HashMap<>();
         
         Iterable<? extends Method> directMethods;
         if (classDef instanceof DexBackedClassDef) {
@@ -86,18 +92,22 @@ public class ASTClassDefinition implements ClassDefinition {
             
             MethodImplementation methodImpl = method.getImplementation();
             if (methodImpl != null) {
+                String name = method.getName();
                 ASTMethodDefinition methodASTBuilder = new ASTMethodDefinition(this, method, methodImpl);
-                methodASTs.add(methodASTBuilder.createAST());
+                methodASTs.put(name, methodASTBuilder.createAST());
             }
         }
         
         return methodASTs;
-        
     }
     
-    private List<Node> createvirtualMethodsAST() throws IOException {
+    private Collection<Node> createDirectMethodsAST() throws IOException {
+        return createDirectMethodsASTwithNames().values();
+    }
+    
+    private Map<String, Node> createVirtualMethodsASTwithNames() throws IOException {
         
-        List<Node> methodASTs = new LinkedList<>();
+        Map<String, Node> methodASTs = new HashMap<>();
 
         Iterable<? extends Method> virtualMethods;
         if (classDef instanceof DexBackedClassDef) {
@@ -111,12 +121,16 @@ public class ASTClassDefinition implements ClassDefinition {
             MethodImplementation methodImpl = method.getImplementation();
             if (methodImpl != null) {
                 ASTMethodDefinition methodDefinition = new ASTMethodDefinition(this, method, methodImpl);
-                methodASTs.add(methodDefinition.createAST());
+                String name = method.getName();
+                methodASTs.put(name, methodDefinition.createAST());
             }
         }
-        
         return methodASTs;
     }    
+    
+    private Collection<Node> createVirtualMethodsAST() throws IOException {
+        return createVirtualMethodsASTwithNames().values();
+    }
 
     @Override
     public void writeTo(IndentingWriter writer) throws IOException {

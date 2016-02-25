@@ -15,8 +15,8 @@ import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.androidlibid.proto.ao.Class;
 import org.androidlibid.proto.ao.VectorEntity;
+import org.androidlibid.proto.ao.Clazz;
 
 /**
  *
@@ -25,10 +25,10 @@ import org.androidlibid.proto.ao.VectorEntity;
 public class FingerprintMatcherTest {
     
     private List<Fingerprint>  fingerprints;
-    private Class entity1;
-    private Class entity2;
-    private Class entity3;
-    private Class needleEntity;
+    private Clazz entity1;
+    private Clazz entity2;
+    private Clazz entity3;
+    private Clazz needleEntity;
     private Fingerprint needle;
     private FingerprintMatcher matcher;
     private BasicVector v3;
@@ -38,9 +38,9 @@ public class FingerprintMatcherTest {
     
     @Before
     public void setUp() throws SQLException {
-        entity1 = mock(Class.class);
-        entity2 = mock(Class.class);
-        entity3 = mock(Class.class);
+        entity1 = mock(Clazz.class);
+        entity2 = mock(Clazz.class);
+        entity3 = mock(Clazz.class);
         
         v1 = new BasicVector(3);
         v1.set(0, 1.0);
@@ -69,7 +69,7 @@ public class FingerprintMatcherTest {
         needleVector.set(1, 2.0);
         needleVector.set(2, 4.0);
         
-        needleEntity = mock(Class.class);
+        needleEntity = mock(Clazz.class);
         when(needleEntity.getVector()).thenReturn(needleVector.toBinary());
         when(needleEntity.getName()).thenReturn("n1");
         

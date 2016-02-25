@@ -3,6 +3,7 @@ package org.androidlibid.proto;
 import com.google.common.collect.Lists;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,7 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
             String name = classDef.getType();
 
             ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
-            List<Node> ast = classDefinition.createAST();
+            Collection<Node> ast = classDefinition.createAST();
 
             ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
 

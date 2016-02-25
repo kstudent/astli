@@ -12,10 +12,10 @@ import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ao.Library;
 import org.androidlibid.proto.ao.Package;
-import org.androidlibid.proto.ao.Class;
 import org.jf.baksmali.baksmali;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
+import org.androidlibid.proto.ao.Clazz;
 
 /**
  *
@@ -86,7 +86,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         for(Package pckg : lib.getPackages()) {
             Fingerprint pckgFingerprint = new Fingerprint(pckg);
 
-            for(Class clazz : pckg.getClasses()) {
+            for(Clazz clazz : pckg.getClasses()) {
                 Fingerprint clazzFingerprint = new Fingerprint(clazz);
 
                 pckgFingerprint.add(clazzFingerprint);

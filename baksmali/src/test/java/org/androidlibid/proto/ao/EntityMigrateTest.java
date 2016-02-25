@@ -35,7 +35,7 @@ public class EntityMigrateTest {
         @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(Class.class);
+            entityManager.migrate(Clazz.class);
             entityManager.migrate(Library.class);
         }
     }

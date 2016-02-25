@@ -7,11 +7,12 @@ import net.java.ao.OneToMany;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 
-public interface Package extends VectorEntity {
-
-    Library getLibrary();
-    void setLibrary(Library library);
+public interface Clazz extends VectorEntity {
+   
+    public void setPackage(Package pckg);
+    public Package getPackage();
     
     @OneToMany
-    public Clazz[] getClasses();
-    }
+    public Method[] getMethods();
+    
+}

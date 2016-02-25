@@ -24,15 +24,29 @@ public class EntityService {
     }
     
     public void truncateTables() throws SQLException {
-        em.deleteWithSQL(Class.class,   "1 = 1");
+        em.deleteWithSQL(Method.class,  "1 = 1");
+        em.deleteWithSQL(Clazz.class,   "1 = 1");
         em.deleteWithSQL(Package.class, "1 = 1");
         em.deleteWithSQL(Library.class, "1 = 1");
     }
     
-    public synchronized Class saveClass(byte[] vector, String className, 
+    public synchronized Method saveMethod(byte[] vector, String methodName, Clazz clazz) 
+            throws SQLException
+    {
+        Method entity = em.create(Method.class);
+        
+        entity.setVector(vector);
+        entity.setName(methodName);
+        entity.setClazz(clazz);
+        
+        entity.save();
+        return entity;
+    }
+    
+    public synchronized Clazz saveClass(byte[] vector, String className, 
         String packageName, String mvnIdentifier) throws SQLException {
 
-        Class print = em.create(Class.class);
+        Clazz print = em.create(Clazz.class);
         Library lib  = saveLibrary(mvnIdentifier);
         Package pckg = savePackage(packageName, lib);
         
@@ -73,11 +87,11 @@ public class EntityService {
     }
 
     public int countClasses() throws SQLException {
-        return em.count(Class.class);
+        return em.count(Clazz.class);
     }    
 
-    public List<Class> findClasses() throws SQLException {
-        return Arrays.asList(em.find(Class.class));
+    public List<Clazz> findClasses() throws SQLException {
+        return Arrays.asList(em.find(Clazz.class));
     }
     
     public List<Package> findPackages() throws SQLException {

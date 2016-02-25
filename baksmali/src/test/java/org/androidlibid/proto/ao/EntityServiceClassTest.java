@@ -28,18 +28,18 @@ public class EntityServiceClassTest {
     
     @Test 
     public void testSaveFingerprintCount() throws Exception {
-        assert(em.count(Class.class) == 0);
+        assert(em.count(Clazz.class) == 0);
         Vector vector = new BasicVector(5);
         
         EntityService service = new EntityService(em, vector.toBinary());
         service.saveClass(vector.toBinary(), "vector 1", "", "");
-        assert(em.count(Class.class) == 1);
+        assert(em.count(Clazz.class) == 1);
         
         service.saveClass(vector.toBinary(), "vector 2", "", "");
-        assert(em.count(Class.class) == 2);
+        assert(em.count(Clazz.class) == 2);
         
         service.saveClass(vector.toBinary(), "vector 3", "", "");
-        assert(em.count(Class.class) == 3);
+        assert(em.count(Clazz.class) == 3);
     }
     
     @Test 
@@ -48,7 +48,7 @@ public class EntityServiceClassTest {
         String packageName   = "Lorg.lib.package";
         String mvnIdentifier = "libGroupId:libArtifactId:0.1";
         
-        assert(em.count(Class.class)   == 0);
+        assert(em.count(Clazz.class)   == 0);
         assert(em.count(Library.class) == 0);
         assert(em.count(Package.class) == 0);
         
@@ -59,7 +59,7 @@ public class EntityServiceClassTest {
         service.saveClass(vector.toBinary(), "vector 2", packageName, mvnIdentifier);
         service.saveClass(vector.toBinary(), "vector 3", packageName, mvnIdentifier);
         
-        Class[] classes = em.find(Class.class, "NAME = ?", "vector 1");
+        Clazz[] classes = em.find(Clazz.class, "NAME = ?", "vector 1");
         assert(classes.length == 1);
         assert(classes[0].getName() != null);
         assert(classes[0].getName().equals("vector 1"));
@@ -79,7 +79,7 @@ public class EntityServiceClassTest {
         assert(libs[0].getVector() != null);
         assert(packages[0].getLibrary().equals(libs[0]));
         
-        assert(em.count(Class.class)   == 3);
+        assert(em.count(Clazz.class)   == 3);
         assert(em.count(Library.class) == 1);
         assert(em.count(Package.class) == 1);
         
@@ -93,7 +93,7 @@ public class EntityServiceClassTest {
         String lib2Identifier = "libGroupId:libArtifactId2:0.1";
         String className = "class";
         
-        assert(em.count(Class.class)   == 0);
+        assert(em.count(Clazz.class)   == 0);
         assert(em.count(Library.class) == 0);
         assert(em.count(Package.class) == 0);
         
@@ -103,7 +103,7 @@ public class EntityServiceClassTest {
         service.saveClass(vector.toBinary(), className, packageName, lib1Identifier);
         service.saveClass(vector.toBinary(), className, packageName, lib2Identifier);
         
-        Class[] classes = em.find(Class.class, "NAME = ?", className);
+        Clazz[] classes = em.find(Clazz.class, "NAME = ?", className);
         assert(classes.length == 2);
         assert(classes[0].getName() != null);
         assert(classes[0].getName().equals(className));
@@ -121,7 +121,7 @@ public class EntityServiceClassTest {
         libs = em.find(Library.class, "NAME = ?", lib2Identifier);
         assert(libs.length == 1);
         
-        assert(em.count(Class.class)   == 2);
+        assert(em.count(Clazz.class)   == 2);
         assert(em.count(Library.class) == 2);
         assert(em.count(Package.class) == 2);
     }
@@ -137,7 +137,7 @@ public class EntityServiceClassTest {
         service.saveClass(vector.toBinary(), "vector 3", "", "");
         
         int counter = 0;
-        for (Class entity : service.findClasses()) {
+        for (Clazz entity : service.findClasses()) {
             counter ++;
         }
         
@@ -162,7 +162,7 @@ public class EntityServiceClassTest {
     @Test
     public void testDeleteAllFingerprints() throws Exception {
         
-        assert(em.count(Class.class) == 0);
+        assert(em.count(Clazz.class) == 0);
         Vector vector = new BasicVector(5);
         
         EntityService service = new EntityService(em, vector.toBinary());
@@ -171,11 +171,11 @@ public class EntityServiceClassTest {
         service.saveClass(vector.toBinary(), "vector 2", "", "");
         service.saveClass(vector.toBinary(), "vector 3", "", "");
         
-        assert(em.count(Class.class) == 3);
+        assert(em.count(Clazz.class) == 3);
         
         service.truncateTables();
         
-        assert(em.count(Class.class) == 0);
+        assert(em.count(Clazz.class) == 0);
     }
     
     public static final class FingerprintServiceTestDatabaseUpdater implements DatabaseUpdater
@@ -184,7 +184,7 @@ public class EntityServiceClassTest {
         @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(Class.class, Package.class, Library.class);
+            entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
         }
     }
 }
