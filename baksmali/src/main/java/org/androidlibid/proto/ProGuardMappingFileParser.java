@@ -11,41 +11,98 @@ import java.util.Map;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 public class ProGuardMappingFileParser {
+    
+    Map<String, String> mapping = new HashMap<>();
+    String mappingFilePath; 
 
-    public Map<String, String> parseMappingFile(String mappingFilePath) throws IOException {
-        
-        Map<String, String> mapping = new HashMap<>();
+    public ProGuardMappingFileParser(String mappingFilePath) {
+        this.mappingFilePath = mappingFilePath;
+    }
+
+    public Map<String, String> parseMappingFileOnClassLevel() throws IOException {
         
         try (BufferedReader br = new BufferedReader(new FileReader(mappingFilePath))) {
             String line;
-            
             while ((line = br.readLine()) != null) {
-                
                 if(line.startsWith("    ")) continue;
-                
-                String[] pieces = line.split(" -> ");
-                
-                if(pieces.length != 2) {
-                    throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
-                }
-                
-                String obfuscatedClassName = pieces[1].substring(0, pieces[1].length() - 1);
-                String clearClassName = pieces[0];
-                
-                if(obfuscatedClassName.length() == 0 || clearClassName.length() == 0) {
-                    throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
-                }
-                
-                mapping.put(obfuscatedClassName, clearClassName);
-                
-                String obfuscatedPackageName = obfuscatedClassName.substring(0, obfuscatedClassName.lastIndexOf("."));
-                String clearPackageName = clearClassName.substring(0, clearClassName.lastIndexOf("."));
-                
-                mapping.put(obfuscatedPackageName, clearPackageName);
+                parseClassLine(line);
             }
         }
         
         return mapping;
+    }
+    
+    public Map<String, String> parseMappingFileOnMethodLevel() throws IOException {
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(mappingFilePath))) {
+            String line;
+            
+            String[] classNames = {"", ""}; 
+            
+            while ((line = br.readLine()) != null) {
+                
+                if(line.startsWith("    ")) {
+                    System.out.println("now im using " + classNames[0]);
+                    parseMethodLine(line.substring(4), classNames[0], classNames[1]);
+                } else {
+                    classNames = parseClassLine(line);
+                }
+            }
+        }
+        
+        return mapping;
+    }
+
+    private String[] parseClassLine(String line) {
+        String[] pieces = line.split(" -> ");
+
+        if(pieces.length != 2) {
+            throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
+        }
+
+        String obfuscatedClassName = pieces[1].substring(0, pieces[1].length() - 1);
+        String clearClassName = pieces[0];
+
+        if(obfuscatedClassName.length() == 0 || clearClassName.length() == 0) {
+            throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
+        }
+
+        mapping.put(obfuscatedClassName, clearClassName);
+
+        String obfuscatedPackageName = obfuscatedClassName.substring(0, obfuscatedClassName.lastIndexOf("."));
+        String clearPackageName = clearClassName.substring(0, clearClassName.lastIndexOf("."));
+
+        mapping.put(obfuscatedPackageName, clearPackageName);
+        
+        String[] classNames = {obfuscatedPackageName, clearClassName};
+        
+        return classNames;
+    }
+    
+    private void parseMethodLine(String line, String obfuscatedClassName, String clearClassName) {
+        String[] pieces = line.split(" -> ");
+        if(pieces.length != 2) {
+            throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
+        }
+        
+        String clearNameString = pieces[0]; 
+        int start = clearNameString.indexOf(" ");
+        int end = clearNameString.indexOf("(", start);
+        
+        if(start < 0 || end < 0) {
+            return;
+        }
+        
+        String clearMethodName = clearNameString.substring(start + 1, end);
+        
+        String obfuscatedMethodName = pieces[1];
+        
+        if(obfuscatedClassName.length() == 0 || clearClassName.length() == 0 
+                || clearMethodName.length() == 0 || obfuscatedMethodName.length() == 0) {
+            throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
+        }
+        
+        mapping.put(obfuscatedClassName + ":" + obfuscatedMethodName, clearClassName + ":" + clearMethodName);
     }
     
 }

@@ -12,11 +12,11 @@ import org.androidlibid.proto.ProGuardMappingFileParser;
 public class MappingFileParserTest {
     
     @Test
-    public void testMappingFileParser() throws IOException {
+    public void testMappingFileParserClassLevel() throws IOException {
         String mappingFile = "./src/integration-test/resources/MappingFiles/mapping.txt";
         
-        ProGuardMappingFileParser parser = new ProGuardMappingFileParser();
-        Map<String, String> mapping = parser.parseMappingFile(mappingFile);
+        ProGuardMappingFileParser parser = new ProGuardMappingFileParser(mappingFile);
+        Map<String, String> mapping = parser.parseMappingFileOnClassLevel();
         
         assert(mapping.get("a.a.a.a.a.a") != null);
         assert(mapping.get("a.a.a.a.a.a").equals("org.spongycastle.jcajce.provider.config.ConfigurableProvider"));
@@ -24,4 +24,17 @@ public class MappingFileParserTest {
         assert(mapping.get("a.a.a.a.a") != null);
         assert(mapping.get("a.a.a.a.a").equals("org.spongycastle.jcajce.provider.config"));
     }
+    
+    @Test
+    public void testMappingFileParserMethodLevel() throws IOException {
+        String mappingFile = "./src/integration-test/resources/MappingFiles/mapping.txt";
+        
+        ProGuardMappingFileParser parser = new ProGuardMappingFileParser(mappingFile);
+        Map<String, String> mapping = parser.parseMappingFileOnMethodLevel();
+        
+        assert(mapping.size() > 0);
+        assert(mapping.get("a.a.a.a.a:<init>") != null);
+        assert(mapping.get("a.a.a.a.a:<init>").equals("org.spongycastle.jcajce.provider.config.ProviderConfigurationPermission:<init>"));
+    }
+    
 }
