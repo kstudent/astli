@@ -1,6 +1,6 @@
 package org.androidlibid.proto;
 
-import java.util.Collection;
+import java.util.Map;
 import org.androidlibid.proto.ast.Node;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.ASTClassDefinition;
@@ -30,7 +30,7 @@ public class StoreMethodFingerprint implements Callable<Void> {
         
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         
-        Collection<Node> ast = classDefinition.createAST();
+        Map<String, Node> ast = classDefinition.createASTwithNames();
         
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
@@ -39,17 +39,22 @@ public class StoreMethodFingerprint implements Callable<Void> {
         String mvnIdentifier = options.mvnIdentifier;
 
         Fingerprint classFingerprint = new Fingerprint(className);
-        Clazz clazzEntity = service.saveClass(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
                 
-        for(Node node : ast) {
-            Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
-//            service.saveMethod(methodFingerprint.getVector().toBinary(), , clazzEntity)
-            
-            classFingerprint.add(methodFingerprint);
+        for(String methodName : ast.keySet()) {
+            Fingerprint methodFingerprint = ast2fpt.createFingerprint(ast.get(methodName));
+            if(methodFingerprint.euclideanNorm() > 1.0d) {
+                methodFingerprint.setName(methodName);
+                classFingerprint.add(methodFingerprint);
+                classFingerprint.addChild(methodFingerprint);
+            }
         }
         
         if(classFingerprint.euclideanNorm() > 0.0d) {
-            service.saveClass(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
+            Clazz clazz = service.saveClass(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
+            
+            for(Fingerprint method : classFingerprint.getChildren()) {
+                service.saveMethod(method.getVector().toBinary(), method.getName(), clazz);
+            }
         }
         
         return null;

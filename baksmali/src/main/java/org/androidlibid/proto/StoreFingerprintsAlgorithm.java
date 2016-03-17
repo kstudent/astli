@@ -45,12 +45,14 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     }
     
     private void generateClassFingerprints() throws InterruptedException {
-        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
+//        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
+        ExecutorService executor = Executors.newFixedThreadPool(1);
         
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
         
         for (final ClassDef classDef: classDefs) {
-            completionService.submit(new StoreClassFingerprintTask(classDef, options, service));
+//            completionService.submit(new StoreClassFingerprintTask(classDef, options, service));
+            completionService.submit(new StoreMethodFingerprint(classDef, options, service));
         }
         
         int count = 0;

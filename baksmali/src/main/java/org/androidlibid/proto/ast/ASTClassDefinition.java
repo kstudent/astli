@@ -102,7 +102,7 @@ public class ASTClassDefinition implements ClassDefinition {
     }
     
     private Collection<Node> createDirectMethodsAST() throws IOException {
-        return new ArrayList(createDirectMethodsASTwithNames().values());
+        return new ArrayList<>(createDirectMethodsASTwithNames().values());
     }
     
     private Map<String, Node> createVirtualMethodsASTwithNames() throws IOException {

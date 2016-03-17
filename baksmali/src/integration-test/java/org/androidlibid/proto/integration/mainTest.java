@@ -3,6 +3,7 @@ package org.androidlibid.proto.integration;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import org.jf.baksmali.main;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
@@ -10,6 +11,7 @@ import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
 import org.androidlibid.proto.ao.Package;
 import org.androidlibid.proto.ao.Clazz;
+import org.androidlibid.proto.ao.Method;
 
 
 /**
@@ -31,7 +33,9 @@ public class mainTest {
 //        clearDB();
 //        testStoreFingerprintLibSpongyCore();
 //        testStoreFingerprintLibSpongyProv();
-        testFindLibrariesOfAPKLvl(3 );
+//        countMethods();
+//        printSomeMethods();
+        testFindLibrariesOfAPKLvl(3);
     }
     
     public void testFindLibrariesOfAPK() throws IOException {
@@ -72,6 +76,11 @@ public class mainTest {
         String arg[] = {"-z", "com.madgag.spongycastle:prov:1.54.0.0", jarPath};
         main.main(arg); 
     }
+    
+     public void countMethods() throws Exception {
+        EntityService service = EntityServiceFactory.createService();
+        System.out.println("methods: " + service.countMethods());
+    } 
     
     public void clearDB() throws Exception {
         EntityService service = EntityServiceFactory.createService();
@@ -117,5 +126,20 @@ public class mainTest {
         
         System.out.println("amount of packages: " + counter);
     }
-    
+
+    private void printSomeMethods() throws SQLException {
+      
+        EntityService service = EntityServiceFactory.createService();
+        List<Clazz> classes = service.findClasses();
+        int upper_bound = (classes.size() > 10) ? 10 : classes.size();
+        
+        for(int i = 0; i < upper_bound; i++) {
+            Clazz clazz = classes.get(i);
+            System.out.println(clazz.getName());
+            for(Method m : clazz.getMethods()) {
+                Fingerprint p = new Fingerprint(m);
+                System.out.println(p);  
+            }
+        }
+    }
 }

@@ -30,6 +30,7 @@ public class EntityService {
         em.deleteWithSQL(Library.class, "1 = 1");
     }
     
+    //@todo: maybe dont synchronize this method? 
     public synchronized Method saveMethod(byte[] vector, String methodName, Clazz clazz) 
             throws SQLException
     {
@@ -90,6 +91,10 @@ public class EntityService {
         return em.count(Clazz.class);
     }    
 
+    public int countMethods() throws SQLException {
+        return em.count(Method.class); 
+    }
+    
     public List<Clazz> findClasses() throws SQLException {
         return Arrays.asList(em.find(Clazz.class));
     }

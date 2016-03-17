@@ -32,7 +32,7 @@ public class EntityServiceFactory {
                 .password(jdbcProperties.passord)
                 .auto().build();
 
-        entityManager.migrate(Clazz.class, Package.class, Library.class);
+        entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
 
         return new EntityService(entityManager, ZERO_BYTES);
     }
