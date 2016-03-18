@@ -53,7 +53,7 @@ public class StoreMethodFingerprint implements Callable<Void> {
             Clazz clazz = service.saveClass(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
             
             for(Fingerprint method : classFingerprint.getChildren()) {
-                service.saveMethod(method.getVector().toBinary(), method.getName(), clazz);
+                service.saveMethod(method.getVector().toBinary(), method.getName(), method.euclideanNorm(), clazz);
             }
         }
         

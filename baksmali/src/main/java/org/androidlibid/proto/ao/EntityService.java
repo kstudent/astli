@@ -31,7 +31,7 @@ public class EntityService {
     }
     
     //@todo: maybe dont synchronize this method? 
-    public synchronized Method saveMethod(byte[] vector, String methodName, Clazz clazz) 
+    public synchronized Method saveMethod(byte[] vector, String methodName, double length, Clazz clazz) 
             throws SQLException
     {
         Method entity = em.create(Method.class);
@@ -39,6 +39,7 @@ public class EntityService {
         entity.setVector(vector);
         entity.setName(methodName);
         entity.setClazz(clazz);
+        entity.setLength(length);
         
         entity.save();
         return entity;

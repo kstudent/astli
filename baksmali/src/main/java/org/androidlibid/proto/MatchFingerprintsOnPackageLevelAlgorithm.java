@@ -109,15 +109,15 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
             return FingerprintMatchTaskResult.NO_MATCH_BY_NAME;
         } else {
             
-            int i;
+            int position;
             
-            for (i = 0; i < matchesByDistance.size(); i++) {
-                if(matchesByDistance.get(i).getName().equals(needleName)) {
+            for (position = 0; position < matchesByDistance.size(); position++) {
+                if(matchesByDistance.get(position).getName().equals(needleName)) {
                     break;
                 }
             }
             
-            if(i > 0) {
+            if(position > 0) {
                 System.out.println("--------------------------------------------");
                 System.out.println("Needle: ");
                 System.out.println(needle);
@@ -125,20 +125,20 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
                 System.out.println("Match By Name: ");
                 System.out.println(nameMatch);
                 
-                System.out.println("diff: " + frmt.format(needle.euclideanDiff(nameMatch)));
+                System.out.println("euc. diff: " + frmt.format(needle.euclideanDiff(nameMatch)) + "; in betweeners: " + position);
                 
-                System.out.println("closer matches:");
-                for(int j = 0; j < i; j++) {
-                    System.out.println(matchesByDistance.get(j).getName() + " ("
-                            + frmt.format(needle.euclideanDiff(matchesByDistance.get(j))) + ")");
-                }
+//                System.out.println("closer matches:");
+//                for(int j = 0; j < position; j++) {
+//                    System.out.println(matchesByDistance.get(j).getName() + " ("
+//                            + frmt.format(needle.euclideanDiff(matchesByDistance.get(j))) + ")");
+//                }
                 
-                if(i == matchesByDistance.size()) {
+                if(position == matchesByDistance.size()) {
                     System.out.println(needleName + ": not mached by distance.");
                     System.out.println("--------------------------------------------");
                     return FingerprintMatchTaskResult.NO_MATCH_BY_DISTANCE;
                 } else {
-                    System.out.println(needleName + ": found at position " + (i + 1));
+                    System.out.println(needleName + ": found at position " + (position + 1));
                     System.out.println("--------------------------------------------");
                     return FingerprintMatchTaskResult.NOT_PERFECT;
                 } 
