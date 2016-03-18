@@ -1,13 +1,11 @@
 package org.androidlibid.proto.match;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.ao.EntityService;
 
 /**
  *
@@ -15,16 +13,13 @@ import org.androidlibid.proto.ao.EntityService;
  */
 public class FingerprintMatcher {
 
-    EntityService service; 
     private final double diffThreshold;
 
     public FingerprintMatcher(double diffThreshold) {
         this.diffThreshold = diffThreshold;
     }
     
-    public Result matchFingerprints(
-            final List<Fingerprint> haystack, 
-            final Fingerprint needle) throws SQLException {
+    public Result matchFingerprints(final List<Fingerprint> haystack, final Fingerprint needle) {
         
         List<Fingerprint> matches = new ArrayList<>();
         Result result = new Result();

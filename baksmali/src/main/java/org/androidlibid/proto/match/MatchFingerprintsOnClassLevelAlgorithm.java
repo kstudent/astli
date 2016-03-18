@@ -42,7 +42,7 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
     public boolean run() {
 //        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         ExecutorService executor = Executors.newFixedThreadPool(1);
-        List<Future<FingerprintMatchTaskResult>> tasks = Lists.newArrayList();
+        List<Future<MatchingStrategy.Status>> tasks = Lists.newArrayList();
 
         EntityService service;
         try {
@@ -59,14 +59,14 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
         }
 
         int count_total = 0;
-        Map<FingerprintMatchTaskResult, Integer> stats = new HashMap<>();
-        for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
+        Map<MatchingStrategy.Status, Integer> stats = new HashMap<>();
+        for(MatchingStrategy.Status key : MatchingStrategy.Status.values()) {
             stats.put(key, 0);
         }
         
         try {
-            for (Future<FingerprintMatchTaskResult> task: tasks) {
-                FingerprintMatchTaskResult key = task.get();
+            for (Future<MatchingStrategy.Status> task: tasks) {
+                MatchingStrategy.Status key = task.get();
                 stats.put(key, stats.get(key) + 1);
                 count_total++;
             }
@@ -81,14 +81,14 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
         System.out.println("Stats: ");
         System.out.println("Total: " + count_total);
         
-        for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
+        for(MatchingStrategy.Status key : MatchingStrategy.Status.values()) {
             System.out.println(key.toString() + ": " + stats.get(key));
         }
         
         return true;
     }
     
-    class MatchClassFingerprintTask implements Callable<FingerprintMatchTaskResult>{
+    class MatchClassFingerprintTask implements Callable<MatchingStrategy.Status>{
     
         private final ClassDef classDef;
         private final baksmaliOptions options;
@@ -100,7 +100,7 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
             this.service = service;
         }
 
-        @Override public FingerprintMatchTaskResult call() throws Exception {
+        @Override public MatchingStrategy.Status call() throws Exception {
             String name = classDef.getType();
 
             ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
@@ -117,7 +117,7 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
 
             if (needle.euclideanNorm() == 0.0d) {
                 System.out.println(name + ": class length 0");
-                return FingerprintMatchTaskResult.CLASS_LENGTH_0;
+                return MatchingStrategy.Status.CLASS_LENGTH_0;
             }
 
             FingerprintMatcher matcher = new FingerprintMatcher(100.0d);
@@ -136,7 +136,7 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
 
             if(nameMatch == null) {
                 System.out.println(name + ": not mached by name");
-                return FingerprintMatchTaskResult.NO_MATCH_BY_NAME;
+                return MatchingStrategy.Status.NO_MATCH_BY_NAME;
             } else {
 
                 int i;
@@ -151,13 +151,13 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
                     System.out.println(name + ": not mached by distance.");
                     System.out.println(needle);
                     System.out.println(nameMatch);
-                    return FingerprintMatchTaskResult.NO_MATCH_BY_DISTANCE;
+                    return MatchingStrategy.Status.NO_MATCH_BY_DISTANCE;
                 } else if(i > 0) {
                     System.out.println(name + ": found at position " + i);
-                    return FingerprintMatchTaskResult.NOT_PERFECT;
+                    return MatchingStrategy.Status.NOT_PERFECT;
                 } else {
     //                System.out.println(name + ": found first.");
-                    return FingerprintMatchTaskResult.OK;
+                    return MatchingStrategy.Status.OK;
                 }
             }
         }
