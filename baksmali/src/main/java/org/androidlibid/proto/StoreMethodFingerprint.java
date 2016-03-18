@@ -43,7 +43,7 @@ public class StoreMethodFingerprint implements Callable<Void> {
         for(String methodName : ast.keySet()) {
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(ast.get(methodName));
             if(methodFingerprint.euclideanNorm() > 1.0d) {
-                methodFingerprint.setName(methodName);
+                methodFingerprint.setName(className + ":" + methodName);
                 classFingerprint.add(methodFingerprint);
                 classFingerprint.addChild(methodFingerprint);
             }

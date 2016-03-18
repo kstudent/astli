@@ -42,10 +42,15 @@ public class ProGuardMappingFileParser {
             while ((line = br.readLine()) != null) {
                 
                 if(line.startsWith("    ")) {
-                    System.out.println("now im using " + classNames[0]);
                     parseMethodLine(line.substring(4), classNames[0], classNames[1]);
                 } else {
                     classNames = parseClassLine(line);
+                    if(classNames[0].equals("a.a.c.a")) {
+                        System.out.println("Good time to start debugging");
+                    }
+                    if(classNames[1].equals("a.a.c.a")) {
+                        System.out.println("Also a Good time to start debugging");
+                    }
                 }
             }
         }
@@ -74,7 +79,7 @@ public class ProGuardMappingFileParser {
 
         mapping.put(obfuscatedPackageName, clearPackageName);
         
-        String[] classNames = {obfuscatedPackageName, clearClassName};
+        String[] classNames = {obfuscatedClassName, clearClassName};
         
         return classNames;
     }

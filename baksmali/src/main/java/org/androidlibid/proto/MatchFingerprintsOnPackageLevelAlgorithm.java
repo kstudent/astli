@@ -5,15 +5,16 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.androidlibid.proto.ao.Clazz;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.Package;
 import org.androidlibid.proto.ao.EntityServiceFactory;
+import org.androidlibid.proto.ao.Method;
 import org.androidlibid.proto.ao.VectorEntity;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
@@ -48,14 +49,16 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
             service = EntityServiceFactory.createService();
             
             if(options.isObfuscated) {
-                ProGuardMappingFileParser parser = new ProGuardMappingFileParser(); 
-                mappings = parser.parseMappingFile(options.mappingFile);
+                ProGuardMappingFileParser parser = new ProGuardMappingFileParser(options.mappingFile); 
+//                mappings = parser.parseMappingFileOnClassLeve();
+                mappings = parser.parseMappingFileOnMethodLevel();
             }
             
             Map<String, Fingerprint> packagePrints = generatePackagePrints(); 
             
 //            Map<FingerprintMatchTaskResult, Integer> stats = matchPackagePrints(packagePrints);
-            Map<FingerprintMatchTaskResult, Integer> stats = matchPackageOverClassPrints(packagePrints);
+//            Map<FingerprintMatchTaskResult, Integer> stats = matchPackageOverClassPrints(packagePrints);
+            Map<FingerprintMatchTaskResult, Integer> stats = matchPackagesOnMethodLevel(packagePrints);
             
             System.out.println("Stats: ");
             for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
@@ -73,15 +76,22 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
         return true;
     }
     
-    private Fingerprint transformClassDefToFingerprint(ClassDef classDef) throws IOException {
+    private Fingerprint transformClassDefToFingerprint(ClassDef classDef, String obfsClassName) throws IOException {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
-        Collection<Node> ast = classDefinition.createAST();
+        Map<String, Node> ast = classDefinition.createASTwithNames();
         
         Fingerprint classFingerprint = new Fingerprint();
                 
-        for(Node node : ast) {
+        for(String obfsMethodName : ast.keySet()) {
+            Node node = ast.get(obfsMethodName);
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
-            classFingerprint.add(methodFingerprint);
+            
+            if(methodFingerprint.euclideanNorm() > 1.0f) {
+                String methodName = translateName(obfsClassName + ":" + obfsMethodName);
+                methodFingerprint.setName(methodName);
+                classFingerprint.addChild(methodFingerprint);
+                classFingerprint.add(methodFingerprint);
+            }
         }
         
         return classFingerprint;
@@ -90,19 +100,19 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
     private FingerprintMatchTaskResult evaluateResult(Fingerprint needle, 
             FingerprintMatcher.Result result) throws SQLException {
         
-        String packageName = needle.getName();
+        String needleName = needle.getName();
         Fingerprint nameMatch = result.getMatchByName();
         List<Fingerprint> matchesByDistance = result.getMatchesByDistance();
         
         if(nameMatch == null) {
-            System.out.println(packageName + ": not mached by name");
+            System.out.println(needleName + ": not mached by name");
             return FingerprintMatchTaskResult.NO_MATCH_BY_NAME;
         } else {
             
             int i;
             
             for (i = 0; i < matchesByDistance.size(); i++) {
-                if(matchesByDistance.get(i).getName().equals(packageName)) {
+                if(matchesByDistance.get(i).getName().equals(needleName)) {
                     break;
                 }
             }
@@ -124,18 +134,18 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
                 }
                 
                 if(i == matchesByDistance.size()) {
-                    System.out.println(packageName + ": not mached by distance.");
+                    System.out.println(needleName + ": not mached by distance.");
                     System.out.println("--------------------------------------------");
                     return FingerprintMatchTaskResult.NO_MATCH_BY_DISTANCE;
                 } else {
-                    System.out.println(packageName + ": found at position " + (i + 1));
+                    System.out.println(needleName + ": found at position " + (i + 1));
                     System.out.println("--------------------------------------------");
                     return FingerprintMatchTaskResult.NOT_PERFECT;
                 } 
             } else {
                 double diff = needle.euclideanDiff(nameMatch);
                 totalDiffToFirstMatch += diff;
-                System.out.println(packageName + ": machted correctly with diff: " + frmt.format(diff) );
+                System.out.println(needleName + ": machted correctly with diff: " + frmt.format(diff) );
                 System.out.print("    Diff to next in lines: " );
                 
                 int counter = 0;
@@ -175,7 +185,7 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
             String className =    translateName(obfClassName);
             String packageName =  extractPackageName(className);
 
-            Fingerprint classFingerprint = transformClassDefToFingerprint(def);
+            Fingerprint classFingerprint = transformClassDefToFingerprint(def, obfClassName);
             classFingerprint.setName(className);
 
             Fingerprint packageFingerprint;
@@ -256,4 +266,50 @@ public class MatchFingerprintsOnPackageLevelAlgorithm implements AndroidLibIDAlg
         
         return stats;
     }
+    
+    private Map<FingerprintMatchTaskResult, Integer> matchPackagesOnMethodLevel(
+            Map<String, Fingerprint> packagePrints) throws SQLException {
+    
+        Map<FingerprintMatchTaskResult, Integer> stats = new HashMap<>();
+        for(FingerprintMatchTaskResult key : FingerprintMatchTaskResult.values()) {
+            stats.put(key, 0);
+        }
+        
+        FingerprintMatcher matcher = new FingerprintMatcher(1000);
+        
+        int count = 0;
+        
+        for(Fingerprint packageNeedle : packagePrints.values()) {
+            
+            System.out.println(((float)(count++) / packagePrints.size()) * 100 + "%"); 
+            
+            if(packageNeedle.getName().startsWith("android")) continue;
+            if(packageNeedle.getName().equals("")) continue;
+         
+            int level = StringUtils.countMatches(packageNeedle.getName(), ".");
+            
+            List<Fingerprint> haystack = new ArrayList<>();
+            
+            for (Package pckg : service.findPackagesByDepth(level)) {
+                for(VectorEntity clazz : pckg.getClasses()) {
+                    Clazz clazz1 = (Clazz) clazz;
+                    for (Method m : clazz1.getMethods()) {
+                        haystack.add(new Fingerprint(m));
+                    }
+                }
+            }
+            
+            for(Fingerprint classNeedle : packageNeedle.getChildren()) {
+                for(Fingerprint methodNeedle : classNeedle.getChildren()) {
+                    FingerprintMatcher.Result matches = matcher.matchFingerprints(haystack, methodNeedle);
+                    FingerprintMatchTaskResult result = evaluateResult(methodNeedle, matches);
+                    stats.put(result, stats.get(result) + 1);
+                }
+            }
+        }
+        
+        return stats;
+        
+    }
+    
 }
