@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.androidlibid.proto;
+package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.match.FingerprintMatcher;
 import java.sql.SQLException;
 import java.util.ArrayList; 
 import java.util.List;
+import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
 import org.junit.Before;
 import org.junit.Test;

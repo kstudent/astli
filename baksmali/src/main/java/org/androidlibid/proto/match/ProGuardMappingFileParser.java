@@ -1,4 +1,4 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.match;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

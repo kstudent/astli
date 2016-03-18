@@ -28,7 +28,7 @@
 
 package org.jf.baksmali;
 
-import org.androidlibid.proto.AndroidLibIDAlgorithm;
+import org.androidlibid.proto.match.AndroidLibIDAlgorithm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -52,8 +52,8 @@ import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
-import org.androidlibid.proto.MatchFingerprintsOnClassLevelAlgorithm;
-import org.androidlibid.proto.MatchFingerprintsOnPackageLevelAlgorithm;
+import org.androidlibid.proto.match.MatchFingerprintsOnClassLevelAlgorithm;
+import org.androidlibid.proto.match.MatchFingerprintsOnPackageLevelAlgorithm;
 import org.androidlibid.proto.StoreFingerprintsAlgorithm;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 

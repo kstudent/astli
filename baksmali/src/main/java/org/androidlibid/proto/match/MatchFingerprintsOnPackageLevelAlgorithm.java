@@ -1,4 +1,4 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.match;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.Clazz;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.Package;

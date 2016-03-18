@@ -139,15 +139,15 @@ public class Fingerprint {
         return this.vector.euclideanNorm();
     }
     
-    List<Fingerprint> getChildren() {
+    public List<Fingerprint> getChildren() {
         return children;
     }
 
-    void addChild(Fingerprint child) {
+    public void addChild(Fingerprint child) {
         this.children.add(child);
     }
 
-    @Nullable VectorEntity getEntity() {
+    public @Nullable VectorEntity getEntity() {
         return entity;
     }
 }

@@ -1,5 +1,6 @@
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.match.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CompletionService;
