@@ -44,8 +44,8 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
                 mappings = parser.parseMappingFileOnMethodLevel();
             }
             
-            MatchingStrategy strategy = new MatchOnMethodLevelStrategy(
-                    service, new ResultEvaluator(), new FingerprintMatcher(1000));
+            MatchingStrategy strategy = new MatchOnMethodLevelWithInclusionStrategy(
+                    new FingerprintService(service), new FingerprintMatcher(1000));
             
             Map<String, Fingerprint> packagePrints = generatePackagePrints(); 
             

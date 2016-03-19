@@ -3,7 +3,7 @@ package org.androidlibid.proto.integration;
 import java.io.IOException;
 import java.util.Map;
 import org.junit.Test;
-import org.androidlibid.proto.ProGuardMappingFileParser;
+import org.androidlibid.proto.match.ProGuardMappingFileParser;
 
 /**
  *

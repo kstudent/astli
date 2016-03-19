@@ -14,6 +14,7 @@ public class Fingerprint {
 
     private String name;
     private Vector vector;
+    private Fingerprint parent; 
     private List<Fingerprint> children = new LinkedList<>();
     private VectorEntity entity;
     
@@ -145,9 +146,18 @@ public class Fingerprint {
 
     public void addChild(Fingerprint child) {
         this.children.add(child);
+        child.setParent(this);
     }
 
     public @Nullable VectorEntity getEntity() {
         return entity;
+    }
+
+    public @Nullable Fingerprint getParent() {
+        return parent;
+    }
+
+    private void setParent(@Nullable Fingerprint parent) {
+        this.parent = parent;
     }
 }
