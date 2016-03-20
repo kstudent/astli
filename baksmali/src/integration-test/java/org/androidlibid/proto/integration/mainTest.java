@@ -35,6 +35,7 @@ public class mainTest {
 //        testStoreFingerprintLibSpongyProv();
 //        countMethods();
 //        printSomeMethods();
+//        printMethodLengths();
         testFindLibrariesOfAPKLvl(3);
     }
     
@@ -139,6 +140,19 @@ public class mainTest {
             for(Method m : clazz.getMethods()) {
                 Fingerprint p = new Fingerprint(m);
                 System.out.println(p);  
+            }
+        }
+    }
+    
+    private void printMethodLengths() throws SQLException {
+      
+        EntityService service = EntityServiceFactory.createService();
+        List<Clazz> classes = service.findClasses();
+        
+        for(int i = 0; i < classes.size(); i++) {
+            Clazz clazz = classes.get(i);
+            for(Method m : clazz.getMethods()) {
+                System.out.print(m.getLength() + ", ");
             }
         }
     }

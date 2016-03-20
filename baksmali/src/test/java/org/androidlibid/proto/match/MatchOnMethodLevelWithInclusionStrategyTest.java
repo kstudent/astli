@@ -25,7 +25,7 @@ public class MatchOnMethodLevelWithInclusionStrategyTest {
     @Before 
     public void setUp() throws SQLException {
         service   = Mockito.mock(FingerprintService.class);
-        evaluator = Mockito.mock(ResultEvaluator.class);
+        evaluator = new ResultEvaluator();
         matcher   = new FingerprintMatcher(1000);
         
         //prepare haystack hierarchy
@@ -179,7 +179,7 @@ public class MatchOnMethodLevelWithInclusionStrategyTest {
     
     @Test 
     public void testMatching() throws SQLException {
-        MatchOnMethodLevelWithInclusionStrategy strategy = new MatchOnMethodLevelWithInclusionStrategy(service, matcher);
+        MatchOnMethodLevelWithInclusionStrategy strategy = new MatchOnMethodLevelWithInclusionStrategy(service, matcher, evaluator);
         Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(appPackagePrints);
         assert(stats.get(MatchingStrategy.Status.OK) == 1);
 //        System.out.println("Stats: ");

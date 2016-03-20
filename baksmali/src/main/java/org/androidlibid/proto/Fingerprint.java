@@ -17,7 +17,8 @@ public class Fingerprint {
     private Fingerprint parent; 
     private List<Fingerprint> children = new LinkedList<>();
     private VectorEntity entity;
-    
+    private double inclusionScore; 
+
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE;
     private static final FeatureGenerator FEATURE_GENERATOR;
@@ -98,7 +99,7 @@ public class Fingerprint {
     public void add(Fingerprint that) {
         this.vector = this.vector.add(that.vector);
     }
-
+    
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
@@ -118,6 +119,17 @@ public class Fingerprint {
     
     public double euclideanDiff(Fingerprint that) {
         return vector.subtract(that.vector).euclideanNorm();
+    }
+    
+    public double computeSimilarityScore(Fingerprint that) {
+        double diff = vector.subtract(that.vector).euclideanNorm();
+        double length = this.vector.euclideanNorm();
+        if(length > 0) {
+            double similarityScore = 1 - (diff / length); 
+            return (similarityScore > 0)? similarityScore : 0;
+        } else {
+            throw new RuntimeException("Cant norm by 0 length vector");
+        }
     }
     
     public String getName() {
@@ -160,4 +172,13 @@ public class Fingerprint {
     private void setParent(@Nullable Fingerprint parent) {
         this.parent = parent;
     }
+    
+    public double getInclusionScore() {
+        return inclusionScore;
+    }
+
+    public void setInclusionScore(double score) {
+        this.inclusionScore = score;
+    }
+    
 }

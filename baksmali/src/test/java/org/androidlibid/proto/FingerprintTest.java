@@ -107,4 +107,53 @@ public class FingerprintTest {
         f1.add(f2);
         assert(f1.getFeatureCount(NodeType.METHOD) == 2);    
     }
+    
+    @Test 
+    public void testSimilarityBetweenEqualVectors() {
+        double[] v1 = {1.0, 1.0};
+        double[] v2 = {1.0, 1.0};
+        
+        Fingerprint f1 = new Fingerprint();
+        Fingerprint f2 = new Fingerprint();
+        
+        f1.setVector(new BasicVector(v1));
+        f2.setVector(new BasicVector(v2));
+        
+        double similarity = f1.computeSimilarityScore(f2);
+        assert(similarity > .999999d);
+        assert(similarity < 1.00001d);
+    }
+    
+    @Test 
+    public void testSimilarityBetweenCloseVectors() {
+        double[] v1 = {1.0, 2.0};
+        double[] v2 = {0.5, 1.0};
+        
+        Fingerprint f1 = new Fingerprint();
+        Fingerprint f2 = new Fingerprint();
+        
+        f1.setVector(new BasicVector(v1));
+        f2.setVector(new BasicVector(v2));
+        
+        double similarity = f1.computeSimilarityScore(f2);
+        System.out.println(similarity);
+        assert(similarity > 0.49999d);
+        assert(similarity < 0.50001d);
+    }
+    
+    @Test 
+    public void testSimilarityBetweenDistantVectors() {
+        double[] v1 = { 1.0,  2.0};
+        double[] v2 = {-0.5, -1.0};
+        
+        Fingerprint f1 = new Fingerprint();
+        Fingerprint f2 = new Fingerprint();
+        
+        f1.setVector(new BasicVector(v1));
+        f2.setVector(new BasicVector(v2));
+        
+        double similarity = f1.computeSimilarityScore(f2);
+        System.out.println(similarity);
+        assert(similarity < 0.00001d);
+    }
 }

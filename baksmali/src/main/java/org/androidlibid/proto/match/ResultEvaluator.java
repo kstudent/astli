@@ -41,13 +41,23 @@ public class ResultEvaluator {
                 System.out.println("Match By Name: ");
                 System.out.println(nameMatch);
                 
-                System.out.println("euc. diff: " + frmt.format(needle.euclideanDiff(nameMatch)) + "; in betweeners: " + position);
+                System.out.println("euc. diff: " + frmt.format(needle.euclideanDiff(nameMatch)) + "; position: " + position);
                 
-//                System.out.println("closer matches:");
-//                for(int j = 0; j < position; j++) {
-//                    System.out.println(matchesByDistance.get(j).getName() + " ("
-//                            + frmt.format(needle.euclideanDiff(matchesByDistance.get(j))) + ")");
-//                }
+                int maxShow = ((position + 20) < matchesByDistance.size()) ? position + 20 : matchesByDistance.size();
+                
+                System.out.println("other matches (" + maxShow + "):");
+                for(int j = 0; j < maxShow; j++) {
+                    System.out.print(matchesByDistance.get(j).getName() + " ("
+                            + frmt.format(needle.euclideanDiff(matchesByDistance.get(j))) + ")");
+                    
+                    double score = matchesByDistance.get(j).getInclusionScore();
+                    
+                    if(score > 0.0d) {
+                        System.out.println(" (" + frmt.format(score) + ")"); 
+                    } else {
+                        System.out.println(); 
+                    }
+                }
                 
                 if(position == matchesByDistance.size()) {
                     System.out.println(needleName + ": not mached by distance.");
@@ -60,12 +70,12 @@ public class ResultEvaluator {
                 } 
             } else {
                 double diff = needle.euclideanDiff(nameMatch);
-                System.out.println(needleName + ": machted correctly with diff: " + frmt.format(diff) );
+                System.out.println(needleName + ": machted correctly with diff: " + frmt.format(nameMatch.getInclusionScore()) );
                 System.out.print("    Diff to next in lines: " );
                 
                 int counter = 0;
                 for (Fingerprint matchByDistance : matchesByDistance) {
-                    System.out.print(frmt.format(needle.euclideanDiff(matchByDistance)) + ", ");
+                    System.out.print(frmt.format(matchByDistance.getInclusionScore()) + ", ");
                     if(counter++ > 10) break;
                 } 
                 System.out.print("\n");
