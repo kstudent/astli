@@ -10,6 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.la4j.vector.dense.BasicVector;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  *
@@ -20,7 +24,7 @@ public class MatchOnMethodLevelWithInclusionStrategyTest {
     FingerprintService service; 
     ResultEvaluator    evaluator;
     FingerprintMatcher matcher;
-    private Map<String, Fingerprint> appPackagePrints;
+    Map<String, Fingerprint> appPackagePrints;
     
     @Before 
     public void setUp() throws SQLException {
@@ -158,8 +162,11 @@ public class MatchOnMethodLevelWithInclusionStrategyTest {
         haystackMethods.add(method231);
         haystackMethods.add(method232);
         
-        Mockito.when(service.findMethodsByPackageDepth(1)).thenReturn(haystackMethods);
-        
+        when(service.findMethodsByPackageDepth(1)).thenReturn(haystackMethods);
+        when(service.findMethodsByLength(any(Double.class), any(Double.class)))
+                .thenReturn(haystackMethods);
+        when(service.getPackageHierarchyByMethod(any(Fingerprint.class))).thenAnswer(getAnswer());
+
         //Prepare app package hierarchy
         appPackagePrints = new HashMap<>();
         Fingerprint needlePackage = new Fingerprint(pckg2Name);
@@ -186,5 +193,16 @@ public class MatchOnMethodLevelWithInclusionStrategyTest {
 //        for(MatchingStrategy.Status key : MatchingStrategy.Status.values()) {
 //            System.out.println(key.toString() + ": " + stats.get(key));
 //        }
+    }
+
+    private Answer<?> getAnswer() {
+        return new Answer<Fingerprint>() {
+            @Override
+            public Fingerprint answer(InvocationOnMock invocation) throws Throwable {
+                Fingerprint method = (Fingerprint) invocation.getArguments()[0];
+                Fingerprint pckg = method.getParent().getParent();
+                return pckg;
+            }
+        };
     }
 }

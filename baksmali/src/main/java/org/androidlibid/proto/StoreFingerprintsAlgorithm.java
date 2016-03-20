@@ -89,7 +89,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         for(Package pckg : lib.getPackages()) {
             Fingerprint pckgFingerprint = new Fingerprint(pckg);
 
-            for(Clazz clazz : pckg.getClasses()) {
+            for(Clazz clazz : pckg.getClazzes()) {
                 Fingerprint clazzFingerprint = new Fingerprint(clazz);
 
                 pckgFingerprint.add(clazzFingerprint);

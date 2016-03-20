@@ -29,7 +29,7 @@ public class FingerprintService {
         for (Package pckg : service.findPackagesByDepth(depth)) {
             Fingerprint pckgFingerprint = new Fingerprint(pckg);
             
-            for(Clazz classEntity : pckg.getClasses()) {
+            for(Clazz classEntity : pckg.getClazzes()) {
                 Fingerprint classFingerprint = new Fingerprint(classEntity);
                 pckgFingerprint.addChild(classFingerprint);
                 
@@ -44,4 +44,39 @@ public class FingerprintService {
         
         return haystack; 
     }
+    
+    public List<Fingerprint> findMethodsByLength(double length, double size) throws SQLException {
+        
+        List<Fingerprint> methods = new ArrayList<>();
+        
+        for(Method methodEntity : service.findMethodsByLength(length, size)) {
+            methods.add(new Fingerprint(methodEntity));
+        }
+        
+        return methods;
+    }
+    
+    Fingerprint getPackageHierarchyByMethod(Fingerprint keyMethod) {
+        
+        Method keyMethodEntity = (Method) keyMethod.getEntity();
+        if(keyMethodEntity == null) {
+            throw new RuntimeException("Method.getEntity() was null."); 
+        }
+
+        Package packageEntity = keyMethodEntity.getClazz().getPackage();
+        Fingerprint packageHierarchy = new Fingerprint(packageEntity);
+        
+        for(Clazz clazzEntity : packageEntity.getClazzes()) {
+            Fingerprint clazz = new Fingerprint(clazzEntity);
+            
+            for(Method methodEntity : clazzEntity.getMethods()) {
+                Fingerprint method = new Fingerprint(methodEntity);
+                clazz.addChild(method);
+            }
+            packageHierarchy.addChild(clazz);
+        }
+        
+        return packageHierarchy;
+    }
+    
 }

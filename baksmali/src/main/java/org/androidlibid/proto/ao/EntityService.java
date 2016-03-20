@@ -2,6 +2,7 @@ package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,6 +113,19 @@ public class EntityService {
             } 
         }
         return packages;
+    }
+    
+    public List<Method> findMethodsByLength(double length, double size) throws SQLException {
+        
+        if(size <= 0 || length <= 0 || length - size <= 0) {
+            throw new IllegalArgumentException("Length or Size are negative");
+        }
+        
+        Method[] found = em.find(Method.class, 
+                "LENGTH > ? AND LENGTH < ? ORDER BY LENGTH DESC", 
+                length - size, length + size); 
+        
+        return Arrays.asList(found);
     }
 
     public @Nullable Package findPackageByNameAndLib(

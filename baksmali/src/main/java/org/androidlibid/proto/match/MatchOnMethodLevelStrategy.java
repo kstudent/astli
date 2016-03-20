@@ -50,7 +50,7 @@ public class MatchOnMethodLevelStrategy implements MatchingStrategy {
             List<Fingerprint> haystack = new ArrayList<>();
             
             for (Package pckg : service.findPackagesByDepth(level)) {
-                for(VectorEntity clazz : pckg.getClasses()) {
+                for(VectorEntity clazz : pckg.getClazzes()) {
                     Clazz clazz1 = (Clazz) clazz;
                     for (Method m : clazz1.getMethods()) {
                         haystack.add(new Fingerprint(m));

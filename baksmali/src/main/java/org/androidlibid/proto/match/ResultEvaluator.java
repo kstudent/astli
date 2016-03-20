@@ -35,11 +35,7 @@ public class ResultEvaluator {
             
             if(position > 0) {
                 System.out.println("--------------------------------------------");
-                System.out.println("Needle: ");
-                System.out.println(needle);
-                
-                System.out.println("Match By Name: ");
-                System.out.println(nameMatch);
+                System.out.println(needle.getName() + " not perfectly matched");
                 
                 System.out.println("euc. diff: " + frmt.format(needle.euclideanDiff(nameMatch)) + "; position: " + position);
                 

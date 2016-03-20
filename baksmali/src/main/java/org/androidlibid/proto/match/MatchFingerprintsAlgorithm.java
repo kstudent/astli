@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
@@ -71,6 +73,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         Map<String, Node> ast = classDefinition.createASTwithNames();
         
+        SortedMap<Double, Fingerprint> sortedMethods = new TreeMap<>(); 
         Fingerprint classFingerprint = new Fingerprint();
                 
         for(String obfsMethodName : ast.keySet()) {
@@ -80,9 +83,13 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             if(methodFingerprint.euclideanNorm() > 1.0f) {
                 String methodName = translateName(obfsClassName + ":" + obfsMethodName);
                 methodFingerprint.setName(methodName);
-                classFingerprint.addChild(methodFingerprint);
+                sortedMethods.put(methodFingerprint.euclideanNorm() * (-1), methodFingerprint);
                 classFingerprint.add(methodFingerprint);
             }
+        }
+        
+        for(Fingerprint method : sortedMethods.values()) {
+            classFingerprint.addChild(method);
         }
         
         return classFingerprint;

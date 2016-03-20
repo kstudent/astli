@@ -13,5 +13,5 @@ public interface Package extends VectorEntity {
     void setLibrary(Library library);
     
     @OneToMany
-    public Clazz[] getClasses();
+    public Clazz[] getClazzes();
     }

@@ -13,7 +13,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.Fingerprint;
-import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -23,11 +22,11 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
 
     private final FingerprintService service;
     private final FingerprintMatcher matcher;
-    private final NumberFormat frmt = new DecimalFormat("#0.00");
-    private final double methodMatchThreshold = 0.9999d;
-    private final double classMatchThreshold = 0.8d;
-    private final double packageMatchThreshold = 0.8d;
     private final ResultEvaluator evaluator; 
+    private final double methodMatchThreshold  = 0.9999d;
+    private final double classMatchThreshold   = 0.8d;
+    private final double packageMatchThreshold = 0.8d;
+    private final double orbitBreadth          = 0.2d;
 
     public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, FingerprintMatcher matcher, ResultEvaluator evaluator) {
         this.service = service;
@@ -51,11 +50,13 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
          
-            int level = StringUtils.countMatches(packageNeedle.getName(), ".");
-            
-            List<Fingerprint> methodHayStack = service.findMethodsByPackageDepth(level);
- 
-            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle, methodHayStack);
+            //package depth approach
+//            int level = StringUtils.countMatches(packageNeedle.getName(), ".");
+//            List<Fingerprint> methodHayStack = service.findMethodsByPackageDepth(level);
+//            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle, methodHayStack);
+
+            //segment approach
+            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle);
 
             MatchingStrategy.Status result = evaluator.evaluateResult(packageNeedle, matches);
             stats.put(result, stats.get(result) + 1);
@@ -65,39 +66,72 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         
     }
 
-    private @Nullable FingerprintMatcher.Result findPackageInMethodHaystack(Fingerprint packageNeedle, List<Fingerprint> methodHaystack) {
-        
+//package depth approach
+//    private @Nullable FingerprintMatcher.Result findPackageInMethodHaystack(Fingerprint packageNeedle, List<Fingerprint> methodHaystack) {
+    private @Nullable FingerprintMatcher.Result findPackageInMethodHaystack(Fingerprint packageNeedle) throws SQLException {
+      
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         
         SortedMap<Double, Fingerprint> matchesByScore = new TreeMap<>();
-                
+        
+        boolean breakOut = false; 
+        
         for(Fingerprint classNeedle : packageNeedle.getChildren()) {
             for(Fingerprint methodNeedle : classNeedle.getChildren()) {
+                double length = methodNeedle.euclideanNorm();
+                double size   = length * orbitBreadth;
+                System.out.println("..." + methodNeedle.getName() + " (" + length + ")"); 
+                
+                if(length < 10) {
+                    break;
+                }
+                
+                List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
+                System.out.println("   " + methodHaystack.size() + " needles to check..."); 
+                
                 for(Fingerprint methodCandidate : methodHaystack) {
                     
                     double methodDiff = methodCandidate.computeSimilarityScore(methodNeedle);
                     
                     if(methodDiff > methodMatchThreshold) {
                         
-                        Fingerprint classCandidate = methodCandidate.getParent();
-                        Fingerprint packageCandiate = classCandidate.getParent();
+                        Fingerprint packageCandidate = service.getPackageHierarchyByMethod(methodCandidate);
 
-                        List<Fingerprint> classSuperSet = new LinkedList<>(packageCandiate.getChildren());
+                        List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildren());
                         List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildren());
 
                         double packageScore = checkPackageInclusion(classSuperSet, classSubSet);
                         
-                        packageCandiate.setInclusionScore(packageScore);
+                        packageCandidate.setInclusionScore(packageScore);
                         
                         //TODO: find meaningful threshold (evaluation?) 
-                        matchesByScore.put(packageScore * -1, packageCandiate);
+                        matchesByScore.put(packageScore * -1, packageCandidate);
                         
-                        if(packageCandiate.getName().equals(packageNeedle.getName())) {
-                            result.setMatchByName(packageCandiate);
+                        if(packageCandidate.getName().equals(packageNeedle.getName())) {
+                            result.setMatchByName(packageCandidate);
+                        }
+                        
+                        System.out.println("   " + packageNeedle.getName() + " - " + packageCandidate.getName() + " sim: " + packageScore);
+                        
+                        if(packageScore > packageMatchThreshold) {
+                            breakOut = true; 
+                            break; 
                         }
                     }
                 }
+                
+                
+                if(breakOut) {
+                    System.out.println("   found breakout");
+                    break;
+                } else {
+                    System.out.println("   continue new method :(");
+                }
             }
+            
+            if(breakOut) {
+                break;
+            } 
         }    
         
         result.setMatchesByDistance(new ArrayList<>(matchesByScore.values()));
