@@ -27,6 +27,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     private final double classMatchThreshold   = 0.95d;
     private final double packageMatchThreshold = 0.8d;
     private final double orbitBreadth          = 0.2d;
+    private final double minimalMethodLengthForNeedleLookup = 12;
 
     public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, FingerprintMatcher matcher, ResultEvaluator evaluator) {
         this.service = service;
@@ -72,11 +73,12 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             for(Fingerprint methodNeedle : classNeedle.getChildren()) {
                 double length = methodNeedle.euclideanNorm();
                 double size   = length * orbitBreadth;
-                System.out.println("..." + methodNeedle.getName() + " (" + length + ")"); 
                 
-                if(length < 10) {
+                if(length < minimalMethodLengthForNeedleLookup) {
                     break;
                 }
+                
+                System.out.println("..." + methodNeedle.getName() + " (" + length + ")"); 
                 
                 List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
                 System.out.println("   " + methodHaystack.size() + " needles to check..."); 
@@ -88,6 +90,16 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                     if(methodDiff > methodMatchThreshold) {
                         
                         Fingerprint packageCandidate = service.getPackageHierarchyByMethod(methodCandidate);
+                        
+                        boolean continueFlag = false;
+                        for(Fingerprint alreadyScored : matchesByScore.values()) {
+                            if(alreadyScored.getName().equals(packageCandidate.getName())) {
+                                System.out.println("   " + packageCandidate.getName() + " already in score table. next needle, please.");
+                                continueFlag = true;
+                                break;
+                            }
+                        }
+                        if (continueFlag) continue;
 
                         List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildren());
                         List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildren());
