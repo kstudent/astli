@@ -24,7 +24,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     private final FingerprintMatcher matcher;
     private final ResultEvaluator evaluator; 
     private final double methodMatchThreshold  = 0.9999d;
-    private final double classMatchThreshold   = 0.8d;
+    private final double classMatchThreshold   = 0.95d;
     private final double packageMatchThreshold = 0.8d;
     private final double orbitBreadth          = 0.2d;
 
@@ -50,12 +50,6 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
          
-            //package depth approach
-//            int level = StringUtils.countMatches(packageNeedle.getName(), ".");
-//            List<Fingerprint> methodHayStack = service.findMethodsByPackageDepth(level);
-//            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle, methodHayStack);
-
-            //segment approach
             FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle);
 
             MatchingStrategy.Status result = evaluator.evaluateResult(packageNeedle, matches);
@@ -66,8 +60,6 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         
     }
 
-//package depth approach
-//    private @Nullable FingerprintMatcher.Result findPackageInMethodHaystack(Fingerprint packageNeedle, List<Fingerprint> methodHaystack) {
     private @Nullable FingerprintMatcher.Result findPackageInMethodHaystack(Fingerprint packageNeedle) throws SQLException {
       
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
@@ -120,7 +112,6 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                     }
                 }
                 
-                
                 if(breakOut) {
                     System.out.println("   found breakout");
                     break;
@@ -171,9 +162,12 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         }
         
         double packageScore = 0;
+        int amountMethods = 0;
 
         for (Iterator<Fingerprint> subSetIt = subSet.iterator(); subSetIt.hasNext(); ) {
             Fingerprint classNeedle = subSetIt.next();
+            
+            amountMethods += classNeedle.getChildren().size();
             
             double maxClassScore = 0; 
 
@@ -184,11 +178,11 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                 List<Fingerprint> methodSuperSet = new LinkedList<>(classCandidate.getChildren());
                 
                 double classScore = checkClassInclusion(methodSuperSet, methodSubSet);
-                classScore = classScore / methodSubSet.size(); 
+                double classScoreNormalizied = classScore / methodSubSet.size(); 
                 
                 maxClassScore = (classScore > maxClassScore) ? classScore : maxClassScore; 
                 
-                if(classScore > classMatchThreshold) {
+                if(classScoreNormalizied > classMatchThreshold) {
                     superSetIt.remove();
                     break;
                 }
@@ -198,7 +192,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             
         }
         
-        return (packageScore / (subSet.size())); 
+        return (packageScore / amountMethods); 
     }
 
 }
