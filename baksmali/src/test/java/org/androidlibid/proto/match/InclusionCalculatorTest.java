@@ -39,6 +39,9 @@ public class InclusionCalculatorTest {
         classB.add(methods.get(4));
         
         double score = calculator.computeClassInclusion(classA, classB);
+        
+        System.out.println(score);
+        
         assert(doubleEquals(score, 3));
     }
     
@@ -55,6 +58,9 @@ public class InclusionCalculatorTest {
         classB.add(methods.get(4));
         
         double score = calculator.computeClassInclusion(classB, classA);
+        
+        System.out.println(score);
+               
         assert(doubleEquals(score, 3));
     }
     
@@ -72,18 +78,31 @@ public class InclusionCalculatorTest {
         classB.add(new Fingerprint(70, 10,  5));
         classB.add(new Fingerprint(5,   9, 70));
 
-        double expectedScore = 0;
-        for(int i = 0; i < classA.size(); i++) {
-            expectedScore += classA.get(i).computeSimilarityScore(classB.get(i));
-        }
-        
         double score = calculator.computeClassInclusion(classB, classA);
         
-        System.out.println(expectedScore);
-        System.out.println(score);
         
-        assert(doubleEquals(score, expectedScore));
         
+        assert(score > 4);
+        assert(score < 4.5);
+    }
+    
+    @Test
+    public void testClassAIsBarelySimilarToB() {
+        InclusionCalculator calculator = new InclusionCalculator(matcher);
+        
+        List<Fingerprint> classA = new ArrayList<>();
+        List<Fingerprint> classB = new ArrayList<>();
+        
+        classA.addAll(methods);
+        classB.add(new Fingerprint(1,   1,  1));
+        classB.add(new Fingerprint(1,   1,  1));
+        classB.add(new Fingerprint(1,   1,  1));
+        classB.add(new Fingerprint(1,   1,  1));
+        classB.add(new Fingerprint(1,   1,  1));
+
+        double score = calculator.computeClassInclusion(classB, classA);
+        
+        assert(score < 1);
     }
     
     private boolean doubleEquals(double a, double b) {

@@ -41,6 +41,7 @@ public class InclusionCalculator {
         }
         
         double classScore = 0;
+        double normalizer = 0;
         
         for (Fingerprint element : smallerSet) {
             FingerprintMatcher.Result result = matcher.matchFingerprints(biggerSet, element);
@@ -49,14 +50,18 @@ public class InclusionCalculator {
             
             if(result.getMatchesByDistance().size() > 0) {
                 Fingerprint closestElmentInBiggerSet = result.getMatchesByDistance().get(0);
-                score = element.computeSimilarityScore(closestElmentInBiggerSet);
+                
+                double length = Math.max(element.euclideanNorm(), closestElmentInBiggerSet.euclideanNorm());
+                normalizer += length;
+                score = element.computeSimilarityScore(closestElmentInBiggerSet) * length;
+                
                 biggerSet.remove(closestElmentInBiggerSet);    
             }
             
             classScore += score;
         }
         
-        return classScore;
+        return (classScore / normalizer) * smallerSet.size();
     }
 
     public double computePackageInclusion(List<Fingerprint> packageSuperSet, List<Fingerprint> packageSubSet) {
