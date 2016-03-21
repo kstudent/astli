@@ -60,13 +60,18 @@ public class Fingerprint {
     }
     
     public Fingerprint(String name) {
-        vector = new BasicVector(FEATURES.size());
+        this.vector = new BasicVector(FEATURES.size());
         this.name = name;
     }
     
     public Fingerprint() {
         this("");
     } 
+    
+    public Fingerprint(double... array) {
+        this.vector = BasicVector.fromArray(array);
+        this.name = "";
+    }
 
     public static int getFeaturesSize() {
         return FEATURES.size();

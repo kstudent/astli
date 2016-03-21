@@ -47,9 +47,10 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             }
             
             FingerprintService fingerprintService = new FingerprintService(service);
+            InclusionCalculator inclusionCalculator = new InclusionCalculator(new FingerprintMatcher(1000));
             
             MatchingStrategy strategy = new MatchOnMethodLevelWithInclusionStrategy(
-                    fingerprintService, new FingerprintMatcher(1000), new ResultEvaluator(fingerprintService));
+                fingerprintService, inclusionCalculator, new ResultEvaluator(fingerprintService));
             
             Map<String, Fingerprint> packagePrints = generatePackagePrints(); 
             
@@ -113,6 +114,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         return className.substring(1, className.length() - 1);
     }
 
+    //TODO: Swap out.
     private Map<String, Fingerprint> generatePackagePrints() throws IOException {
         
         Map<String, Fingerprint> packagePrints = new HashMap<>();

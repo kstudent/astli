@@ -19,16 +19,15 @@ import org.androidlibid.proto.Fingerprint;
 public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy {
 
     private final FingerprintService service;
-    private final FingerprintMatcher matcher;
+    private final InclusionCalculator calculator;
     private final ResultEvaluator evaluator; 
     private final double methodMatchThreshold  = 0.9999d;
-    private final double classMatchThreshold   = 0.95d;
     private final double packageMatchThreshold = 0.8d;
     private final double minimalMethodLengthForNeedleLookup = 12;
 
-    public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, FingerprintMatcher matcher, ResultEvaluator evaluator) {
+    public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, InclusionCalculator calculator, ResultEvaluator evaluator) {
         this.service = service;
-        this.matcher = matcher;
+        this.calculator = calculator;
         this.evaluator = evaluator;
     }
 
@@ -102,7 +101,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                         List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildren());
                         List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildren());
 
-                        double packageScore = checkPackageInclusion(classSuperSet, classSubSet);
+                        double packageScore = calculator.computePackageInclusion(classSuperSet, classSubSet);
                         
                         packageCandidate.setInclusionScore(packageScore);
                         
@@ -139,70 +138,4 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         
         return result;
     }
-
-    private double checkClassInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
-        
-        if(subSet.isEmpty()) {
-            return 0;
-        }
-        
-        double classScore = 0;
-        
-        //TODO: exclude found methods!
-        
-        for (Fingerprint element : subSet) {
-            FingerprintMatcher.Result result = matcher.matchFingerprints(superSet, element);
-            
-            if(result.getMatchesByDistance().size() > 0) {
-                Fingerprint closestElmentInSuperSet = result.getMatchesByDistance().get(0);
-                double diff   = element.euclideanDiff(closestElmentInSuperSet);
-                double length = element.euclideanNorm();
-                double score  = 1 - (diff / length);
-                if(score < 0) score = 0;
-                classScore += score;
-            }
-        }
-        
-        return classScore; 
-    }
-
-    private double checkPackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
-        if(subSet.isEmpty()) {
-            return 0;
-        }
-        
-        double packageScore = 0;
-        int amountMethods = 0;
-
-        for (Iterator<Fingerprint> subSetIt = subSet.iterator(); subSetIt.hasNext(); ) {
-            Fingerprint classNeedle = subSetIt.next();
-            
-            amountMethods += classNeedle.getChildren().size();
-            
-            double maxClassScore = 0; 
-
-            for (Iterator<Fingerprint> superSetIt = superSet.iterator(); superSetIt.hasNext(); ) {
-                Fingerprint classCandidate = superSetIt.next();
-            
-                List<Fingerprint> methodSubSet   = new LinkedList<>(classNeedle.getChildren());
-                List<Fingerprint> methodSuperSet = new LinkedList<>(classCandidate.getChildren());
-                
-                double classScore = checkClassInclusion(methodSuperSet, methodSubSet);
-                double classScoreNormalizied = classScore / methodSubSet.size(); 
-                
-                maxClassScore = (classScore > maxClassScore) ? classScore : maxClassScore; 
-                
-                if(classScoreNormalizied > classMatchThreshold) {
-                    superSetIt.remove();
-                    break;
-                }
-            }
-            
-            packageScore += maxClassScore;
-            
-        }
-        
-        return (packageScore / amountMethods); 
-    }
-
 }
