@@ -53,6 +53,7 @@ public class FingerprintMatcher {
         }); 
         
         result.setMatchesByDistance(matches);
+        result.setNeedle(needle);
         
         return result; 
     }
@@ -61,7 +62,8 @@ public class FingerprintMatcher {
         private List<Fingerprint> matchesByDistance;
         @Nullable
         private Fingerprint matchByName;
-
+        private Fingerprint needle;
+        
         public Result() {
         }
 
@@ -79,6 +81,14 @@ public class FingerprintMatcher {
 
         public void setMatchByName(Fingerprint matchByName) {
             this.matchByName = matchByName;
+        }
+
+        public Fingerprint getNeedle() {
+            return needle;
+        }
+
+        public void setNeedle(Fingerprint needle) {
+            this.needle = needle;
         }
     }
 }

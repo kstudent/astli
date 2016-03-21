@@ -18,6 +18,7 @@ public interface MatchingStrategy {
         OK,
         NOT_PERFECT,
         NO_MATCH_BY_NAME,
+        NO_MATCH_BY_NAME_ALTHOUGH_IN_DB,
         NO_MATCH_BY_DISTANCE,
         CLASS_LENGTH_0;
     }

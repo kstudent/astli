@@ -1,5 +1,6 @@
 package org.androidlibid.proto.match;
 
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -11,7 +12,12 @@ import org.androidlibid.proto.Fingerprint;
  */
 public class ResultEvaluator {
     
-    private final NumberFormat frmt = new DecimalFormat("#0.00");  
+    private final NumberFormat frmt = new DecimalFormat("#0.00");
+    private final FingerprintService service;
+
+    public ResultEvaluator(FingerprintService service) {
+        this.service = service;
+    }
     
     public MatchingStrategy.Status evaluateResult(Fingerprint needle, 
             FingerprintMatcher.Result result) {
@@ -21,8 +27,19 @@ public class ResultEvaluator {
         List<Fingerprint> matchesByDistance = result.getMatchesByDistance();
         
         if(nameMatch == null) {
-            System.out.println(needleName + ": not mached by name");
-            return MatchingStrategy.Status.NO_MATCH_BY_NAME;
+            try { 
+                List<Fingerprint> packagesWithTheSameName = service.findPackageByName(needleName);
+                if(packagesWithTheSameName.isEmpty()) {
+                    System.out.println(needleName + ": not matched by name");
+                    return MatchingStrategy.Status.NO_MATCH_BY_NAME;
+                } else {
+                    System.out.println(needleName + ": not matched by name, but its in the db " + packagesWithTheSameName.size() + " time(s)");
+                    return MatchingStrategy.Status.NO_MATCH_BY_NAME_ALTHOUGH_IN_DB;
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex);
+                return MatchingStrategy.Status.NO_MATCH_BY_NAME;
+            }
         } else {
             
             int position;

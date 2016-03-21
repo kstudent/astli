@@ -1,8 +1,6 @@
 package org.androidlibid.proto.match;
 
 import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,7 +24,6 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     private final double methodMatchThreshold  = 0.9999d;
     private final double classMatchThreshold   = 0.95d;
     private final double packageMatchThreshold = 0.8d;
-    private final double orbitBreadth          = 0.2d;
     private final double minimalMethodLengthForNeedleLookup = 12;
 
     public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, FingerprintMatcher matcher, ResultEvaluator evaluator) {
@@ -64,6 +61,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     private @Nullable FingerprintMatcher.Result findPackageInMethodHaystack(Fingerprint packageNeedle) throws SQLException {
       
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
+        result.setNeedle(packageNeedle);
         
         SortedMap<Double, Fingerprint> matchesByScore = new TreeMap<>();
         
@@ -72,7 +70,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         for(Fingerprint classNeedle : packageNeedle.getChildren()) {
             for(Fingerprint methodNeedle : classNeedle.getChildren()) {
                 double length = methodNeedle.euclideanNorm();
-                double size   = length * orbitBreadth;
+                double size   = length * (1 - methodMatchThreshold);
                 
                 if(length < minimalMethodLengthForNeedleLookup) {
                     break;

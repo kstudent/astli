@@ -161,7 +161,7 @@ public class EntityService {
         
         if (libraries.length > 1) {
             throw new SQLWarning("Multiple libraries (" + libraries.length + ") with the mvn Identifier " + mvnIdentifier 
-                    + " found. Database inconsitent?");
+                    + " found. Database inconsistent?");
         }
         
         if(libraries.length == 0) {
@@ -169,5 +169,9 @@ public class EntityService {
         }
         
         return libraries[0];
+    }
+
+    public List<Package> findPackageByName(String name) throws SQLException {
+        return Arrays.asList(em.find(Package.class, "NAME = ?", name ));
     }
 }
