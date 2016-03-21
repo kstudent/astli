@@ -128,7 +128,8 @@ public class Fingerprint {
     
     public double computeSimilarityScore(Fingerprint that) {
         double diff = vector.subtract(that.vector).euclideanNorm();
-        double length = this.vector.euclideanNorm();
+        double length = Math.max(this.vector.euclideanNorm(), that.vector.euclideanNorm()); 
+                
         if(length > 0) {
             double similarityScore = 1 - (diff / length); 
             return (similarityScore > 0)? similarityScore : 0;

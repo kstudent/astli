@@ -95,7 +95,6 @@ public class FingerprintTest {
     @Test
     public void testAdd() {
         Mockito.when(vector.getVector()).thenReturn(null);
-        Fingerprint f = new Fingerprint(vector);
         
         Fingerprint f1 = new Fingerprint(vector);
         Fingerprint f2 = new Fingerprint(vector);
@@ -110,50 +109,40 @@ public class FingerprintTest {
     
     @Test 
     public void testSimilarityBetweenEqualVectors() {
-        double[] v1 = {1.0, 1.0};
-        double[] v2 = {1.0, 1.0};
-        
-        Fingerprint f1 = new Fingerprint();
-        Fingerprint f2 = new Fingerprint();
-        
-        f1.setVector(new BasicVector(v1));
-        f2.setVector(new BasicVector(v2));
-        
+        Fingerprint f1 = new Fingerprint(1, 1);
+        Fingerprint f2 = new Fingerprint(1, 1);
         double similarity = f1.computeSimilarityScore(f2);
-        assert(similarity > .999999d);
-        assert(similarity < 1.00001d);
+        assert(doubleEquals(similarity, 1));
     }
     
     @Test 
     public void testSimilarityBetweenCloseVectors() {
-        double[] v1 = {1.0, 2.0};
-        double[] v2 = {0.5, 1.0};
-        
-        Fingerprint f1 = new Fingerprint();
-        Fingerprint f2 = new Fingerprint();
-        
-        f1.setVector(new BasicVector(v1));
-        f2.setVector(new BasicVector(v2));
+        Fingerprint f1 = new Fingerprint( 1, 2);
+        Fingerprint f2 = new Fingerprint(.5, 1);
         
         double similarity = f1.computeSimilarityScore(f2);
-        System.out.println(similarity);
-        assert(similarity > 0.49999d);
-        assert(similarity < 0.50001d);
+        assert(doubleEquals(similarity, 0.5));
     }
     
     @Test 
     public void testSimilarityBetweenDistantVectors() {
-        double[] v1 = { 1.0,  2.0};
-        double[] v2 = {-0.5, -1.0};
-        
-        Fingerprint f1 = new Fingerprint();
-        Fingerprint f2 = new Fingerprint();
-        
-        f1.setVector(new BasicVector(v1));
-        f2.setVector(new BasicVector(v2));
-        
+        Fingerprint f1 = new Fingerprint(  1,  2);
+        Fingerprint f2 = new Fingerprint(-.5, -1);
         double similarity = f1.computeSimilarityScore(f2);
-        System.out.println(similarity);
-        assert(similarity < 0.00001d);
+        assert(doubleEquals(similarity, 0));
     }
+    
+    @Test 
+    public void testSimilarityReflexivity() {
+        Fingerprint f1 = new Fingerprint(  49,     35);
+        Fingerprint f2 = new Fingerprint(  17,  8.014);
+        double similarity1 = f1.computeSimilarityScore(f2);
+        double similarity2 = f2.computeSimilarityScore(f1);
+        assert(doubleEquals(similarity1, similarity2));
+    }
+    
+    private boolean doubleEquals(double a, double b) {
+        return Math.abs(a - b) < 0.00001;
+    }
+
 }

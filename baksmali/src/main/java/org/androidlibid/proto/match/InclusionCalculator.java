@@ -14,7 +14,6 @@ public class InclusionCalculator {
 
     private final FingerprintMatcher matcher;
     private final double classMatchThreshold = 0.95d; 
-    private final double methodMatchThreshold = 0.6d; 
 
     public InclusionCalculator(FingerprintMatcher matcher) {
         this.matcher = matcher;
@@ -31,43 +30,33 @@ public class InclusionCalculator {
             return 0;
         }
         
-        List<Fingerprint> superSetCopy = new ArrayList<>(classSuperSet);
+        List<Fingerprint> smallerSet, biggerSet;
+        
+        if(classSuperSet.size() < classSubSet.size()) {
+            smallerSet = classSuperSet;
+            biggerSet  = new LinkedList<>(classSubSet);
+        } else {
+            smallerSet = classSubSet;
+            biggerSet  = new LinkedList<>(classSuperSet);
+        }
         
         double classScore = 0;
         
-        //TODO: exclude found methods!
-        
-        for (Fingerprint element : classSubSet) {
-            FingerprintMatcher.Result result = matcher.matchFingerprints(superSetCopy, element);
+        for (Fingerprint element : smallerSet) {
+            FingerprintMatcher.Result result = matcher.matchFingerprints(biggerSet, element);
             
             double score = 0;
             
             if(result.getMatchesByDistance().size() > 0) {
-                Fingerprint closestElmentInSuperSet = result.getMatchesByDistance().get(0);
-                
-                System.out.println("matched");
-                System.out.println(element);
-                System.out.println("with");
-                System.out.println(closestElmentInSuperSet);
-                
-                double diff   = element.euclideanDiff(closestElmentInSuperSet);
-                double length = element.euclideanNorm();
-                score  = 1 - (diff / length);
-                if(score < 0) score = 0;
-                
-                System.out.println("score: " + score);
-                
-                if(score > methodMatchThreshold) {
-                    superSetCopy.remove(closestElmentInSuperSet);
-                } else {
-                    score = 0;
-                } 
+                Fingerprint closestElmentInBiggerSet = result.getMatchesByDistance().get(0);
+                score = element.computeSimilarityScore(closestElmentInBiggerSet);
+                biggerSet.remove(closestElmentInBiggerSet);    
             }
             
             classScore += score;
         }
         
-        return classScore; 
+        return classScore;
     }
 
     public double computePackageInclusion(List<Fingerprint> packageSuperSet, List<Fingerprint> packageSubSet) {

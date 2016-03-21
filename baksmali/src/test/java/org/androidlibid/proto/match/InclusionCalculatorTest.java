@@ -34,38 +34,59 @@ public class InclusionCalculatorTest {
         List<Fingerprint> classB = new ArrayList<>();
         
         classA.addAll(methods);
-                
         classB.add(methods.get(0));
         classB.add(methods.get(2));
         classB.add(methods.get(4));
         
         double score = calculator.computeClassInclusion(classA, classB);
-        score /= classB.size();
-        
-        assert(score > .99999d && score < 1.00001d); 
+        assert(doubleEquals(score, 3));
     }
     
     @Test
-    public void testClassAIsNotSuperSetOfB() {
-    
+    public void testClassAIsSubSetOfB() {
         InclusionCalculator calculator = new InclusionCalculator(matcher);
         
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
-                
-        classA.add(methods.get(0));
-        classA.add(methods.get(2));
-        classA.add(methods.get(4));
         
-        classB.addAll(methods);
+        classA.addAll(methods);
+        classB.add(methods.get(0));
+        classB.add(methods.get(2));
+        classB.add(methods.get(4));
         
-        double score = calculator.computeClassInclusion(classA, classB);
-        score /= classB.size();
+        double score = calculator.computeClassInclusion(classB, classA);
+        assert(doubleEquals(score, 3));
+    }
+    
+    @Test
+    public void testClassAIsSomehowSimilarToB() {
+        InclusionCalculator calculator = new InclusionCalculator(matcher);
         
+        List<Fingerprint> classA = new ArrayList<>();
+        List<Fingerprint> classB = new ArrayList<>();
+        
+        classA.addAll(methods);
+        classB.add(new Fingerprint(1,   1,  2));
+        classB.add(new Fingerprint(10, 10, 12));
+        classB.add(new Fingerprint(50, 50, 49));
+        classB.add(new Fingerprint(70, 10,  5));
+        classB.add(new Fingerprint(5,   9, 70));
+
+        double expectedScore = 0;
+        for(int i = 0; i < classA.size(); i++) {
+            expectedScore += classA.get(i).computeSimilarityScore(classB.get(i));
+        }
+        
+        double score = calculator.computeClassInclusion(classB, classA);
+        
+        System.out.println(expectedScore);
         System.out.println(score);
-        assert(score <= 3.0/5.0);
         
+        assert(doubleEquals(score, expectedScore));
         
     }
     
+    private boolean doubleEquals(double a, double b) {
+        return Math.abs(a - b) < 0.00001;
+    }
 }
