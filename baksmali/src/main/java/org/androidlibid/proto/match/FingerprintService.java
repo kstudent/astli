@@ -102,4 +102,14 @@ public class FingerprintService {
         return pckgFingerprints;
     }
     
+    List<Fingerprint> findPackages() throws SQLException {
+        
+        List<Fingerprint> pckgFingerprints = new ArrayList<>();
+        
+        for(Package pckg : service.findPackages()) {
+            pckgFingerprints.add(new Fingerprint(pckg));
+        }
+                
+        return pckgFingerprints;
+    }
 }

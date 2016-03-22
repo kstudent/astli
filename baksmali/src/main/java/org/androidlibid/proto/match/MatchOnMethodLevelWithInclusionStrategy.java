@@ -2,13 +2,12 @@ package org.androidlibid.proto.match;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.Fingerprint;
 
@@ -19,13 +18,13 @@ import org.androidlibid.proto.Fingerprint;
 public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy {
 
     private final FingerprintService service;
-    private final InclusionCalculator calculator;
+    private final PackageInclusionCalculator calculator;
     private final ResultEvaluator evaluator; 
     private final double methodMatchThreshold  = 0.9999d;
     private final double packageMatchThreshold = 0.8d;
     private final double minimalMethodLengthForNeedleLookup = 12;
 
-    public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, InclusionCalculator calculator, ResultEvaluator evaluator) {
+    public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
         this.service = service;
         this.calculator = calculator;
         this.evaluator = evaluator;
@@ -47,7 +46,8 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
          
-            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle);
+//            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle);
+            FingerprintMatcher.Result matches = findPackage(packageNeedle);
 
             MatchingStrategy.Status result = evaluator.evaluateResult(packageNeedle, matches);
             stats.put(result, stats.get(result) + 1);
@@ -56,13 +56,43 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         return stats;
         
     }
+    
+    private @Nullable FingerprintMatcher.Result findPackage(Fingerprint packageNeedle) throws SQLException {
+        
+        FingerprintMatcher.Result result = new FingerprintMatcher.Result();
+        result.setNeedle(packageNeedle);
+        List<Fingerprint> matchesByScore = new ArrayList<>();
+        
+        for(Fingerprint packageCandidate : service.findPackages()) {
+            Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
+            
+            List<Fingerprint> classSuperSet = new LinkedList<>(packageHierarchy.getChildren());
+            List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildren());
+            
+            double packageScore = calculator.computePackageInclusion(classSuperSet, classSubSet);
+                        
+            packageHierarchy.setInclusionScore(packageScore);
+            
+            if(packageHierarchy.getName().equals(packageNeedle.getName())) {
+                result.setMatchByName(packageHierarchy);
+            }
+            
+            matchesByScore.add(packageHierarchy);
+        }
+                
+        Collections.sort(matchesByScore, new SortDescByInclusionScoreComparator());
+        
+        result.setMatchesByDistance(matchesByScore);
+        return result;
+    
+    }
 
     private @Nullable FingerprintMatcher.Result findPackageInMethodHaystack(Fingerprint packageNeedle) throws SQLException {
       
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
         
-        SortedMap<Double, Fingerprint> matchesByScore = new TreeMap<>();
+        List<Fingerprint> matchesByScore = new ArrayList<>();
         
         boolean breakOut = false; 
         
@@ -89,7 +119,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                         Fingerprint packageCandidate = service.getPackageHierarchyByMethod(methodCandidate);
                         
                         boolean continueFlag = false;
-                        for(Fingerprint alreadyScored : matchesByScore.values()) {
+                        for(Fingerprint alreadyScored : matchesByScore) {
                             if(alreadyScored.getName().equals(packageCandidate.getName())) {
                                 System.out.println("   " + packageCandidate.getName() + " already in score table. next needle, please.");
                                 continueFlag = true;
@@ -106,7 +136,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                         packageCandidate.setInclusionScore(packageScore);
                         
                         //TODO: find meaningful threshold (evaluation?) 
-                        matchesByScore.put(packageScore * -1, packageCandidate);
+                        matchesByScore.add(packageCandidate);
                         
                         if(packageCandidate.getName().equals(packageNeedle.getName())) {
                             result.setMatchByName(packageCandidate);
@@ -134,7 +164,9 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             } 
         }    
         
-        result.setMatchesByDistance(new ArrayList<>(matchesByScore.values()));
+        Collections.sort(matchesByScore, new SortDescByInclusionScoreComparator());
+
+        result.setMatchesByDistance(matchesByScore);
         
         if(result.getMatchByName() == null) {
             List<Fingerprint> packagesWithSameName = service.findPackageByName(packageNeedle.getName());
@@ -152,5 +184,16 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         }
         
         return result;
+    }
+    
+    private class SortDescByInclusionScoreComparator implements Comparator<Fingerprint> {
+        @Override
+        public int compare(Fingerprint that, Fingerprint other) {
+            double scoreNeedleThat  = that.getInclusionScore();
+            double scoreNeedleOther = other.getInclusionScore();
+            if (scoreNeedleThat > scoreNeedleOther) return -1;
+            if (scoreNeedleThat < scoreNeedleOther) return  1;
+            return 0;
+        }
     }
 }

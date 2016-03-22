@@ -10,7 +10,7 @@ import org.junit.Test;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class InclusionCalculatorTest {
+public class ClassInclusionCalculatorTest {
 
     private FingerprintMatcher matcher;
     private ArrayList<Fingerprint> methods;
@@ -28,7 +28,7 @@ public class InclusionCalculatorTest {
     
     @Test
     public void testClassAIsSuperSetOfB() {
-        InclusionCalculator calculator = new InclusionCalculator(matcher);
+        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher);
         
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
@@ -47,7 +47,7 @@ public class InclusionCalculatorTest {
     
     @Test
     public void testClassAIsSubSetOfB() {
-        InclusionCalculator calculator = new InclusionCalculator(matcher);
+        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher);
         
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
@@ -66,7 +66,7 @@ public class InclusionCalculatorTest {
     
     @Test
     public void testClassAIsSomehowSimilarToB() {
-        InclusionCalculator calculator = new InclusionCalculator(matcher);
+        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher);
         
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
@@ -88,7 +88,7 @@ public class InclusionCalculatorTest {
     
     @Test
     public void testClassAIsBarelySimilarToB() {
-        InclusionCalculator calculator = new InclusionCalculator(matcher);
+        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher);
         
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
@@ -103,6 +103,21 @@ public class InclusionCalculatorTest {
         double score = calculator.computeClassInclusion(classB, classA);
         
         assert(score < 1);
+    }
+    
+    @Test
+    public void testEmptyClasses() {
+        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher);
+        
+        List<Fingerprint> classA = new ArrayList<>();
+        List<Fingerprint> classB = new ArrayList<>();
+        classA.addAll(methods);
+        
+        double score = calculator.computeClassInclusion(classB, classA);
+        assert(doubleEquals(score, 0));
+        
+        score = calculator.computeClassInclusion(classA, classB);
+        assert(doubleEquals(score, 0));
     }
     
     private boolean doubleEquals(double a, double b) {
