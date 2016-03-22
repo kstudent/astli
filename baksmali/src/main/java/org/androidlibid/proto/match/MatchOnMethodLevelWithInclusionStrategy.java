@@ -136,6 +136,21 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         
         result.setMatchesByDistance(new ArrayList<>(matchesByScore.values()));
         
+        if(result.getMatchByName() == null) {
+            List<Fingerprint> packagesWithSameName = service.findPackageByName(packageNeedle.getName());
+            
+            if(!packagesWithSameName.isEmpty()) {
+                Fingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));
+                
+                List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildren());
+                List<Fingerprint> classSuperSet = new LinkedList<>(matchByName.getChildren());
+                
+                double score = calculator.computePackageInclusion(classSuperSet, classSubSet);
+                matchByName.setInclusionScore(score);
+                result.setMatchByName(matchByName);
+            }
+        }
+        
         return result;
     }
 }

@@ -54,7 +54,9 @@ public class ResultEvaluator {
                 System.out.println("--------------------------------------------");
                 System.out.println(needle.getName() + " not perfectly matched");
                 
-                System.out.println("euc. diff: " + frmt.format(needle.euclideanDiff(nameMatch)) + "; position: " + position);
+                System.out.println("euc. diff: " + frmt.format(needle.euclideanDiff(nameMatch)) 
+                        + "; incScore: " +  frmt.format(nameMatch.getInclusionScore()) 
+                        + "; position: " + position);
                 
                 int maxShow = ((position + 20) < matchesByDistance.size()) ? position + 20 : matchesByDistance.size();
                 
@@ -83,7 +85,7 @@ public class ResultEvaluator {
                 } 
             } else {
                 double diff = needle.euclideanDiff(nameMatch);
-                System.out.println(needleName + ": machted correctly with diff: " + frmt.format(nameMatch.getInclusionScore()) );
+                System.out.println(needleName + ": machted correctly with incScore: " + frmt.format(nameMatch.getInclusionScore()) );
                 System.out.print("    Diff to next in lines: " );
                 
                 int counter = 0;
