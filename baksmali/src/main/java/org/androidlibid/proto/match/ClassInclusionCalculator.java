@@ -2,7 +2,10 @@ package org.androidlibid.proto.match;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.logger.MyLogger;
 
 /**
  *
@@ -11,6 +14,8 @@ import org.androidlibid.proto.Fingerprint;
 public class ClassInclusionCalculator {
 
     private final FingerprintMatcher matcher;
+    
+    private static final Logger LOG = MyLogger.getLogger(ClassInclusionCalculator.class.getName());
 
     public ClassInclusionCalculator(FingerprintMatcher matcher) {
         this.matcher = matcher;
@@ -23,30 +28,27 @@ public class ClassInclusionCalculator {
      * example: score = 4.2 : there are 4 methods which match perfectly and 
      * one method which matches 20% OR there are 3 methods with .8 and so on...
      * 
-     * @param methodsOfclassA list of methods of the superset class
-     * @param methodsOfClassB list of methods of the subset class
+     * @param subSet list of methods of the superset class
+     * @param superSet list of methods of the subset class
      * @return score
      */
-    public double computeClassInclusion(List<Fingerprint> methodsOfclassA, List<Fingerprint> methodsOfClassB) {
+    public double computeClassInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
-        List<Fingerprint> smallerSet, biggerSet;
+        List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         
-        if(methodsOfclassA.size() < methodsOfClassB.size()) {
-            smallerSet = methodsOfclassA;
-            biggerSet  = new LinkedList<>(methodsOfClassB);
-        } else {
-            smallerSet = methodsOfClassB;
-            biggerSet  = new LinkedList<>(methodsOfclassA);
-        }
-        
-        if(smallerSet.isEmpty()) {
+        if(subSet.isEmpty()) {
             return 0; 
         }
         
         double classScore = 0;
         
-        for (Fingerprint element : smallerSet) {
-            FingerprintMatcher.Result result = matcher.matchFingerprints(biggerSet, element);
+        for (Fingerprint element : subSet) {
+            
+            if(superSetCopy.isEmpty()) {
+                break;
+            }
+            
+            FingerprintMatcher.Result result = matcher.matchFingerprints(superSetCopy, element);
             
             String elementName = element.getName();
             elementName = elementName.substring(elementName.lastIndexOf(":"), elementName.length());
@@ -60,15 +62,16 @@ public class ClassInclusionCalculator {
                 
                 String bestMatchName = closestElmentInBiggerSet.getName();
                 bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf(":"), bestMatchName.length());
-                System.out.println("| " + elementName + " | " + bestMatchName + " | " + score + " |" );
                 
-                biggerSet.remove(closestElmentInBiggerSet);    
+                LOG.log(Level.FINE, "| {0} | {1} | {2} |", new Object[]{elementName, bestMatchName, score});
+                
+                superSetCopy.remove(closestElmentInBiggerSet);    
             }
             
             classScore += score;
         }
         
-        System.out.println("|  |  | " + classScore + " |" );
+        LOG.log(Level.INFO, "|  |  | {0} |", classScore);
         
         if(Double.isNaN(classScore)) {
             throw new RuntimeException("What did you do this time?!");

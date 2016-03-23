@@ -2,7 +2,10 @@ package org.androidlibid.proto.match;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.logger.MyLogger;
 
 /**
  *
@@ -11,42 +14,40 @@ import org.androidlibid.proto.Fingerprint;
 public class PackageInclusionCalculator {
     
     private final ClassInclusionCalculator calculator; 
-
+    
+    private static final Logger LOG = MyLogger.getLogger(PackageInclusionCalculator.class.getName());
+    
     public PackageInclusionCalculator(ClassInclusionCalculator calculator) {
         this.calculator = calculator;
     }
     
-    public double computePackageInclusion(List<Fingerprint> classesOfPackageA, List<Fingerprint> classesOfPackageB) {
+    public double computePackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
-        List<Fingerprint> smallerSet, biggerSet;
+        List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         
-        if(classesOfPackageA.size() < classesOfPackageB.size()) {
-            smallerSet = classesOfPackageA;
-            biggerSet  = new LinkedList<>(classesOfPackageB);
-        } else {
-            smallerSet = classesOfPackageB;
-            biggerSet  = new LinkedList<>(classesOfPackageA);
-        }
-        
-        if(smallerSet.isEmpty()) {
+        if(subSet.isEmpty()) {
             return 0;
         }
         
         double packageScore = 0;
 
-        for (Fingerprint clazz : smallerSet) {
+        for (Fingerprint clazz : subSet) {
             
-            System.out.println("*** myself: " + clazz.getName()); 
+            if (superSetCopy.isEmpty()) {
+                break;
+            }
+            
+            LOG.fine("*** myself: " + clazz.getName() + ", which has " + clazz.getChildren().size() + " methods."); 
             double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
+            LOG.fine("perfect score: " + perfectScore); 
             
             double maxScore = -1;
             Fingerprint maxScoreClazz = null;
             
-            
-            for (Fingerprint clazzCandidate : biggerSet) {
-                System.out.println("**** " + clazzCandidate.getName()); 
+            for (Fingerprint clazzCandidate : superSetCopy) {
+                LOG.finer("**** " + clazzCandidate.getName()); 
                 
-                double score = calculator.computeClassInclusion(clazz.getChildren(), clazzCandidate.getChildren());
+                double score = calculator.computeClassInclusion(clazzCandidate.getChildren(), clazz.getChildren());
                 
                 if(Double.isNaN(score) || score < 0) {
                     throw new RuntimeException("Like, srsly?");
@@ -67,11 +68,11 @@ public class PackageInclusionCalculator {
             String bestMatchName = maxScoreClazz.getName();
             bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf("."), bestMatchName.length());
             
-            System.out.println("*** result: " + bestMatchName); 
-            System.out.println("| " + clazzName + " | " + bestMatchName + " | " + maxScore + " | "); 
+            LOG.fine("*** result: " + bestMatchName); 
+            LOG.fine("| " + clazzName + " | " + bestMatchName + " | " + maxScore + " | "); 
             
             packageScore += maxScore;
-            if(!biggerSet.remove(maxScoreClazz)) {
+            if(!superSetCopy.remove(maxScoreClazz)) {
                 throw new RuntimeException("are you feeding the bugs again??");
             }
         }

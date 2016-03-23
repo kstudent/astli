@@ -8,8 +8,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.logger.MyLogger;
 
 /**
  *
@@ -23,6 +26,12 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     private final double methodMatchThreshold  = 0.9999d;
     private final double packageMatchThreshold = 0.8d;
     private final double minimalMethodLengthForNeedleLookup = 12;
+    
+    private static final Logger LOG; 
+            
+    static {
+        LOG = MyLogger.getLogger( MatchOnMethodLevelWithInclusionStrategy.class.getName() );
+    }
 
     public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
         this.service = service;
@@ -41,7 +50,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         
         for(Fingerprint packageNeedle : packagePrints.values()) {
             
-            System.out.println(((float)(count++) / packagePrints.size()) * 100 + "%"); 
+            LOG.log(Level.INFO, "{0}%", ((float)(count++) / packagePrints.size()) * 100); 
             
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
@@ -59,13 +68,13 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     
     private @Nullable FingerprintMatcher.Result findPackage(Fingerprint packageNeedle) throws SQLException {
         
-        System.out.println("* " + packageNeedle.getName());
+        LOG.log(Level.FINE, "* {0}", packageNeedle.getName());
+        
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
         List<Fingerprint> matchesByScore = new ArrayList<>();
         
         String interestingClassName = "org.spongycastle.jcajce.provider.symmetric.util"; 
-        
         if(!packageNeedle.getName().equals(interestingClassName)) {
             return result;
         }
@@ -75,12 +84,11 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             if(!packageCandidate.getName().equals(interestingClassName)) {
                 continue;
             }
-            
-            System.out.println("** " + packageCandidate.getName());
+//            System.out.println("** " + packageCandidate.getName());
             
             Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
             
-            double packageScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageHierarchy.getChildren());
+            double packageScore = calculator.computePackageInclusion(packageHierarchy.getChildren(), packageNeedle.getChildren());
                         
             packageHierarchy.setInclusionScore(packageScore);
             
@@ -89,11 +97,17 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             }
             
             matchesByScore.add(packageHierarchy);
+            
+            
         }
                 
         Collections.sort(matchesByScore, new SortDescByInclusionScoreComparator());
         
         result.setMatchesByDistance(matchesByScore);
+        
+        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageNeedle.getChildren());
+        packageNeedle.setInclusionScore(perfectScore);
+        
         return result;
     
     }

@@ -2,11 +2,12 @@ package org.androidlibid.proto.match;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
@@ -15,6 +16,7 @@ import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.Node;
+import org.androidlibid.proto.logger.MyLogger;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 
@@ -29,10 +31,24 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private final List<? extends ClassDef> classDefs;
     private final baksmaliOptions options;
     private final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
+    private final Comparator<Fingerprint> sortByEuclidDESCComparator;
+    
+    private static final Logger LOG = MyLogger.getLogger( MatchFingerprintsAlgorithm.class.getName() );
        
     public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options = options;
         this.classDefs = classDefs;
+        
+        sortByEuclidDESCComparator = new Comparator<Fingerprint>() {
+            @Override
+            public int compare(Fingerprint that, Fingerprint other) {
+                double thatNeedleLength  = that.euclideanNorm();
+                double otherNeedleLength = other.euclideanNorm();
+                if (thatNeedleLength > otherNeedleLength) return  1;
+                if (thatNeedleLength < otherNeedleLength) return -1;
+                return 0;
+            }};
+        
     }
     
     @Override
@@ -56,9 +72,9 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
             Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(packagePrints);
             
-            System.out.println("Stats: ");
+            LOG.info("Stats: ");
             for(MatchingStrategy.Status key : MatchingStrategy.Status.values()) {
-                System.out.println(key.toString() + ": " + stats.get(key));
+                LOG.log(Level.INFO, "{0}: {1}", new Object[]{key.toString(), stats.get(key)});
             }
             
 //            int amountFirstMatches = stats.get(MatchingStrategy.Status.OK);
@@ -76,7 +92,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         Map<String, Node> ast = classDefinition.createASTwithNames();
         
-        SortedMap<Double, Fingerprint> sortedMethods = new TreeMap<>(); 
+        List<Fingerprint> methods = new ArrayList<>(); 
         Fingerprint classFingerprint = new Fingerprint();
                 
         for(String obfsMethodName : ast.keySet()) {
@@ -86,12 +102,14 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             if(methodFingerprint.euclideanNorm() > 1.0f) {
                 String methodName = translateName(obfsClassName + ":" + obfsMethodName);
                 methodFingerprint.setName(methodName);
-                sortedMethods.put(methodFingerprint.euclideanNorm() * (-1), methodFingerprint);
+                methods.add(methodFingerprint);
                 classFingerprint.add(methodFingerprint);
             }
         }
         
-        for(Fingerprint method : sortedMethods.values()) {
+        Collections.sort(methods, sortByEuclidDESCComparator);
+        
+        for(Fingerprint method : methods) {
             classFingerprint.addChild(method);
         }
         
@@ -122,11 +140,16 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         for(ClassDef def : classDefs) {
             String obfClassName = transformClassName(def.getType());
             String className =    translateName(obfClassName);
+            
             String packageName =  extractPackageName(className);
 
             Fingerprint classFingerprint = transformClassDefToFingerprint(def, obfClassName);
+            
+            if(classFingerprint.getChildren().isEmpty()) {
+                continue;
+            }
+            
             classFingerprint.setName(className);
-
             Fingerprint packageFingerprint;
 
             if(packagePrints.containsKey(packageName)) {

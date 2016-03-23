@@ -49,7 +49,6 @@ public class FingerprintMatcher {
                 if (diffNeedleThat < diffNeedleOther) return -1;
                 return 0;
             }
-    
         }); 
         
         result.setMatchesByDistance(matches);
