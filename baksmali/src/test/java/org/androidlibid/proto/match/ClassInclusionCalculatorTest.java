@@ -27,6 +27,22 @@ public class ClassInclusionCalculatorTest {
     }
     
     @Test
+    public void testClassAIsClassA() {
+        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher);
+        List<Fingerprint> classA = new ArrayList<>();
+        classA.addAll(methods);
+        
+        double score = calculator.computeClassInclusion(classA, classA);
+        double expectedScore = methods.get(0).euclideanNorm() 
+                + methods.get(1).euclideanNorm()  
+                + methods.get(2).euclideanNorm()  
+                + methods.get(3).euclideanNorm()  
+                + methods.get(4).euclideanNorm(); 
+        
+        assert(doubleEquals(score, expectedScore));
+    }
+    
+    @Test
     public void testClassAIsSuperSetOfB() {
         ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher);
         
@@ -39,10 +55,11 @@ public class ClassInclusionCalculatorTest {
         classB.add(methods.get(4));
         
         double score = calculator.computeClassInclusion(classA, classB);
+        double expectedScore = methods.get(0).euclideanNorm() 
+                + methods.get(2).euclideanNorm() 
+                + methods.get(4).euclideanNorm();
         
-        System.out.println(score);
-        
-        assert(doubleEquals(score, 3));
+        assert(doubleEquals(score, expectedScore));
     }
     
     @Test
@@ -58,10 +75,11 @@ public class ClassInclusionCalculatorTest {
         classB.add(methods.get(4));
         
         double score = calculator.computeClassInclusion(classB, classA);
-        
-        System.out.println(score);
+        double expectedScore = methods.get(0).euclideanNorm() 
+                + methods.get(2).euclideanNorm() 
+                + methods.get(4).euclideanNorm();
                
-        assert(doubleEquals(score, 3));
+        assert(doubleEquals(score, expectedScore));
     }
     
     @Test
@@ -79,11 +97,15 @@ public class ClassInclusionCalculatorTest {
         classB.add(new Fingerprint(5,   9, 70));
 
         double score = calculator.computeClassInclusion(classB, classA);
+
+        double maxScore = methods.get(0).euclideanNorm() 
+                + methods.get(1).euclideanNorm()  
+                + methods.get(2).euclideanNorm()  
+                + methods.get(3).euclideanNorm()  
+                + methods.get(4).euclideanNorm(); 
         
-        
-        
-        assert(score > 4);
-        assert(score < 4.5);
+        assert(score < maxScore);
+        assert(score > maxScore * .8);
     }
     
     @Test
@@ -102,7 +124,13 @@ public class ClassInclusionCalculatorTest {
 
         double score = calculator.computeClassInclusion(classB, classA);
         
-        assert(score < 1);
+        double maxScore = methods.get(0).euclideanNorm() 
+                + methods.get(1).euclideanNorm()  
+                + methods.get(2).euclideanNorm()  
+                + methods.get(3).euclideanNorm()  
+                + methods.get(4).euclideanNorm(); 
+        
+        assert(score < maxScore * .1);
     }
     
     @Test

@@ -44,19 +44,23 @@ public class ClassInclusionCalculator {
         }
         
         double classScore = 0;
-        double normalizer = 0;
         
         for (Fingerprint element : smallerSet) {
             FingerprintMatcher.Result result = matcher.matchFingerprints(biggerSet, element);
+            
+            String elementName = element.getName();
+            elementName = elementName.substring(elementName.lastIndexOf(":"), elementName.length());
             
             double score = 0;
             
             if(result.getMatchesByDistance().size() > 0) {
                 Fingerprint closestElmentInBiggerSet = result.getMatchesByDistance().get(0);
                 
-                double length = Math.max(element.euclideanNorm(), closestElmentInBiggerSet.euclideanNorm());
-                normalizer += length;
-                score = element.computeSimilarityScore(closestElmentInBiggerSet) * length;
+                score = element.computeSimilarityScore(closestElmentInBiggerSet);
+                
+                String bestMatchName = closestElmentInBiggerSet.getName();
+                bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf(":"), bestMatchName.length());
+                System.out.println("| " + elementName + " | " + bestMatchName + " | " + score + " |" );
                 
                 biggerSet.remove(closestElmentInBiggerSet);    
             }
@@ -64,12 +68,12 @@ public class ClassInclusionCalculator {
             classScore += score;
         }
         
-        double val = (classScore / normalizer) * smallerSet.size();
+        System.out.println("|  |  | " + classScore + " |" );
         
-        if(Double.isNaN(val)) {
+        if(Double.isNaN(classScore)) {
             throw new RuntimeException("What did you do this time?!");
         }
         
-        return val;
+        return classScore;
     }
 }

@@ -33,15 +33,18 @@ public class PackageInclusionCalculator {
         }
         
         double packageScore = 0;
-        int amountMethods = 0;
 
         for (Fingerprint clazz : smallerSet) {
-            amountMethods += clazz.getChildren().size();
+            
+            System.out.println("*** myself: " + clazz.getName()); 
+            double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
             
             double maxScore = -1;
             Fingerprint maxScoreClazz = null;
             
+            
             for (Fingerprint clazzCandidate : biggerSet) {
+                System.out.println("**** " + clazzCandidate.getName()); 
                 
                 double score = calculator.computeClassInclusion(clazz.getChildren(), clazzCandidate.getChildren());
                 
@@ -59,13 +62,21 @@ public class PackageInclusionCalculator {
                 throw new RuntimeException("fix your code, maniac");
             }
             
+            String clazzName = clazz.getName();
+            clazzName = clazzName.substring(clazzName.lastIndexOf("."), clazzName.length());
+            String bestMatchName = maxScoreClazz.getName();
+            bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf("."), bestMatchName.length());
+            
+            System.out.println("*** result: " + bestMatchName); 
+            System.out.println("| " + clazzName + " | " + bestMatchName + " | " + maxScore + " | "); 
+            
             packageScore += maxScore;
             if(!biggerSet.remove(maxScoreClazz)) {
                 throw new RuntimeException("are you feeding the bugs again??");
             }
         }
         
-        return packageScore / amountMethods;
+        return packageScore;
         
         
 //        for (Iterator<Fingerprint> subSetIt = classesOfPackageB.iterator(); subSetIt.hasNext(); ) {

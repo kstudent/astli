@@ -129,9 +129,9 @@ public class Fingerprint {
     public double computeSimilarityScore(Fingerprint that) {
         double diff = vector.subtract(that.vector).euclideanNorm();
         double length = Math.max(this.vector.euclideanNorm(), that.vector.euclideanNorm()); 
-                
+        
         if(length > 0) {
-            double similarityScore = 1 - (diff / length); 
+            double similarityScore = length - diff; 
             return (similarityScore > 0)? similarityScore : 0;
         } else {
             throw new RuntimeException("Cant norm by 0 length vector");

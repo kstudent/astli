@@ -65,8 +65,6 @@ public class FingerprintTest {
         f.incrementFeature(NodeType.PARAMETER, NodeType.LOCAL);
         assert(f.getFeatureCount(NodeType.PARAMETER, NodeType.LOCAL) == 2);
         
-        System.out.println(f.toString());
-        
     }
     
     @Test
@@ -112,7 +110,7 @@ public class FingerprintTest {
         Fingerprint f1 = new Fingerprint(1, 1);
         Fingerprint f2 = new Fingerprint(1, 1);
         double similarity = f1.computeSimilarityScore(f2);
-        assert(doubleEquals(similarity, 1));
+        assert(doubleEquals(similarity, Math.sqrt(2)));
     }
     
     @Test 
@@ -121,7 +119,8 @@ public class FingerprintTest {
         Fingerprint f2 = new Fingerprint(.5, 1);
         
         double similarity = f1.computeSimilarityScore(f2);
-        assert(doubleEquals(similarity, 0.5));
+        double expectedSimilarity = Math.max(f1.euclideanNorm(), f2.euclideanNorm()) - f1.euclideanDiff(f2);
+        assert(doubleEquals(similarity, expectedSimilarity));
     }
     
     @Test 

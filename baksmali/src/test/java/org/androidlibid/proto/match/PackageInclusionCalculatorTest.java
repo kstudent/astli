@@ -35,8 +35,6 @@ public class PackageInclusionCalculatorTest {
         
         for(int i = 0; i < 8; i++) {
             Fingerprint clazz = new Fingerprint(); 
-            Fingerprint method = new Fingerprint();
-            clazz.addChild(method);
             allMethods.add(clazz.getChildren());
             allClasses.add(clazz); 
         }
@@ -83,7 +81,7 @@ public class PackageInclusionCalculatorTest {
         
         double score = calc.computePackageInclusion(package1classes, package2classes);
         
-        assert(doubleEquals(score, 1));
+        assert(doubleEquals(score, 2));
     }
     
     @Test
@@ -92,7 +90,7 @@ public class PackageInclusionCalculatorTest {
         
         double score = calc.computePackageInclusion(package1classes, package3classes);
         
-        assert(doubleEquals(score, 1));
+        assert(doubleEquals(score, 2));
     }
     
     @Test
@@ -101,7 +99,7 @@ public class PackageInclusionCalculatorTest {
         
         double score = calc.computePackageInclusion(package1classes, package4classes);
         
-        assert(doubleEquals(score,.5));
+        assert(doubleEquals(score, 1));
     }
     
     private boolean doubleEquals(double a, double b) {

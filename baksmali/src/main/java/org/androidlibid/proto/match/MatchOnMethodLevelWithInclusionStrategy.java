@@ -59,17 +59,28 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     
     private @Nullable FingerprintMatcher.Result findPackage(Fingerprint packageNeedle) throws SQLException {
         
+        System.out.println("* " + packageNeedle.getName());
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
         List<Fingerprint> matchesByScore = new ArrayList<>();
         
+        String interestingClassName = "org.spongycastle.jcajce.provider.symmetric.util"; 
+        
+        if(!packageNeedle.getName().equals(interestingClassName)) {
+            return result;
+        }
+        
         for(Fingerprint packageCandidate : service.findPackages()) {
+            
+            if(!packageCandidate.getName().equals(interestingClassName)) {
+                continue;
+            }
+            
+            System.out.println("** " + packageCandidate.getName());
+            
             Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
             
-            List<Fingerprint> classSuperSet = new LinkedList<>(packageHierarchy.getChildren());
-            List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildren());
-            
-            double packageScore = calculator.computePackageInclusion(classSuperSet, classSubSet);
+            double packageScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageHierarchy.getChildren());
                         
             packageHierarchy.setInclusionScore(packageScore);
             
