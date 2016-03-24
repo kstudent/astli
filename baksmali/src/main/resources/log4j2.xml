@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <!-- <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/> -->
+            <PatternLayout pattern="%m%n"/>
+        </Console>
+        <File name="FILE" fileName="log/app.org" append="false">
+          <PatternLayout pattern="%m%n" />
+        </File>
+        <RollingFile name="ROLLINGFILE" fileName="log/rfile.org"
+                 filePattern="log/%i.log.gz">
+            <PatternLayout pattern="%m%n" />
+            <Policies>
+              <OnStartupTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+
+     </Appenders>
+    
+    
+    <Loggers>
+        <!--<Root level="warn" />-->
+        <Root level="warn">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="FILE"/>
+            <!--<AppenderRef ref="ROLLINGFILE"/>-->
+        </Root>
+        <Logger name="org.androidlibid.proto.Log4JTest"                                     level="trace"/>
+        <Logger name="org.androidlibid.proto.match.MatchOnMethodLevelWithInclusionStrategy" level="debug"/>
+        <Logger name="org.androidlibid.proto.match.PackageInclusionCalculator"              level="debug"/>
+        <Logger name="org.androidlibid.proto.match.ClassInclusionCalculator"                level="debug"/>
+        <Logger name="org.androidlibid.proto.match.ResultEvaluator"                         level="debug"/>
+        <!--<Logger name="" level="debug"/>-->
+    </Loggers>
+</Configuration>

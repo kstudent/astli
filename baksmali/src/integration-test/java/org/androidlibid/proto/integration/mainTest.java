@@ -13,29 +13,30 @@ import org.androidlibid.proto.ao.Package;
 import org.androidlibid.proto.ao.Clazz;
 import org.androidlibid.proto.ao.Method;
 
-
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 public class mainTest {
     
-//    @Test
-    public void storeLibandMatchAPK() throws Exception {
+    @Test
+    public void storeLibs() throws Exception {
         clearDB();
         testStoreFingerprintLibSpongyCore();
         testStoreFingerprintLibSpongyProv();
-        testFindLibrariesOfAPK();
+        countMethods();
     }
     
     @Test
-    public void storeLibandMatchAPKLvl() throws Exception {
-//        clearDB();
-//        testStoreFingerprintLibSpongyCore();
-//        testStoreFingerprintLibSpongyProv();
-//        countMethods();
-//        printSomeMethods();
-//        printMethodLengths();
+    public void matchAPKLvl1() throws Exception {
+        testFindLibrariesOfAPKLvl(1);
+    }
+    @Test
+    public void matchAPKLvl2() throws Exception {
+        testFindLibrariesOfAPKLvl(2);
+    }
+    @Test
+    public void matchAPKLvl3() throws Exception {
         testFindLibrariesOfAPKLvl(3);
     }
     

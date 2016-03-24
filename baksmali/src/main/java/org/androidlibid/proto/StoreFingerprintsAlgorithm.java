@@ -7,16 +7,15 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ao.Library;
 import org.androidlibid.proto.ao.Package;
-import org.jf.baksmali.baksmali;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 import org.androidlibid.proto.ao.Clazz;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -27,6 +26,8 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private final List<? extends ClassDef> classDefs;
     private final baksmaliOptions options;
     private EntityService service;
+    
+    private static final Logger LOGGER = LogManager.getLogger(StoreFingerprintsAlgorithm.class);
 
     public StoreFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options = options;
@@ -35,12 +36,13 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     
     @Override
     public boolean run() {   
+        
         try {
             this.service = EntityServiceFactory.createService();
             generateClassFingerprints();
             generateLibAndPackageFingerprints();
-        } catch (Exception ex) {
-            Logger.getLogger(baksmali.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException | InterruptedException ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
         return true;
     }
@@ -63,7 +65,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
                 completionService.take();
                 
                 if(count % 20 == 0) {
-                    System.out.println(((float)(count) / classDefs.size()) * 100 + "%"); 
+                    LOGGER.info("{}%", ((float)(count) / classDefs.size()) * 100); 
                 }
             }
         } finally {

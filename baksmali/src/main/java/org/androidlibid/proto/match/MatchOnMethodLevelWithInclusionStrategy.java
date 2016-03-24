@@ -8,11 +8,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.logger.MyLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -27,11 +26,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     private final double packageMatchThreshold = 0.8d;
     private final double minimalMethodLengthForNeedleLookup = 12;
     
-    private static final Logger LOG; 
-            
-    static {
-        LOG = MyLogger.getLogger( MatchOnMethodLevelWithInclusionStrategy.class.getName() );
-    }
+    private static final Logger LOGGER = LogManager.getLogger( MatchOnMethodLevelWithInclusionStrategy.class.getName());
 
     public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
         this.service = service;
@@ -50,7 +45,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         
         for(Fingerprint packageNeedle : packagePrints.values()) {
             
-            LOG.log(Level.INFO, "{0}%", ((float)(count++) / packagePrints.size()) * 100); 
+            LOGGER.info("{}%", ((float)(count++) / packagePrints.size()) * 100); 
             
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
@@ -68,13 +63,14 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     
     private @Nullable FingerprintMatcher.Result findPackage(Fingerprint packageNeedle) throws SQLException {
         
-        LOG.log(Level.FINE, "* {0}", packageNeedle.getName());
+        LOGGER.info("* {}", packageNeedle.getName());
         
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
         List<Fingerprint> matchesByScore = new ArrayList<>();
         
-        String interestingClassName = "org.spongycastle.jcajce.provider.symmetric.util"; 
+//        String interestingClassName = "org.spongycastle.jcajce.provider.symmetric.util"; 
+        String interestingClassName = "org.spongycastle.pqc.crypto.ntru"; 
         if(!packageNeedle.getName().equals(interestingClassName)) {
             return result;
         }
@@ -84,7 +80,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             if(!packageCandidate.getName().equals(interestingClassName)) {
                 continue;
             }
-//            System.out.println("** " + packageCandidate.getName());
+            LOGGER.debug("** {}", packageCandidate.getName());
             
             Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
             

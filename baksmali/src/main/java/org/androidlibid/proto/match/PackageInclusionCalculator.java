@@ -2,10 +2,9 @@ package org.androidlibid.proto.match;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.logger.MyLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -15,7 +14,7 @@ public class PackageInclusionCalculator {
     
     private final ClassInclusionCalculator calculator; 
     
-    private static final Logger LOG = MyLogger.getLogger(PackageInclusionCalculator.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(PackageInclusionCalculator.class.getName());
     
     public PackageInclusionCalculator(ClassInclusionCalculator calculator) {
         this.calculator = calculator;
@@ -37,15 +36,15 @@ public class PackageInclusionCalculator {
                 break;
             }
             
-            LOG.fine("*** myself: " + clazz.getName() + ", which has " + clazz.getChildren().size() + " methods."); 
+            LOGGER.info("*** myself: {}, which has {} methods.", clazz.getName(), clazz.getChildren().size()); 
             double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
-            LOG.fine("perfect score: " + perfectScore); 
+            LOGGER.info("perfect score: {}", perfectScore); 
             
             double maxScore = -1;
             Fingerprint maxScoreClazz = null;
             
             for (Fingerprint clazzCandidate : superSetCopy) {
-                LOG.finer("**** " + clazzCandidate.getName()); 
+                LOGGER.debug("**** {}", clazzCandidate.getName()); 
                 
                 double score = calculator.computeClassInclusion(clazzCandidate.getChildren(), clazz.getChildren());
                 
@@ -68,8 +67,8 @@ public class PackageInclusionCalculator {
             String bestMatchName = maxScoreClazz.getName();
             bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf("."), bestMatchName.length());
             
-            LOG.fine("*** result: " + bestMatchName); 
-            LOG.fine("| " + clazzName + " | " + bestMatchName + " | " + maxScore + " | "); 
+            LOGGER.info("*** result: {}", bestMatchName); 
+            LOGGER.info("| {} | {} | {} |", clazzName, bestMatchName, maxScore); 
             
             packageScore += maxScore;
             if(!superSetCopy.remove(maxScoreClazz)) {

@@ -8,15 +8,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.Node;
-import org.androidlibid.proto.logger.MyLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 
@@ -33,7 +32,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
     private final Comparator<Fingerprint> sortByEuclidDESCComparator;
     
-    private static final Logger LOG = MyLogger.getLogger( MatchFingerprintsAlgorithm.class.getName() );
+    private static final Logger LOGGER = LogManager.getLogger( MatchFingerprintsAlgorithm.class.getName() );
        
     public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options = options;
@@ -72,9 +71,9 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
             Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(packagePrints);
             
-            LOG.info("Stats: ");
+            LOGGER.info("Stats: ");
             for(MatchingStrategy.Status key : MatchingStrategy.Status.values()) {
-                LOG.log(Level.INFO, "{0}: {1}", new Object[]{key.toString(), stats.get(key)});
+                LOGGER.info("{}: {}", new Object[]{key.toString(), stats.get(key)});
             }
             
 //            int amountFirstMatches = stats.get(MatchingStrategy.Status.OK);
@@ -83,7 +82,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
 //            }
  
        } catch (SQLException | IOException ex) {
-            Logger.getLogger(MatchFingerprintsAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex.getMessage(), ex);
         }
         return true;
     }

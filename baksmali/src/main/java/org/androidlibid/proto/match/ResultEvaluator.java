@@ -4,10 +4,9 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.logger.MyLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -17,7 +16,7 @@ public class ResultEvaluator {
     
     private final NumberFormat frmt = new DecimalFormat("#0.00");
     private final FingerprintService service;
-    private static final Logger LOG = MyLogger.getLogger( ResultEvaluator.class.getName() );
+    private static final Logger LOGGER = LogManager.getLogger( ResultEvaluator.class.getName() );
     
     public ResultEvaluator(FingerprintService service) {
         this.service = service;
@@ -34,14 +33,14 @@ public class ResultEvaluator {
             try { 
                 List<Fingerprint> packagesWithTheSameName = service.findPackageByName(needleName);
                 if(packagesWithTheSameName.isEmpty()) {
-                    LOG.log(Level.INFO, "{0}: not matched by name", needleName);
+                    LOGGER.info("{}: not matched by name", needleName);
                     return MatchingStrategy.Status.NO_MATCH_BY_NAME;
                 } else {
-                    LOG.log(Level.INFO, "{0}: not matched by name, but its in the db {1} time(s)", new Object[]{needleName, packagesWithTheSameName.size()});
+                    LOGGER.info("{}: not matched by name, but its in the db {} time(s)", new Object[]{needleName, packagesWithTheSameName.size()});
                     return MatchingStrategy.Status.NO_MATCH_BY_NAME_ALTHOUGH_IN_DB;
                 }
             } catch (SQLException ex) {
-                LOG.log(Level.SEVERE, ex.toString(), ex);
+                LOGGER.error(ex.toString(), ex);
                 return MatchingStrategy.Status.NO_MATCH_BY_NAME;
             }
         } else {
@@ -54,12 +53,12 @@ public class ResultEvaluator {
                 }
             }
             
-            LOG.log(Level.INFO, "* {0} (max : {1}) found at position {2}", new Object[]{needle.getName(), frmt.format(needle.getInclusionScore()), position});
+            LOGGER.info("* {} (max : {}) found at position {}", needle.getName(), frmt.format(needle.getInclusionScore()), position);
             
             for(int i = 0; i < result.getMatchesByDistance().size(); i++) {
                 Fingerprint matchByDistance = result.getMatchesByDistance().get(i);
-                LOG.log(Level.FINE, "| {0} | {1} | {2} | {3} |" 
-                , new Object[]{i, frmt.format(matchByDistance.getInclusionScore()), frmt.format(matchByDistance.euclideanDiff(needle)), matchByDistance.getName()});
+                LOGGER.debug("| {} | {} | {} | {} |", 
+                        i, frmt.format(matchByDistance.getInclusionScore()), frmt.format(matchByDistance.euclideanDiff(needle)), matchByDistance.getName());
             }
             
             if(position == 0) {

@@ -2,10 +2,9 @@ package org.androidlibid.proto.match;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.logger.MyLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -15,7 +14,7 @@ public class ClassInclusionCalculator {
 
     private final FingerprintMatcher matcher;
     
-    private static final Logger LOG = MyLogger.getLogger(ClassInclusionCalculator.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ClassInclusionCalculator.class.getName());
 
     public ClassInclusionCalculator(FingerprintMatcher matcher) {
         this.matcher = matcher;
@@ -63,7 +62,7 @@ public class ClassInclusionCalculator {
                 String bestMatchName = closestElmentInBiggerSet.getName();
                 bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf(":"), bestMatchName.length());
                 
-                LOG.log(Level.FINE, "| {0} | {1} | {2} |", new Object[]{elementName, bestMatchName, score});
+                LOGGER.info("| {} | {} | {} |", new Object[]{elementName, bestMatchName, score});
                 
                 superSetCopy.remove(closestElmentInBiggerSet);    
             }
@@ -71,7 +70,7 @@ public class ClassInclusionCalculator {
             classScore += score;
         }
         
-        LOG.log(Level.INFO, "|  |  | {0} |", classScore);
+        LOGGER.info("|  |  | {} |", classScore);
         
         if(Double.isNaN(classScore)) {
             throw new RuntimeException("What did you do this time?!");
