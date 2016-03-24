@@ -22,6 +22,9 @@ public class PackageInclusionCalculator {
     
     public double computePackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
+        String interestingClassName = ".NTRUEncryptionKeyGenerationParameters";
+        
+        LOGGER.info("| class | matched | score | max |"); 
         List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         
         if(subSet.isEmpty()) {
@@ -36,15 +39,21 @@ public class PackageInclusionCalculator {
                 break;
             }
             
-            LOGGER.info("*** myself: {}, which has {} methods.", clazz.getName(), clazz.getChildren().size()); 
+            String clazzName = clazz.getName();
+            clazzName = clazzName.substring(clazzName.lastIndexOf("."), clazzName.length());
+
+            if(!interestingClassName.equals(clazzName))
+                continue;
+            
+//            LOGGER.info("*** myself: {}, which has {} methods.", clazzName, clazz.getChildren().size()); 
+            
             double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
-            LOGGER.info("perfect score: {}", perfectScore); 
+//            LOGGER.info("perfect score: {}", perfectScore); 
             
             double maxScore = -1;
             Fingerprint maxScoreClazz = null;
             
             for (Fingerprint clazzCandidate : superSetCopy) {
-                LOGGER.debug("**** {}", clazzCandidate.getName()); 
                 
                 double score = calculator.computeClassInclusion(clazzCandidate.getChildren(), clazz.getChildren());
                 
@@ -62,13 +71,12 @@ public class PackageInclusionCalculator {
                 throw new RuntimeException("fix your code, maniac");
             }
             
-            String clazzName = clazz.getName();
-            clazzName = clazzName.substring(clazzName.lastIndexOf("."), clazzName.length());
             String bestMatchName = maxScoreClazz.getName();
             bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf("."), bestMatchName.length());
             
-            LOGGER.info("*** result: {}", bestMatchName); 
-            LOGGER.info("| {} | {} | {} |", clazzName, bestMatchName, maxScore); 
+//            LOGGER.info("*** {} -> {} ({})", clazzName, bestMatchName, maxScore); 
+            LOGGER.info("| {} | {} | {} | {}|", clazzName, bestMatchName, maxScore, perfectScore); 
+
             
             packageScore += maxScore;
             if(!superSetCopy.remove(maxScoreClazz)) {

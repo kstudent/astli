@@ -33,11 +33,20 @@ public class ClassInclusionCalculator {
      */
     public double computeClassInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
+        
         List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         
         if(subSet.isEmpty()) {
             return 0; 
         }
+        
+        String superSetName = "";
+        
+        if(superSet.size()>0) {
+            superSetName = superSet.get(0).getParent().getName();
+        }
+        
+        LOGGER.info("**** {} ({}) -> {} ({}) ?", subSet.get(0).getParent().getName(), subSet.size(), superSetName, superSet.size()); 
         
         double classScore = 0;
         

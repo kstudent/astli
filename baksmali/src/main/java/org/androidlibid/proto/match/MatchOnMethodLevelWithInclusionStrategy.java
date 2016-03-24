@@ -2,6 +2,7 @@ package org.androidlibid.proto.match;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -63,23 +64,33 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     
     private @Nullable FingerprintMatcher.Result findPackage(Fingerprint packageNeedle) throws SQLException {
         
-        LOGGER.info("* {}", packageNeedle.getName());
         
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
         List<Fingerprint> matchesByScore = new ArrayList<>();
         
 //        String interestingClassName = "org.spongycastle.jcajce.provider.symmetric.util"; 
-        String interestingClassName = "org.spongycastle.pqc.crypto.ntru"; 
-        if(!packageNeedle.getName().equals(interestingClassName)) {
+        String interestedIn = "org.spongycastle.pqc.crypto.ntru"; 
+        if(!packageNeedle.getName().equals(interestedIn)) {
             return result;
         }
         
+        List<String> interestedCandidates = Arrays.asList(new String[]{"org.spongycastle.math.ec.custom.sec", "org.spongycastle.jce.provider",  "org.spongycastle.pqc.crypto.ntru" });
+        
+        LOGGER.info("* {}", packageNeedle.getName());
+        
+        LOGGER.info("** doing myself... hehe");
+        
+        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageNeedle.getChildren());
+        packageNeedle.setInclusionScore(perfectScore);
+
+        LOGGER.info("** perfect score was {}", perfectScore);
+        
         for(Fingerprint packageCandidate : service.findPackages()) {
             
-            if(!packageCandidate.getName().equals(interestingClassName)) {
-                continue;
-            }
+            if(!interestedCandidates.contains(packageCandidate.getName())) 
+                continue; 
+            
             LOGGER.debug("** {}", packageCandidate.getName());
             
             Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
@@ -94,15 +105,13 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             
             matchesByScore.add(packageHierarchy);
             
+            LOGGER.debug("** match: {} score: {}", packageHierarchy.getName() , packageScore);
             
         }
                 
         Collections.sort(matchesByScore, new SortDescByInclusionScoreComparator());
         
         result.setMatchesByDistance(matchesByScore);
-        
-        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageNeedle.getChildren());
-        packageNeedle.setInclusionScore(perfectScore);
         
         return result;
     

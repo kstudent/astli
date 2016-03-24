@@ -30,6 +30,7 @@
         <Logger name="org.androidlibid.proto.match.MatchOnMethodLevelWithInclusionStrategy" level="debug"/>
         <Logger name="org.androidlibid.proto.match.PackageInclusionCalculator"              level="debug"/>
         <Logger name="org.androidlibid.proto.match.ClassInclusionCalculator"                level="debug"/>
+        <!--<Logger name="org.androidlibid.proto.match.ClassInclusionCalculator"                level="off"/>-->
         <Logger name="org.androidlibid.proto.match.ResultEvaluator"                         level="debug"/>
         <!--<Logger name="" level="debug"/>-->
     </Loggers>
