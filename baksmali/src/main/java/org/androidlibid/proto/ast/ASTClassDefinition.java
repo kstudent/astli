@@ -34,6 +34,7 @@ import org.jf.dexlib2.iface.*;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
+import org.androidlibid.proto.NameExtractor;
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.util.IndentingWriter;
 
@@ -92,9 +93,10 @@ public class ASTClassDefinition implements ClassDefinition {
             
             MethodImplementation methodImpl = method.getImplementation();
             if (methodImpl != null) {
-                String name = method.getName();
+                
+                String signature = buildMethodSignature(method);
                 ASTMethodDefinition methodASTBuilder = new ASTMethodDefinition(this, method, methodImpl);
-                methodASTs.put(name, methodASTBuilder.createAST());
+                methodASTs.put(signature, methodASTBuilder.createAST());
             }
         }
         
@@ -135,5 +137,28 @@ public class ASTClassDefinition implements ClassDefinition {
     @Override
     public void writeTo(IndentingWriter writer) throws IOException {
         throw new UnsupportedOperationException("Not intendet for writing.");
+    }
+
+    private String buildMethodSignature(Method method) {
+        
+        StringBuilder methodSignature = new StringBuilder(method.getName());
+        methodSignature.append("(");
+        
+        List<? extends CharSequence> parameterTypes = method.getParameterTypes();
+        
+        for(int i = 0; i < parameterTypes.size(); i++) {
+        
+            CharSequence smaliType = parameterTypes.get(i);
+            String type = NameExtractor.transformClassNameFromSmali(smaliType.toString()); 
+            methodSignature.append(type);
+            
+            if(i < parameterTypes.size() - 1) {
+                methodSignature.append(", ");
+            }
+        }
+        
+        methodSignature.append(")");
+        
+        return methodSignature.toString();
     }
 }

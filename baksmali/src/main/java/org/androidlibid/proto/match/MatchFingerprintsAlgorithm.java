@@ -113,9 +113,9 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         Map<String, Fingerprint> packagePrints = new HashMap<>();
             
         for(ClassDef def : classDefs) {
-            String obfClassName = NameExtractor.transformClassName(def.getType());
+            String obfClassName = NameExtractor.transformClassNameFromSmali(def.getType());
             String className =    translateName(obfClassName);
-            String packageName =  NameExtractor.extractPackageName(className);
+            String packageName =  NameExtractor.extractPackageNameFromClassName(className);
 
             Fingerprint classFingerprint = transformClassDefToFingerprint(def, obfClassName);
             classFingerprint.setName(className);

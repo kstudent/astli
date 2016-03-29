@@ -31,8 +31,8 @@ public class StoreClassFingerprintTask implements Callable<Void> {
         Collection<Node> ast = classDefinition.createAST();
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        String className     = NameExtractor.transformClassName(classDef.getType());
-        String packageName   = NameExtractor.extractPackageName(className);
+        String className     = NameExtractor.transformClassNameFromSmali(classDef.getType());
+        String packageName   = NameExtractor.extractPackageNameFromClassName(className);
         String mvnIdentifier = options.mvnIdentifier;
 
         Fingerprint classFingerprint = new Fingerprint(className);
