@@ -27,14 +27,17 @@ public class MappingFileParserTest {
     
     @Test
     public void testMappingFileParserMethodLevel() throws IOException {
-        String mappingFile = "./src/integration-test/resources/MappingFiles/mapping.txt";
+        String mappingFile = "./src/integration-test/resources/MappingFiles/mapping.obflvl1.txt";
         
         ProGuardMappingFileParser parser = new ProGuardMappingFileParser(mappingFile);
-        Map<String, String> mapping = parser.parseMappingFileOnMethodLevel();
+            Map<String, String> mapping = parser.parseMappingFileOnMethodLevel();
+        
+        String obfuscatedMethod = "a.a.f.a.ah:b(org.spongycastle.math.ec.SimpleBigDecimal)";
+        String clearMethod = "org.spongycastle.math.ec.SimpleBigDecimal:subtract(org.spongycastle.math.ec.SimpleBigDecimal)"; 
         
         assert(mapping.size() > 0);
-        assert(mapping.get("a.a.a.a.a:<init>") != null);
-        assert(mapping.get("a.a.a.a.a:<init>").equals("org.spongycastle.jcajce.provider.config.ProviderConfigurationPermission:<init>"));
+        assert(mapping.containsKey(obfuscatedMethod));
+        assert(mapping.get(obfuscatedMethod).equals(clearMethod));
     }
     
 }
