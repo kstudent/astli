@@ -22,10 +22,10 @@ public class StoreFingerPrintTaskTest {
         StoreClassFingerprintTask task = new StoreClassFingerprintTask(classDef, options, service);
         String rawClassName = "Ltld/domain/subdomain/project/package/ClassName;";
         
-        String cleanedClassName = task.transformClassName(rawClassName);
+        String cleanedClassName = NameExtractor.transformClassName(rawClassName);
         assert(cleanedClassName.equals("tld.domain.subdomain.project.package.ClassName"));
         
-        String cleanedPackageName = task.extractPackageName(cleanedClassName);
+        String cleanedPackageName = NameExtractor.extractPackageName(cleanedClassName);
         assert(cleanedPackageName.equals("tld.domain.subdomain.project.package"));
     }
     

@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.NameExtractor;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ast.ASTClassDefinition;
@@ -76,6 +77,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         Map<String, Node> ast = classDefinition.createASTwithNames();
         
+        //TODO replace with better way of sorting.
         SortedMap<Double, Fingerprint> sortedMethods = new TreeMap<>(); 
         Fingerprint classFingerprint = new Fingerprint();
                 
@@ -104,15 +106,6 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         }
         return obfuscatedName;
     }
-    
-    public String extractPackageName(String className) {
-        return className.substring(0, className.lastIndexOf("."));
-    }
-
-    public String transformClassName(String className) {
-        className = className.replace('/', '.');
-        return className.substring(1, className.length() - 1);
-    }
 
     //TODO: Swap out.
     private Map<String, Fingerprint> generatePackagePrints() throws IOException {
@@ -120,9 +113,9 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         Map<String, Fingerprint> packagePrints = new HashMap<>();
             
         for(ClassDef def : classDefs) {
-            String obfClassName = transformClassName(def.getType());
+            String obfClassName = NameExtractor.transformClassName(def.getType());
             String className =    translateName(obfClassName);
-            String packageName =  extractPackageName(className);
+            String packageName =  NameExtractor.extractPackageName(className);
 
             Fingerprint classFingerprint = transformClassDefToFingerprint(def, obfClassName);
             classFingerprint.setName(className);

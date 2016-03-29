@@ -34,8 +34,8 @@ public class StoreMethodFingerprint implements Callable<Void> {
         
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        String className     = transformClassName(classDef.getType());
-        String packageName   = extractPackageName(className);
+        String className     = NameExtractor.transformClassName(classDef.getType());
+        String packageName   = NameExtractor.extractPackageName(className);
         String mvnIdentifier = options.mvnIdentifier;
 
         Fingerprint classFingerprint = new Fingerprint(className);
@@ -58,15 +58,6 @@ public class StoreMethodFingerprint implements Callable<Void> {
         }
         
         return null;
-    }
-    
-    public String extractPackageName(String className) {
-        return className.substring(0, className.lastIndexOf("."));
-    }
-
-    public String transformClassName(String className) {
-        className = className.replace('/', '.');
-        return className.substring(1, className.length() - 1);
     }
     
 }
