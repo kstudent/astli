@@ -69,13 +69,15 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         result.setNeedle(packageNeedle);
         List<Fingerprint> matchesByScore = new ArrayList<>();
         
-//        String interestingClassName = "org.spongycastle.jcajce.provider.symmetric.util"; 
-        String interestedIn = "org.spongycastle.pqc.crypto.ntru"; 
+//        String interestedIn = "org.spongycastle.pqc.crypto.ntru"; 
+//        String interestedIn = "org.spongycastle.asn1.bc"; 
+        String interestedIn = "org.spongycastle.crypto.agreement.kdf"; 
         if(!packageNeedle.getName().equals(interestedIn)) {
             return result;
         }
         
-        List<String> interestedCandidates = Arrays.asList(new String[]{"org.spongycastle.math.ec.custom.sec", "org.spongycastle.jce.provider",  "org.spongycastle.pqc.crypto.ntru" });
+//        List<String> interestedCandidates = Arrays.asList(new String[]{"org.spongycastle.math.ec.custom.sec", "org.spongycastle.jce.provider",  "org.spongycastle.pqc.crypto.ntru" });
+        List<String> interestedCandidates = Arrays.asList(new String[]{"org.spongycastle.crypto.agreement.kdf"});
         
         LOGGER.info("* {}", packageNeedle.getName());
         

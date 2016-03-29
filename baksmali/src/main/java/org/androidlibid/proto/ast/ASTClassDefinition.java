@@ -28,6 +28,8 @@
 
 package org.androidlibid.proto.ast;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 import org.jf.dexlib2.iface.*;
@@ -70,16 +72,16 @@ public class ASTClassDefinition implements ClassDefinition {
         return ast;
     }
 
-    public Map<String, Node> createASTwithNames() throws IOException {
-        Map<String, Node> astwithnames = createDirectMethodsASTwithNames();
+    public Multimap<String, Node> createASTwithNames() throws IOException {
+        Multimap<String, Node> astwithnames = createDirectMethodsASTwithNames();
         astwithnames.putAll(createVirtualMethodsASTwithNames());
         return astwithnames;
     }
     
 
-    private Map<String, Node> createDirectMethodsASTwithNames() throws IOException {
+    private Multimap<String, Node> createDirectMethodsASTwithNames() throws IOException {
 
-        Map<String, Node> methodASTs = new HashMap<>();
+        Multimap<String, Node> methodASTs = ArrayListMultimap.create();
         
         Iterable<? extends Method> directMethods;
         if (classDef instanceof DexBackedClassDef) {
@@ -105,10 +107,10 @@ public class ASTClassDefinition implements ClassDefinition {
         return new ArrayList<>(createDirectMethodsASTwithNames().values());
     }
     
-    private Map<String, Node> createVirtualMethodsASTwithNames() throws IOException {
+    private Multimap<String, Node> createVirtualMethodsASTwithNames() throws IOException {
         
-        Map<String, Node> methodASTs = new HashMap<>();
-
+        Multimap<String, Node> methodASTs = ArrayListMultimap.create();
+         
         Iterable<? extends Method> virtualMethods;
         if (classDef instanceof DexBackedClassDef) {
             virtualMethods = ((DexBackedClassDef)classDef).getVirtualMethods(false);
@@ -117,7 +119,7 @@ public class ASTClassDefinition implements ClassDefinition {
         }
         
         for (Method method: virtualMethods) {
-
+            
             MethodImplementation methodImpl = method.getImplementation();
             if (methodImpl != null) {
                 ASTMethodDefinition methodDefinition = new ASTMethodDefinition(this, method, methodImpl);

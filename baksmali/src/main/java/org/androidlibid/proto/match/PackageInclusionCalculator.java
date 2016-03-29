@@ -22,7 +22,7 @@ public class PackageInclusionCalculator {
     
     public double computePackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
-        String interestingClassName = ".NTRUEncryptionKeyGenerationParameters";
+//        String interestingClassName = ".NTRUEncryptionKeyGenerationParameters";
         
         LOGGER.info("| class | matched | score | max |"); 
         List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
@@ -41,9 +41,9 @@ public class PackageInclusionCalculator {
             
             String clazzName = clazz.getName();
             clazzName = clazzName.substring(clazzName.lastIndexOf("."), clazzName.length());
-
-            if(!interestingClassName.equals(clazzName))
-                continue;
+//
+//            if(!interestingClassName.equals(clazzName))
+//                continue;
             
 //            LOGGER.info("*** myself: {}, which has {} methods.", clazzName, clazz.getChildren().size()); 
             

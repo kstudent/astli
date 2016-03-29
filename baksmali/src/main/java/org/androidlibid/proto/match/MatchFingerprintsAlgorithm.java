@@ -1,5 +1,6 @@
 package org.androidlibid.proto.match;
 
+import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,8 +44,8 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             public int compare(Fingerprint that, Fingerprint other) {
                 double thatNeedleLength  = that.euclideanNorm();
                 double otherNeedleLength = other.euclideanNorm();
-                if (thatNeedleLength > otherNeedleLength) return  1;
-                if (thatNeedleLength < otherNeedleLength) return -1;
+                if (thatNeedleLength > otherNeedleLength) return -1;
+                if (thatNeedleLength < otherNeedleLength) return  1;
                 return 0;
             }};
         
@@ -89,17 +90,27 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     
     private Fingerprint transformClassDefToFingerprint(ClassDef classDef, String obfsClassName) throws IOException {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
-        Map<String, Node> ast = classDefinition.createASTwithNames();
+        Multimap<String, Node> ast = classDefinition.createASTwithNames();
         
         List<Fingerprint> methods = new ArrayList<>(); 
         Fingerprint classFingerprint = new Fingerprint();
                 
-        for(String obfsMethodName : ast.keySet()) {
-            Node node = ast.get(obfsMethodName);
+        for(Map.Entry<String, Node> entry : ast.entries()) {
+            String obfsMethodName = entry.getKey();
+            Node node = entry.getValue();
+            
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
             
+            String obfsIdentifier = obfsClassName + ":" + obfsMethodName; 
+            
+            String methodName = translateName(obfsIdentifier);
+            LOGGER.info("* {}, (obs: {} )", methodName, obfsIdentifier);
+            LOGGER.info("** ast" );
+            LOGGER.info(ast.get(obfsMethodName));
+            LOGGER.info("** fingerprint" );
+            LOGGER.info(methodFingerprint);
+            
             if(methodFingerprint.euclideanNorm() > 1.0f) {
-                String methodName = translateName(obfsClassName + ":" + obfsMethodName);
                 methodFingerprint.setName(methodName);
                 methods.add(methodFingerprint);
                 classFingerprint.add(methodFingerprint);
@@ -141,6 +152,10 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             String className =    translateName(obfClassName);
             
             String packageName =  extractPackageName(className);
+            
+            if(!className.equals("org.spongycastle.crypto.agreement.kdf.DHKEKGenerator")) {
+                continue;
+            }
 
             Fingerprint classFingerprint = transformClassDefToFingerprint(def, obfClassName);
             

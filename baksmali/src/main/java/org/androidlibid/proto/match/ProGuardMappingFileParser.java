@@ -45,12 +45,6 @@ public class ProGuardMappingFileParser {
                     parseMethodLine(line.substring(4), classNames[0], classNames[1]);
                 } else {
                     classNames = parseClassLine(line);
-                    if(classNames[0].equals("a.a.c.a")) {
-                        System.out.println("Good time to start debugging");
-                    }
-                    if(classNames[1].equals("a.a.c.a")) {
-                        System.out.println("Also a Good time to start debugging");
-                    }
                 }
             }
         }
