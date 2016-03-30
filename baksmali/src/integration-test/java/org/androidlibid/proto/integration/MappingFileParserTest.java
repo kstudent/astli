@@ -18,8 +18,8 @@ public class MappingFileParserTest {
         ProGuardMappingFileParser parser = new ProGuardMappingFileParser(mappingFile);
         Map<String, String> mapping = parser.parseMappingFileOnClassLevel();
         
-        assert(mapping.get("a.a.a.a.a.a") != null);
-        assert(mapping.get("a.a.a.a.a.a").equals("org.spongycastle.jcajce.provider.config.ConfigurableProvider"));
+        assert(mapping.get("a.a.a.a.a:a") != null);
+        assert(mapping.get("a.a.a.a.a:a").equals("org.spongycastle.jcajce.provider.config:ConfigurableProvider"));
         assert(mapping.size() > 0);
         assert(mapping.get("a.a.a.a.a") != null);
         assert(mapping.get("a.a.a.a.a").equals("org.spongycastle.jcajce.provider.config"));
@@ -34,15 +34,15 @@ public class MappingFileParserTest {
         Map<String, String> mapping = parser.parseMappingFileOnMethodLevel();
             
         String[] obfuscatedMethods = {
-            "a.a.f.a.ah:b(a.a.f.a.ah):a.a.f.a.ah",
-            "a.a.g.d.a.c:a(byte[][][],byte[][][]):boolean",
-            "a.a.g.c.b.k:<init>(short[][],short[],short[][],short[],int[],a.a.g.b.d.a[]):void"
+            "a.a.f.a:ah:b(a.a.f.a:ah):a.a.f.a:ah",
+            "a.a.g.d.a:c:a(byte[][][],byte[][][]):boolean",
+            "a.a.g.c.b:k:<init>(short[][],short[],short[][],short[],int[],a.a.g.b.d:a[]):void"
         };
         
         String[] clearMethods = {
-            "org.spongycastle.math.ec.SimpleBigDecimal:subtract(org.spongycastle.math.ec.SimpleBigDecimal):org.spongycastle.math.ec.SimpleBigDecimal",
-            "org.spongycastle.pqc.math.linearalgebra.ByteUtils:equals(byte[][][],byte[][][]):boolean", 
-            "org.spongycastle.pqc.jcajce.spec.RainbowPrivateKeySpec:<init>(short[][],short[],short[][],short[],int[],org.spongycastle.pqc.crypto.rainbow.Layer[]):void"
+            "org.spongycastle.math.ec:SimpleBigDecimal:subtract(org.spongycastle.math.ec:SimpleBigDecimal):org.spongycastle.math.ec:SimpleBigDecimal",
+            "org.spongycastle.pqc.math.linearalgebra:ByteUtils:equals(byte[][][],byte[][][]):boolean", 
+            "org.spongycastle.pqc.jcajce.spec:RainbowPrivateKeySpec:<init>(short[][],short[],short[][],short[],int[],org.spongycastle.pqc.crypto.rainbow:Layer[]):void"
         };
         
         

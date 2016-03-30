@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 import org.androidlibid.proto.SmaliNameConverter;
+import org.androidlibid.proto.utils.StringUtils;
 
 /**
  *
@@ -70,6 +71,9 @@ public class ProGuardMappingFileParser {
             throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
         }
 
+        obfuscatedClassName = StringUtils.replaceLastOccurrence(obfuscatedClassName, ".", ":");
+        clearClassName      = StringUtils.replaceLastOccurrence(clearClassName,      ".", ":");
+        
         String obfuscatedPackageName = SmaliNameConverter.extractPackageNameFromClassName(obfuscatedClassName);
         String clearPackageName      = SmaliNameConverter.extractPackageNameFromClassName(clearClassName);
         
@@ -112,6 +116,9 @@ public class ProGuardMappingFileParser {
         String obfuscatedArguments  = obfuscateTypes(clearArguments); 
         String obfuscatedMethodName = pieces[1];
         String obfuscatedReturnType = obfuscateType(clearReturnType); 
+        
+        clearReturnType = StringUtils.replaceLastOccurrence(clearReturnType, ".", ":");
+        clearArguments = replaceLastOccurencesOfArguments(clearArguments);
         
         if(obfuscatedClassName.isEmpty() || clearClassName.isEmpty()
                 || clearMethodName.isEmpty() || obfuscatedMethodName.isEmpty()) {
@@ -170,6 +177,7 @@ public class ProGuardMappingFileParser {
             
         } else {
             
+            clearType = StringUtils.replaceLastOccurrence(clearType, ".", ":");
             obfuscatedType = mapping.inverse().get(clearType);
 
             if(obfuscatedType == null) {
@@ -193,6 +201,27 @@ public class ProGuardMappingFileParser {
             return obfuscatedTypeBuilder.toString();
         }
     }
-    
-    
+
+    private String replaceLastOccurencesOfArguments(String oldArguments) {
+        
+        if(oldArguments.isEmpty()) {
+            return ""; 
+        }
+        
+        StringBuilder clearArguments = new StringBuilder();
+        
+        String[] pieces = oldArguments.split(SmaliNameConverter.TYPE_DELIMITER);
+        
+        for(int i = 0; i < pieces.length; i++) {
+            String oldArgument = pieces[i];
+            String clearArgument = StringUtils.replaceLastOccurrence(oldArgument, ".", ":");
+            clearArguments.append(clearArgument);
+            
+            if(i < pieces.length - 1) {
+                clearArguments.append(SmaliNameConverter.TYPE_DELIMITER);
+            }
+        }
+        
+        return clearArguments.toString();
+    }
 }

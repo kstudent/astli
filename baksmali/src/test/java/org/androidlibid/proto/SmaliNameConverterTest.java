@@ -6,20 +6,22 @@ import org.junit.Test;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class NameExtractorTest {
+public class SmaliNameConverterTest {
     
     @Test
     public void testCleanClassName() throws Exception {
         String rawClassName = "Ltld/domain/subdomain/project/package/ClassName;";
+        String expected     =  "tld.domain.subdomain.project.package:ClassName";
         String cleanedClassName = SmaliNameConverter.convertTypeFromSmali(rawClassName);
-        assert(cleanedClassName.equals("tld.domain.subdomain.project.package.ClassName"));
+        assert(cleanedClassName.equals(expected));
     }
     
     @Test
     public void testExtractPackageName() throws Exception {
-        String className = "tld.domain.subdomain.project.package.ClassName";
+        String className           = "tld.domain.subdomain.project.package:ClassName";
+        String expectedPackageName = "tld.domain.subdomain.project.package";
         String packageName = SmaliNameConverter.extractPackageNameFromClassName(className);
-        assert(packageName.equals("tld.domain.subdomain.project.package"));
+        assert(packageName.equals(expectedPackageName));
     }
    
     @Test

@@ -3,6 +3,7 @@ package org.androidlibid.proto;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.androidlibid.proto.utils.StringUtils;
 
 /**
  *
@@ -27,7 +28,14 @@ public class SmaliNameConverter {
     }
     
     public static String extractPackageNameFromClassName(String className) {
-        return className.substring(0, className.lastIndexOf("."));
+        int index = className.lastIndexOf(":");
+        
+        if(index < 0) {
+            throw new RuntimeException("Classname format error: " + className 
+                    + " is missing a colon delimiter.");
+        }
+        
+        return className.substring(0, index);
     }
 
     public static String convertTypeFromSmali(String smaliType) {
@@ -50,6 +58,7 @@ public class SmaliNameConverter {
             
             type = smaliType.replace('/', '.');
             type = type.substring(1, type.length() - 1);
+            type = StringUtils.replaceLastOccurrence(type, ".", ":");
         }
         
         StringBuilder typeBuilder = new StringBuilder(type);
@@ -82,7 +91,8 @@ public class SmaliNameConverter {
         return PRIMITIVE_TYPES.containsKey(smaliType);
     }
 
-    public static String buildMethodSignature(String methodName, List<? extends CharSequence> smaliParameterTypes, String smaliReturnType) {
+    public static String buildMethodSignature(String methodName, 
+            List<? extends CharSequence> smaliParameterTypes, String smaliReturnType) {
         
         StringBuilder methodSignature = new StringBuilder(methodName);
         methodSignature.append("(");
