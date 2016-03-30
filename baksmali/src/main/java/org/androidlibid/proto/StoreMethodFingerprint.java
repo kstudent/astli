@@ -34,16 +34,16 @@ public class StoreMethodFingerprint implements Callable<Void> {
         
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        String className     = NameExtractor.transformClassNameFromSmali(classDef.getType());
-        String packageName   = NameExtractor.extractPackageNameFromClassName(className);
+        String className     = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
+        String packageName   = SmaliNameConverter.extractPackageNameFromClassName(className);
         String mvnIdentifier = options.mvnIdentifier;
 
         Fingerprint classFingerprint = new Fingerprint(className);
                 
-        for(String methodName : ast.keySet()) {
-            Fingerprint methodFingerprint = ast2fpt.createFingerprint(ast.get(methodName));
+        for(String methodSignature : ast.keySet()) {
+            Fingerprint methodFingerprint = ast2fpt.createFingerprint(ast.get(methodSignature));
             if(methodFingerprint.euclideanNorm() > 1.0d) {
-                methodFingerprint.setName(className + ":" + methodName);
+                methodFingerprint.setName(className + ":" + methodSignature);
                 classFingerprint.add(methodFingerprint);
                 classFingerprint.addChild(methodFingerprint);
             }

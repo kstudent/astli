@@ -6,7 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
-import org.androidlibid.proto.NameExtractor;
+import org.androidlibid.proto.SmaliNameConverter;
 
 /**
  *
@@ -16,7 +16,6 @@ public class ProGuardMappingFileParser {
     
     BiMap<String, String> mapping = HashBiMap.create();
     String mappingFilePath; 
-    private static final String TYPE_DELIMITER = ",";
 
     public ProGuardMappingFileParser(String mappingFilePath) {
         this.mappingFilePath = mappingFilePath;
@@ -71,8 +70,8 @@ public class ProGuardMappingFileParser {
             throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
         }
 
-        String obfuscatedPackageName = NameExtractor.extractPackageNameFromClassName(obfuscatedClassName);
-        String clearPackageName = NameExtractor.extractPackageNameFromClassName(clearClassName);
+        String obfuscatedPackageName = SmaliNameConverter.extractPackageNameFromClassName(obfuscatedClassName);
+        String clearPackageName      = SmaliNameConverter.extractPackageNameFromClassName(clearClassName);
         
         if(addToMapping) {
             
@@ -138,7 +137,7 @@ public class ProGuardMappingFileParser {
         
         StringBuilder obfuscatedTypes = new StringBuilder();
         
-        String[] pieces = types.split(TYPE_DELIMITER);
+        String[] pieces = types.split(SmaliNameConverter.TYPE_DELIMITER);
         
         for(int i = 0; i < pieces.length; i++) {
             String type = pieces[i];
@@ -146,7 +145,7 @@ public class ProGuardMappingFileParser {
             obfuscatedTypes.append(obfuscatedType);
             
             if(i < pieces.length - 1) {
-                obfuscatedTypes.append(TYPE_DELIMITER);
+                obfuscatedTypes.append(SmaliNameConverter.TYPE_DELIMITER);
             }
         }
         
@@ -165,7 +164,7 @@ public class ProGuardMappingFileParser {
         String clearType = pieces[0];
         String obfuscatedType;
         
-        if(NameExtractor.isPrimitiveType(clearType)) {
+        if(SmaliNameConverter.isPrimitiveType(clearType)) {
             
             obfuscatedType = clearType;
             

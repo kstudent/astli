@@ -40,7 +40,8 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             generateClassFingerprints();
             generateLibAndPackageFingerprints();
         } catch (Exception ex) {
-            Logger.getLogger(baksmali.class.getName()).log(Level.SEVERE, null, ex);
+            //TODO logger
+            System.out.println(ex);
         }
         return true;
     }

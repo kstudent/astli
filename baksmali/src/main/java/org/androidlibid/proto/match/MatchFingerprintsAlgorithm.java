@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.NameExtractor;
+import org.androidlibid.proto.SmaliNameConverter;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ast.ASTClassDefinition;
@@ -30,7 +30,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private final List<? extends ClassDef> classDefs;
     private final baksmaliOptions options;
     private final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
-       
+    
     public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options = options;
         this.classDefs = classDefs;
@@ -81,13 +81,13 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         SortedMap<Double, Fingerprint> sortedMethods = new TreeMap<>(); 
         Fingerprint classFingerprint = new Fingerprint();
                 
-        for(String obfsMethodName : ast.keySet()) {
-            Node node = ast.get(obfsMethodName);
+        for(String obfsMethodSignature : ast.keySet()) {
+            Node node = ast.get(obfsMethodSignature);
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
             
             if(methodFingerprint.euclideanNorm() > 1.0f) {
-                String methodName = translateName(obfsClassName + ":" + obfsMethodName);
-                methodFingerprint.setName(methodName);
+                String clearMethodSignature = translateName(obfsClassName + ":" + obfsMethodSignature);
+                methodFingerprint.setName(clearMethodSignature);
                 sortedMethods.put(methodFingerprint.euclideanNorm() * (-1), methodFingerprint);
                 classFingerprint.add(methodFingerprint);
             }
@@ -103,6 +103,8 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private String translateName(String obfuscatedName) {
         if(options.isObfuscated && mappings.get(obfuscatedName) != null) {
             return mappings.get(obfuscatedName);
+        } else {
+            System.out.println("could not look up " + obfuscatedName);
         }
         return obfuscatedName;
     }
@@ -113,9 +115,9 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         Map<String, Fingerprint> packagePrints = new HashMap<>();
             
         for(ClassDef def : classDefs) {
-            String obfClassName = NameExtractor.transformClassNameFromSmali(def.getType());
+            String obfClassName = SmaliNameConverter.convertTypeFromSmali(def.getType());
             String className =    translateName(obfClassName);
-            String packageName =  NameExtractor.extractPackageNameFromClassName(className);
+            String packageName =  SmaliNameConverter.extractPackageNameFromClassName(className);
 
             Fingerprint classFingerprint = transformClassDefToFingerprint(def, obfClassName);
             classFingerprint.setName(className);
