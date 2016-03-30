@@ -91,7 +91,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     
     private Fingerprint transformClassDefToFingerprint(ClassDef classDef, String obfsClassName) throws IOException {
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
-        Multimap<String, Node> ast = classDefinition.createASTwithNames();
+        Map<String, Node> ast = classDefinition.createASTwithNames();
         
         List<Fingerprint> methods = new ArrayList<>(); 
         Fingerprint classFingerprint = new Fingerprint();

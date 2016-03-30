@@ -33,15 +33,9 @@ public class StoreMethodFingerprint implements Callable<Void> {
     
     @Override public Void call() throws Exception {
         
-        String className     = transformClassName(classDef.getType());
-                
-        if(!className.equals("org.spongycastle.crypto.agreement.kdf.DHKEKGenerator")) {
-            return null; 
-        }
-        
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
         
-        Multimap<String, Node> ast = classDefinition.createASTwithNames();
+        Map<String, Node> ast = classDefinition.createASTwithNames();
         
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
