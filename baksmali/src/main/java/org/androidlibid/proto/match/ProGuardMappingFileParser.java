@@ -1,10 +1,12 @@
 package org.androidlibid.proto.match;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import org.androidlibid.proto.NameExtractor;
 
 /**
  *
@@ -12,8 +14,9 @@ import java.util.Map;
  */
 public class ProGuardMappingFileParser {
     
-    Map<String, String> mapping = new HashMap<>();
+    BiMap<String, String> mapping = HashBiMap.create();
     String mappingFilePath; 
+    private static final String TYPE_DELIMITER = ",";
 
     public ProGuardMappingFileParser(String mappingFilePath) {
         this.mappingFilePath = mappingFilePath;
@@ -68,12 +71,21 @@ public class ProGuardMappingFileParser {
             throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
         }
 
-        String obfuscatedPackageName = obfuscatedClassName.substring(0, obfuscatedClassName.lastIndexOf("."));
-        String clearPackageName = clearClassName.substring(0, clearClassName.lastIndexOf("."));
+        String obfuscatedPackageName = NameExtractor.extractPackageNameFromClassName(obfuscatedClassName);
+        String clearPackageName = NameExtractor.extractPackageNameFromClassName(clearClassName);
         
         if(addToMapping) {
-            mapping.put(obfuscatedClassName, clearClassName);
-            mapping.put(obfuscatedPackageName, clearPackageName);
+            
+            if(mapping.containsKey(obfuscatedClassName) || mapping.containsValue(clearClassName)) {
+                throw new RuntimeException("Mapping file format error: " + 
+                        obfuscatedClassName + " or " + clearClassName + " are already mapped");
+            } else {
+                mapping.put(obfuscatedClassName, clearClassName);
+            }
+            
+            if(!mapping.containsKey(obfuscatedPackageName) && !mapping.containsValue(clearPackageName)) {
+                mapping.put(obfuscatedPackageName, clearPackageName);
+            } 
         }
         
         return new String[] {obfuscatedClassName, clearClassName};
@@ -87,25 +99,101 @@ public class ProGuardMappingFileParser {
         
         String clearNameString = pieces[0]; 
         int clearNameStart = clearNameString.indexOf(" ");
-        int argumentStart = clearNameString.indexOf("(", clearNameStart);
+        int argumentStart  = clearNameString.indexOf("(", clearNameStart);
+        int argumentEnd    = clearNameString.indexOf(")", argumentStart);
         
-        if(clearNameStart < 0 || argumentStart < 0) {
+        if(clearNameStart < 0 || argumentStart < 0 || argumentEnd < 0) {
             return;
         }
         
-        int argumentEnd = clearNameString.indexOf(")", argumentStart) + 1;
-        
+        String clearReturnType = clearNameString.substring(0, clearNameStart);
         String clearMethodName = clearNameString.substring(clearNameStart + 1, argumentStart);
-        String arguments = clearNameString.substring(argumentStart, argumentEnd);
+        String clearArguments  = clearNameString.substring(argumentStart  + 1, argumentEnd);
         
+        String obfuscatedArguments  = obfuscateTypes(clearArguments); 
         String obfuscatedMethodName = pieces[1];
+        String obfuscatedReturnType = obfuscateType(clearReturnType); 
         
-        if(obfuscatedClassName.length() == 0 || clearClassName.length() == 0 
-                || clearMethodName.length() == 0 || obfuscatedMethodName.length() == 0) {
+        if(obfuscatedClassName.isEmpty() || clearClassName.isEmpty()
+                || clearMethodName.isEmpty() || obfuscatedMethodName.isEmpty()) {
             throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
         }
        
-        mapping.put(obfuscatedClassName + ":" + obfuscatedMethodName + arguments, clearClassName + ":" + clearMethodName + arguments);
+        String obfuscatedKey  = obfuscatedClassName + ":" + obfuscatedMethodName + "(" + obfuscatedArguments + "):" + obfuscatedReturnType; 
+        String clearNameValue = clearClassName      + ":" + clearMethodName      + "(" + clearArguments      + "):" + clearReturnType; 
+        
+        try {
+            mapping.put(obfuscatedKey, clearNameValue);
+        } catch (IllegalArgumentException ex) {
+            //TODO: Logger
+            System.out.println("Duplicate pair: " + obfuscatedKey + "->" + clearNameValue);
+        }
     }
+
+    private String obfuscateTypes(String types) {
+        
+        if(types.isEmpty()) {
+            return ""; 
+        }
+        
+        StringBuilder obfuscatedTypes = new StringBuilder();
+        
+        String[] pieces = types.split(TYPE_DELIMITER);
+        
+        for(int i = 0; i < pieces.length; i++) {
+            String type = pieces[i];
+            String obfuscatedType = obfuscateType(type);
+            obfuscatedTypes.append(obfuscatedType);
+            
+            if(i < pieces.length - 1) {
+                obfuscatedTypes.append(TYPE_DELIMITER);
+            }
+        }
+        
+        return obfuscatedTypes.toString();
+    
+    }
+    
+    private String obfuscateType(String type) {
+        
+        if(type.isEmpty()) {
+            return ""; 
+        }
+        
+        String[] pieces = type.split("\\[");
+        
+        String clearType = pieces[0];
+        String obfuscatedType;
+        
+        if(NameExtractor.isPrimitiveType(clearType)) {
+            
+            obfuscatedType = clearType;
+            
+        } else {
+            
+            obfuscatedType = mapping.inverse().get(clearType);
+
+            if(obfuscatedType == null) {
+                obfuscatedType = clearType;
+            }
+        
+        }
+
+        if(pieces.length == 1) {
+
+            return obfuscatedType;
+
+        } else {
+            
+            StringBuilder obfuscatedTypeBuilder = new StringBuilder(obfuscatedType);
+            
+            for(int i = 0; i < pieces.length - 1; i++) {
+                obfuscatedTypeBuilder.append("[]");
+            }
+            
+            return obfuscatedTypeBuilder.toString();
+        }
+    }
+    
     
 }

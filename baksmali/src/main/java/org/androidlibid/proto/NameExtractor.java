@@ -36,11 +36,11 @@ public class NameExtractor {
             type = type.substring(1);
         }
         
-        if(PRIMITIVE_TYPES.containsKey(type)) {
+        if(isPrimitiveType(type)) {
             type = PRIMITIVE_TYPES.get(type);
         } else {
-            if(!type.startsWith("L") || !type.endsWith(";")) {
-                throw new RuntimeException("Type format error");
+            if(!type.startsWith("L") || !type.endsWith(";") || !type.equals("void")) {
+                throw new RuntimeException("Type format error: " + type);
             }
             
             type = type.replace('/', '.');
@@ -55,5 +55,9 @@ public class NameExtractor {
         
         return typeBuilder.toString();
         
+    }
+    
+    public static boolean isPrimitiveType(String type) {
+        return PRIMITIVE_TYPES.containsValue(type);
     }
 }

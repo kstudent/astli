@@ -157,7 +157,9 @@ public class ASTClassDefinition implements ClassDefinition {
             }
         }
         
-        methodSignature.append(")");
+        methodSignature
+            .append("):")
+            .append(NameExtractor.transformClassNameFromSmali(method.getReturnType()));
         
         return methodSignature.toString();
     }
