@@ -33,20 +33,13 @@ public class ClassInclusionCalculator {
      */
     public double computeClassInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
-        
         List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         
         if(subSet.isEmpty()) {
             return 0; 
         }
         
-        String superSetName = "";
-        
-        if(superSet.size()>0) {
-            superSetName = superSet.get(0).getParent().getName();
-        }
-        
-        LOGGER.info("**** {} ({}) -> {} ({}) ?", subSet.get(0).getParent().getName(), subSet.size(), superSetName, superSet.size()); 
+        logClassAndMethodsHeader(superSet, subSet);
         
         double classScore = 0;
         
@@ -59,7 +52,6 @@ public class ClassInclusionCalculator {
             FingerprintMatcher.Result result = matcher.matchFingerprints(superSetCopy, element);
             
             String elementName = element.getName();
-            elementName = elementName.substring(elementName.indexOf(":"));
             
             double score = 0;
             
@@ -69,22 +61,63 @@ public class ClassInclusionCalculator {
                 score = element.computeSimilarityScore(closestElmentInBiggerSet);
                 
                 String bestMatchName = closestElmentInBiggerSet.getName();
-                bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":"));
                 
-                LOGGER.info("| {} | {} | {} |", new Object[]{elementName, bestMatchName, score});
-                
+                logScore(elementName, bestMatchName, score);
+                                
                 superSetCopy.remove(closestElmentInBiggerSet);    
             }
             
             classScore += score;
         }
         
-        LOGGER.info("|  |  | {} |", classScore);
+        logClassScore(classScore);
         
         if(Double.isNaN(classScore)) {
             throw new RuntimeException("What did you do this time?!");
         }
         
         return classScore;
+    }
+
+    private void logClassAndMethodsHeader(List<Fingerprint> superSet, List<Fingerprint> subSet) {
+        if(!LOGGER.isInfoEnabled() || superSet.isEmpty() || superSet.get(0) == null 
+            || subSet.isEmpty() || subSet.get(0) == null
+        ) {
+            return;
+        }
+            
+        Fingerprint superClass = superSet.get(0).getParent();
+        Fingerprint subClass = subSet.get(0).getParent();
+            
+        if(superClass == null || subClass == null) { 
+            return;
+        } 
+        
+        String superSetName = superClass.getName();
+        String subSetName   = subClass.getName();
+        LOGGER.info("**** {} ({}) -> {} ({}) ?", subSetName, subSet.size(), superSetName, superSet.size()); 
+        
+    }
+
+    private void logScore(String elementName, String bestMatchName, double score) {
+        
+        if(!LOGGER.isInfoEnabled() || elementName.isEmpty() || bestMatchName.isEmpty() ) {
+            return;
+        }
+        
+        if(bestMatchName.contains(":")) {
+            bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":"));
+        }
+        
+        if(elementName.contains(":")) {
+            elementName = elementName.substring(elementName.indexOf(":"));
+        }
+        
+        LOGGER.info("| {} | {} | {} |", new Object[]{elementName, bestMatchName, score});
+        
+    }
+
+    private void logClassScore(double classScore) {
+        LOGGER.info("|  |  | {} |", classScore);
     }
 }

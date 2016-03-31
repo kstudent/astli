@@ -66,20 +66,30 @@ public class ClassInclusionCalculatorTest {
     public void testClassAIsSubSetOfB() {
         ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher);
         
-        List<Fingerprint> classA = new ArrayList<>();
-        List<Fingerprint> classB = new ArrayList<>();
+        Fingerprint classA = new Fingerprint();
+        classA.setName("pckg:classA");
         
-        classA.addAll(methods);
-        classB.add(methods.get(0));
-        classB.add(methods.get(2));
-        classB.add(methods.get(4));
+        for (int i = 0; i < methods.size(); i++) {
+            Fingerprint method = methods.get(i);
+            classA.addChild(method);
+            method.setName("method" + i + "()");
+        }
         
-        double score = calculator.computeClassInclusion(classB, classA);
+        Fingerprint classB = new Fingerprint();
+        classB.setName("pckg:classB");
+        classB.addChild(methods.get(0));
+        classB.addChild(methods.get(2));
+        classB.addChild(methods.get(4));
+        
+        double score = calculator.computeClassInclusion(classA.getChildren(), classB.getChildren());
         double expectedScore = methods.get(0).euclideanNorm() 
                 + methods.get(2).euclideanNorm() 
                 + methods.get(4).euclideanNorm();
-               
+        
+        double perfectScore = calculator.computeClassInclusion(classB.getChildren(), classB.getChildren());
+        
         assert(doubleEquals(score, expectedScore));
+        assert(doubleEquals(score, perfectScore));
     }
     
     @Test
