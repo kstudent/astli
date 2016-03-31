@@ -1,6 +1,5 @@
 package org.androidlibid.proto.match;
 
-import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -78,11 +77,6 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
                 LOGGER.info("{}: {}", new Object[]{key.toString(), stats.get(key)});
             }
             
-//            int amountFirstMatches = stats.get(MatchingStrategy.Status.OK);
-//            if(amountFirstMatches > 0) {
-//                System.out.println("avg diff on first machted: " +  frmt.format(totalDiffToFirstMatch / amountFirstMatches));
-//            }
- 
        } catch (SQLException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }

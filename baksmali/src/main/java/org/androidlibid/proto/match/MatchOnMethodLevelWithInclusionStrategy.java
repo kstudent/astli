@@ -50,7 +50,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
-         
+            
 //            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle);
             FingerprintMatcher.Result matches = findPackage(packageNeedle);
 
@@ -69,19 +69,9 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         result.setNeedle(packageNeedle);
         List<Fingerprint> matchesByScore = new ArrayList<>();
         
-//        String interestedIn = "org.spongycastle.pqc.crypto.ntru"; 
-//        String interestedIn = "org.spongycastle.asn1.bc"; 
-        String interestedIn = "org.spongycastle.crypto.agreement.kdf"; 
-        if(!packageNeedle.getName().equals(interestedIn)) {
-            return result;
-        }
-        
-//        List<String> interestedCandidates = Arrays.asList(new String[]{"org.spongycastle.math.ec.custom.sec", "org.spongycastle.jce.provider",  "org.spongycastle.pqc.crypto.ntru" });
-        List<String> interestedCandidates = Arrays.asList(new String[]{"org.spongycastle.crypto.agreement.kdf"});
-        
         LOGGER.info("* {}", packageNeedle.getName());
         
-        LOGGER.info("** doing myself... hehe");
+        LOGGER.info("** match with myself");
         
         double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageNeedle.getChildren());
         packageNeedle.setInclusionScore(perfectScore);
@@ -89,9 +79,6 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         LOGGER.info("** perfect score was {}", perfectScore);
         
         for(Fingerprint packageCandidate : service.findPackages()) {
-            
-            if(!interestedCandidates.contains(packageCandidate.getName())) 
-                continue; 
             
             LOGGER.debug("** {}", packageCandidate.getName());
             

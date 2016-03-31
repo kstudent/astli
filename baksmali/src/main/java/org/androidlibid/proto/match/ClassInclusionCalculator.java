@@ -59,7 +59,7 @@ public class ClassInclusionCalculator {
             FingerprintMatcher.Result result = matcher.matchFingerprints(superSetCopy, element);
             
             String elementName = element.getName();
-            elementName = elementName.substring(elementName.lastIndexOf(":"), elementName.length());
+            elementName = elementName.substring(elementName.indexOf(":"));
             
             double score = 0;
             
@@ -69,7 +69,7 @@ public class ClassInclusionCalculator {
                 score = element.computeSimilarityScore(closestElmentInBiggerSet);
                 
                 String bestMatchName = closestElmentInBiggerSet.getName();
-                bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf(":"), bestMatchName.length());
+                bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":"));
                 
                 LOGGER.info("| {} | {} | {} |", new Object[]{elementName, bestMatchName, score});
                 
