@@ -2,7 +2,6 @@ package org.androidlibid.proto.match;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +38,7 @@ public class PackageInclusionCalculatorTest {
             allClasses.add(clazz); 
         }
         
-        double[][] scoreTable = {
+        table = new double[][] {
         //    | p1  | p2  | p3     | p4|
         /*1*/ {1, 0, 1, 0, 1, 0, 0, 0 },
         /*1*/ {0, 1, 0, 1, 0, 0, 1,.5 },
@@ -50,8 +49,6 @@ public class PackageInclusionCalculatorTest {
         /*3*/ {0, 1, 0, 0, 0, 0, 1, 0 },
         /*4*/ {0,.5, 0, 0, 0, 0, 0, 1 }
          };
-        
-        table = scoreTable;
         
         when(classInclusionCalculator.computeClassInclusion(
                 any(List.class ), any(List.class )
@@ -106,13 +103,6 @@ public class PackageInclusionCalculatorTest {
         return Math.abs(a - b) < 0.00001;
     }
     
-    /*
-    private Answer<?> getAnswer() {
-        
-    }
-    
-    */
-
     private Answer<Double> getAnswer() {
         return new Answer<Double>() {
             @Override

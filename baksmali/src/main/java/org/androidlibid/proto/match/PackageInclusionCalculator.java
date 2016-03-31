@@ -22,7 +22,8 @@ public class PackageInclusionCalculator {
     
     public double computePackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
-        LOGGER.info("| class | matched | score | max |"); 
+        logHeader();
+        
         List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         
         if(subSet.isEmpty()) {
@@ -37,21 +38,15 @@ public class PackageInclusionCalculator {
                 break;
             }
             
-            String clazzName = clazz.getName();
-            clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
-            
-            LOGGER.info("*** myself: {}, which has {} methods.", clazzName, clazz.getChildren().size()); 
-            
-            double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
-            
-            LOGGER.info("perfect score: {}", perfectScore); 
+            logClassHeader(clazz);
             
             double maxScore = -1;
             Fingerprint maxScoreClazz = null;
             
             for (Fingerprint clazzCandidate : superSetCopy) {
                 
-                double score = calculator.computeClassInclusion(clazzCandidate.getChildren(), clazz.getChildren());
+                double score = calculator.computeClassInclusion(
+                        clazzCandidate.getChildren(), clazz.getChildren());
                 
                 if(Double.isNaN(score) || score < 0) {
                     throw new RuntimeException("Like, srsly?");
@@ -67,10 +62,7 @@ public class PackageInclusionCalculator {
                 throw new RuntimeException("fix your code, maniac");
             }
             
-            String bestMatchName = maxScoreClazz.getName();
-            bestMatchName = bestMatchName.substring(bestMatchName.lastIndexOf("."), bestMatchName.length());
-            
-            LOGGER.info("| {} | {} | {} | {}|", clazzName, bestMatchName, maxScore, perfectScore); 
+            logResult(clazz, maxScoreClazz, maxScore);
             
             packageScore += maxScore;
             if(!superSetCopy.remove(maxScoreClazz)) {
@@ -79,36 +71,46 @@ public class PackageInclusionCalculator {
         }
         
         return packageScore;
+
+    }
+
+    private void logHeader() {
+        LOGGER.info("| class | matched | score |"); 
+    }
+
+    private void logClassHeader(Fingerprint clazz) {
         
+        if(LOGGER.isInfoEnabled()) {
+            String clazzName = clazz.getName();
+            
+            if(clazzName.contains(":")) {
+                clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
+            }
+            
+            LOGGER.info("*** myself: {}, which has {} methods.", clazzName, clazz.getChildren().size()); 
+            
+            double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
+            
+            LOGGER.info("perfect score: {}", perfectScore); 
+            
+        }
+    }
+
+    private void logResult(Fingerprint clazz, Fingerprint maxScoreClazz, double maxScore) {
         
-//        for (Iterator<Fingerprint> subSetIt = classesOfPackageB.iterator(); subSetIt.hasNext(); ) {
-//            Fingerprint classNeedle = subSetIt.next();
-//            
-//            amountMethods += classNeedle.getChildren().size();
-//            
-//            double maxClassScore = 0; 
-//
-//            for (Iterator<Fingerprint> superSetIt = classesOfPackageA.iterator(); superSetIt.hasNext(); ) {
-//                Fingerprint classCandidate = superSetIt.next();
-//            
-//                List<Fingerprint> methodSubSet   = new LinkedList<>(classNeedle.getChildren());
-//                List<Fingerprint> methodSuperSet = new LinkedList<>(classCandidate.getChildren());
-//                
-//                double classScore = computeClassInclusion(methodSuperSet, methodSubSet);
-//                double classScoreNormalizied = classScore / methodSubSet.size(); 
-//                
-//                maxClassScore = (classScore > maxClassScore) ? classScore : maxClassScore; 
-//                
-//                if(classScoreNormalizied > classMatchThreshold) {
-//                    superSetIt.remove();
-//                    break;
-//                }
-//            }
-//            
-//            packageScore += maxClassScore;
-//            
-//        }
+        if(LOGGER.isInfoEnabled()) {
         
-//        return (packageScore / amountMethods); 
+            String bestMatchName = maxScoreClazz.getName();
+            if(bestMatchName.contains(":")) {
+                bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":") + 1);
+            }
+            
+            String clazzName = clazz.getName();
+            if(clazzName.contains(":")) {
+                clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
+            }
+
+            LOGGER.info("| {} | {} | {} |", clazzName, bestMatchName, maxScore); 
+        }
     }
 }
