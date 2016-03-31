@@ -36,6 +36,7 @@ import org.jf.dexlib2.iface.*;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
+import org.androidlibid.proto.SmaliNameConverter;
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.util.IndentingWriter;
 
@@ -66,74 +67,48 @@ public class ASTClassDefinition implements ClassDefinition {
         return validationErrors;
     }
 
-    public Collection<Node> createAST() throws IOException {
-        Collection<Node> ast = createDirectMethodsAST(); 
-        ast.addAll(createVirtualMethodsAST());
-        return ast;
-    }
-
-    public Multimap<String, Node> createASTwithNames() throws IOException {
-        Multimap<String, Node> astwithnames = createDirectMethodsASTwithNames();
-        astwithnames.putAll(createVirtualMethodsASTwithNames());
+    public Map<String, Node> createASTwithNames() throws IOException {
+        
+        Iterable<? extends Method> virtualMethods, directMethods;
+        if (classDef instanceof DexBackedClassDef) {
+            virtualMethods = ((DexBackedClassDef)classDef).getVirtualMethods(false);
+            directMethods  = ((DexBackedClassDef)classDef).getDirectMethods(false);
+        } else {
+            virtualMethods = classDef.getVirtualMethods();
+            directMethods  = classDef.getDirectMethods();
+        }
+        
+        Map<String, Node> astwithnames = createMethodsASTwithNames(directMethods);
+        astwithnames.putAll(createMethodsASTwithNames(virtualMethods));
+        
         return astwithnames;
     }
     
 
-    private Multimap<String, Node> createDirectMethodsASTwithNames() throws IOException {
+    private Map<String, Node> createMethodsASTwithNames(Iterable<? extends Method> methods) throws IOException {
 
-        Multimap<String, Node> methodASTs = ArrayListMultimap.create();
+        Map<String, Node> methodASTs = new HashMap<>();
         
-        Iterable<? extends Method> directMethods;
-        if (classDef instanceof DexBackedClassDef) {
-            directMethods = ((DexBackedClassDef)classDef).getDirectMethods(false);
-        } else {
-            directMethods = classDef.getDirectMethods();
-        }
-        
-        for (Method method: directMethods) {
+        for (Method method: methods) {
             
             MethodImplementation methodImpl = method.getImplementation();
+            
             if (methodImpl != null) {
-                String name = method.getName();
-                ASTMethodDefinition methodASTBuilder = new ASTMethodDefinition(this, method, methodImpl);
-                methodASTs.put(name, methodASTBuilder.createAST());
+                
+                String signature = SmaliNameConverter.buildMethodSignature(
+                        method.getName(), method.getParameterTypes(), 
+                        method.getReturnType());
+                
+                ASTMethodDefinition methodASTBuilder = new ASTMethodDefinition(
+                        this, method, methodImpl);
+                
+                methodASTs.put(signature, methodASTBuilder.createAST());
             }
         }
         
         return methodASTs;
     }
     
-    private Collection<Node> createDirectMethodsAST() throws IOException {
-        return new ArrayList<>(createDirectMethodsASTwithNames().values());
-    }
-    
-    private Multimap<String, Node> createVirtualMethodsASTwithNames() throws IOException {
-        
-        Multimap<String, Node> methodASTs = ArrayListMultimap.create();
-         
-        Iterable<? extends Method> virtualMethods;
-        if (classDef instanceof DexBackedClassDef) {
-            virtualMethods = ((DexBackedClassDef)classDef).getVirtualMethods(false);
-        } else {
-            virtualMethods = classDef.getVirtualMethods();
-        }
-        
-        for (Method method: virtualMethods) {
-            
-            MethodImplementation methodImpl = method.getImplementation();
-            if (methodImpl != null) {
-                ASTMethodDefinition methodDefinition = new ASTMethodDefinition(this, method, methodImpl);
-                String name = method.getName();
-                methodASTs.put(name, methodDefinition.createAST());
-            }
-        }
-        return methodASTs;
-    }    
-    
-    private Collection<Node> createVirtualMethodsAST() throws IOException {
-        return createVirtualMethodsASTwithNames().values();
-    }
-
     @Override
     public void writeTo(IndentingWriter writer) throws IOException {
         throw new UnsupportedOperationException("Not intendet for writing.");

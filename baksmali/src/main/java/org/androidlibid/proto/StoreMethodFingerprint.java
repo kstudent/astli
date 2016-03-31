@@ -45,25 +45,23 @@ public class StoreMethodFingerprint implements Callable<Void> {
         
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        String packageName   = extractPackageName(className);
+        String className     = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
+        String packageName   = SmaliNameConverter.extractPackageNameFromClassName(className);
         String mvnIdentifier = options.mvnIdentifier;
 
         Fingerprint classFingerprint = new Fingerprint(className);
-        
-        for(Map.Entry<String, Node> entry : ast.entries()) {
-            String methodName = entry.getKey();
-            Node   node = entry.getValue();
-        
-            Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
+                
+        for(String methodSignature : ast.keySet()) {
+            Fingerprint methodFingerprint = ast2fpt.createFingerprint(ast.get(methodSignature));
             
-            LOGGER.info("* {}", methodName);
+            LOGGER.info("* {}", methodSignature);
             LOGGER.info("** ast" );
-            LOGGER.info(ast.get(methodName));
+            LOGGER.info(ast.get(methodSignature));
             LOGGER.info("** fingerprint" );
             LOGGER.info(methodFingerprint);
             
             if(methodFingerprint.euclideanNorm() > 1.0d) {
-                methodFingerprint.setName(className + ":" + methodName);
+                methodFingerprint.setName(className + ":" + methodSignature);
                 classFingerprint.add(methodFingerprint);
                 classFingerprint.addChild(methodFingerprint);
             }
@@ -78,15 +76,6 @@ public class StoreMethodFingerprint implements Callable<Void> {
         }
         
         return null;
-    }
-    
-    public String extractPackageName(String className) {
-        return className.substring(0, className.lastIndexOf("."));
-    }
-
-    public String transformClassName(String className) {
-        className = className.replace('/', '.');
-        return className.substring(1, className.length() - 1);
     }
     
 }

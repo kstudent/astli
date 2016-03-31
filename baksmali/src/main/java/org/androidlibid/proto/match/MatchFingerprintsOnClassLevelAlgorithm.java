@@ -104,7 +104,7 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
             String name = classDef.getType();
 
             ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
-            Collection<Node> ast = classDefinition.createAST();
+            Iterable<Node> ast = classDefinition.createASTwithNames().values();
 
             ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
 

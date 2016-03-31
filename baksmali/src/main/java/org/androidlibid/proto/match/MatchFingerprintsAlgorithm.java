@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.SmaliNameConverter;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ast.ASTClassDefinition;
@@ -94,24 +95,23 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         List<Fingerprint> methods = new ArrayList<>(); 
         Fingerprint classFingerprint = new Fingerprint();
-                
-        for(Map.Entry<String, Node> entry : ast.entries()) {
-            String obfsMethodName = entry.getKey();
-            Node node = entry.getValue();
+
+        for(String obfsMethodSignature : ast.keySet()) {
+            Node node = ast.get(obfsMethodSignature);
             
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
             
-            String obfsIdentifier = obfsClassName + ":" + obfsMethodName; 
+            String obfsIdentifier = obfsClassName + ":" + obfsMethodSignature; 
             
-            String methodName = translateName(obfsIdentifier);
-            LOGGER.info("* {}, (obs: {} )", methodName, obfsIdentifier);
+            String clearMethodSignature = translateName(obfsIdentifier);
+            LOGGER.info("* {}, (obs: {} )", clearMethodSignature, obfsIdentifier);
             LOGGER.info("** ast" );
-            LOGGER.info(ast.get(obfsMethodName));
+            LOGGER.info(ast.get(obfsMethodSignature));
             LOGGER.info("** fingerprint" );
             LOGGER.info(methodFingerprint);
             
             if(methodFingerprint.euclideanNorm() > 1.0f) {
-                methodFingerprint.setName(methodName);
+                methodFingerprint.setName(clearMethodSignature);
                 methods.add(methodFingerprint);
                 classFingerprint.add(methodFingerprint);
             }
@@ -132,15 +132,6 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         }
         return obfuscatedName;
     }
-    
-    public String extractPackageName(String className) {
-        return className.substring(0, className.lastIndexOf("."));
-    }
-
-    public String transformClassName(String className) {
-        className = className.replace('/', '.');
-        return className.substring(1, className.length() - 1);
-    }
 
     //TODO: Swap out.
     private Map<String, Fingerprint> generatePackagePrints() throws IOException {
@@ -148,14 +139,9 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         Map<String, Fingerprint> packagePrints = new HashMap<>();
             
         for(ClassDef def : classDefs) {
-            String obfClassName = transformClassName(def.getType());
+            String obfClassName = SmaliNameConverter.convertTypeFromSmali(def.getType());
             String className =    translateName(obfClassName);
-            
-            String packageName =  extractPackageName(className);
-            
-            if(!className.equals("org.spongycastle.crypto.agreement.kdf.DHKEKGenerator")) {
-                continue;
-            }
+            String packageName =  SmaliNameConverter.extractPackageNameFromClassName(className);
 
             Fingerprint classFingerprint = transformClassDefToFingerprint(def, obfClassName);
             

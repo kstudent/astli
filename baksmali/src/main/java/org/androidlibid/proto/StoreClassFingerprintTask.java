@@ -28,11 +28,11 @@ public class StoreClassFingerprintTask implements Callable<Void> {
     @Override public Void call() throws Exception {
         
         ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
-        Collection<Node> ast = classDefinition.createAST();
+        Iterable<Node> ast = classDefinition.createASTwithNames().values();
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        String className     = transformClassName(classDef.getType());
-        String packageName   = extractPackageName(className);
+        String className     = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
+        String packageName   = SmaliNameConverter.extractPackageNameFromClassName(className);
         String mvnIdentifier = options.mvnIdentifier;
 
         Fingerprint classFingerprint = new Fingerprint(className);
@@ -48,14 +48,4 @@ public class StoreClassFingerprintTask implements Callable<Void> {
         
         return null;
     }
-    
-    public String extractPackageName(String className) {
-        return className.substring(0, className.lastIndexOf("."));
-    }
-
-    public String transformClassName(String className) {
-        className = className.replace('/', '.');
-        return className.substring(1, className.length() - 1);
-    }
-    
 }
