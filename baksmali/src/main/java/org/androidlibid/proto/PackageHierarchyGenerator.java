@@ -27,12 +27,6 @@ public class PackageHierarchyGenerator {
     
     private static final Logger LOGGER = LogManager.getLogger(PackageHierarchyGenerator.class);
 
-    public PackageHierarchyGenerator(baksmaliOptions options, ASTToFingerprintTransformer ast2fpt, Map<String, String> mappings) {
-        this.options = options;
-        this.ast2fpt = ast2fpt;
-        this.mappings = mappings;
-    }
-    
     private final Comparator<Fingerprint> sortByEuclidDESCComparator = new Comparator<Fingerprint>() {
         @Override
         public int compare(Fingerprint that, Fingerprint other) {
@@ -43,6 +37,12 @@ public class PackageHierarchyGenerator {
             return 0;
         }
     };
+    
+    public PackageHierarchyGenerator(baksmaliOptions options, ASTToFingerprintTransformer ast2fpt, Map<String, String> mappings) {
+        this.options = options;
+        this.ast2fpt = ast2fpt;
+        this.mappings = mappings;
+    }
     
     public Map<String, Fingerprint> generatePackageHierarchyFromClassDefs(List<? extends ClassDef> classDefs) throws IOException {
         
@@ -71,6 +71,10 @@ public class PackageHierarchyGenerator {
 
             packageFingerprint.add(classFingerprint);
             packageFingerprint.addChild(classFingerprint);
+        }
+        
+        for(Fingerprint pckg : packagePrints.values()) {
+            Collections.sort(pckg.getChildren(), sortByEuclidDESCComparator);
         }
 
         return packagePrints;
