@@ -4,9 +4,11 @@ import org.androidlibid.proto.match.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ao.Library;
@@ -41,13 +43,13 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             this.service = EntityServiceFactory.createService();
             generateClassFingerprints();
             generateLibAndPackageFingerprints();
-        } catch (SQLException | InterruptedException ex) {
+        } catch (SQLException | InterruptedException | ExecutionException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
         return true;
     }
     
-    private void generateClassFingerprints() throws InterruptedException {
+    private void generateClassFingerprints() throws InterruptedException, ExecutionException {
 //        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         ExecutorService executor = Executors.newFixedThreadPool(1);
         
@@ -62,7 +64,9 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         try {
             while (count++ < classDefs.size()) {
-                completionService.take();
+                Future<Void> future = completionService.take();
+                
+                if(future.isDone()) future.get();
                 
                 if(count % 20 == 0) {
                     LOGGER.info("{}%", ((float)(count) / classDefs.size()) * 100); 
