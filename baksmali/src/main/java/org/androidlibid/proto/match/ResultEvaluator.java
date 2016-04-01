@@ -28,7 +28,7 @@ public class ResultEvaluator {
         String needleName = needle.getName();
         Fingerprint nameMatch = result.getMatchByName();
         List<Fingerprint> matchesByDistance = result.getMatchesByDistance();
-        
+                
         if(nameMatch == null) {
             try { 
                 List<Fingerprint> packagesWithTheSameName = service.findPackageByName(needleName);
@@ -55,10 +55,32 @@ public class ResultEvaluator {
             
             LOGGER.info("* {} (max : {}) found at position {}", needle.getName(), frmt.format(needle.getInclusionScore()), position);
             
+            LOGGER.debug("| {} | {} | {} | {} | {} | {} |", 
+                "pos",
+                "name",
+                "incScore",
+                "incScoreN", 
+                "eucDiff",
+                "eucDiffN"
+            );
+            
             for(int i = 0; i < result.getMatchesByDistance().size(); i++) {
                 Fingerprint matchByDistance = result.getMatchesByDistance().get(i);
-                LOGGER.debug("| {} | {} | {} | {} |", 
-                        i, frmt.format(matchByDistance.getInclusionScore()), frmt.format(matchByDistance.euclideanDiff(needle)), matchByDistance.getName());
+                
+                double maxLength = Math.max(matchByDistance.euclideanNorm(), needle.euclideanNorm());
+                double eucDiffR  = maxLength - matchByDistance.euclideanDiff(needle);
+               
+                if(eucDiffR < 0) eucDiffR = 0;
+                eucDiffR = eucDiffR  / maxLength;
+                
+                LOGGER.debug("| {} | {} | {} | {} | {} | {} |", 
+                        i, 
+                        matchByDistance.getName(),
+                        frmt.format(matchByDistance.getInclusionScore()), 
+                        frmt.format(matchByDistance.getInclusionScore() / needle.getInclusionScore()), 
+                        frmt.format(matchByDistance.euclideanDiff(needle)), 
+                        frmt.format(eucDiffR)
+                );
             }
             
             if(position == 0) {

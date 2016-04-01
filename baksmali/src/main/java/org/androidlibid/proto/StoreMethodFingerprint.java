@@ -1,6 +1,5 @@
 package org.androidlibid.proto;
 
-import com.google.common.collect.Multimap;
 import java.util.Map;
 import org.androidlibid.proto.ast.Node;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
@@ -42,23 +41,24 @@ public class StoreMethodFingerprint implements Callable<Void> {
         String className     = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
         String packageName   = SmaliNameConverter.extractPackageNameFromClassName(className);
         String mvnIdentifier = options.mvnIdentifier;
-
+        
         Fingerprint classFingerprint = new Fingerprint(className);
                 
         for(String methodSignature : ast.keySet()) {
+            
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(ast.get(methodSignature));
             
-            LOGGER.info("* {}", methodSignature);
-            LOGGER.info("** ast" );
-            LOGGER.info(ast.get(methodSignature));
-            LOGGER.info("** fingerprint" );
-            LOGGER.info(methodFingerprint);
+            LOGGER.debug("* {}", methodSignature);
+            LOGGER.debug("** ast" );
+            LOGGER.debug(ast.get(methodSignature));
+            LOGGER.debug("** fingerprint" );
+            LOGGER.debug(methodFingerprint);
             
             if(methodFingerprint.euclideanNorm() > 1.0d) {
                 methodFingerprint.setName(className + ":" + methodSignature);
                 classFingerprint.add(methodFingerprint);
                 classFingerprint.addChild(methodFingerprint);
-            }
+            } 
         }
         
         if(classFingerprint.euclideanNorm() > 0.0d) {

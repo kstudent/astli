@@ -80,18 +80,15 @@ public class PackageInclusionCalculator {
 
     private void logClassHeader(Fingerprint clazz) {
         
-        if(LOGGER.isInfoEnabled()) {
+        if(LOGGER.isDebugEnabled()) {
             String clazzName = clazz.getName();
             
             if(clazzName.contains(":")) {
                 clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
             }
             
-            LOGGER.info("*** myself: {}, which has {} methods.", clazzName, clazz.getChildren().size()); 
-            
             double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
-            
-            LOGGER.info("perfect score: {}", perfectScore); 
+            LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", clazzName, clazz.getChildren().size(), perfectScore); 
             
         }
     }

@@ -2,7 +2,6 @@ package org.androidlibid.proto.match;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -51,8 +50,8 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
             
-//            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle);
-            FingerprintMatcher.Result matches = findPackage(packageNeedle);
+            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle);
+//            FingerprintMatcher.Result matches = findPackage(packageNeedle);
 
             MatchingStrategy.Status result = evaluator.evaluateResult(packageNeedle, matches);
             stats.put(result, stats.get(result) + 1);
@@ -63,12 +62,18 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
     }
     
     private @Nullable FingerprintMatcher.Result findPackage(Fingerprint packageNeedle) throws SQLException {
-        
+       
         
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
-        List<Fingerprint> matchesByScore = new ArrayList<>();
         
+        
+//        String interestingPackage = "org.spongycastle.pqc.math.linearalgebra";
+//        if(!packageNeedle.getName().equals(interestingPackage)) {
+//            return result;
+//        }
+        
+        List<Fingerprint> matchesByScore = new ArrayList<>();
         LOGGER.info("* {}", packageNeedle.getName());
         
         LOGGER.info("** match with myself");
@@ -111,9 +116,14 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
         
+        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageNeedle.getChildren());
+        packageNeedle.setInclusionScore(perfectScore);
+        
         List<Fingerprint> matchesByScore = new ArrayList<>();
         
         boolean breakOut = false; 
+        
+        LOGGER.info("* {} ({})", packageNeedle.getName(), perfectScore); 
         
         for(Fingerprint classNeedle : packageNeedle.getChildren()) {
             for(Fingerprint methodNeedle : classNeedle.getChildren()) {
@@ -124,23 +134,25 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                     break;
                 }
                 
-                System.out.println("..." + methodNeedle.getName() + " (" + length + ")"); 
+                LOGGER.info("** {} ({})", methodNeedle.getName(), length); 
                 
                 List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
-                System.out.println("   " + methodHaystack.size() + " needles to check..."); 
+                
+                LOGGER.info("{} needles to check", methodHaystack.size()); 
                 
                 for(Fingerprint methodCandidate : methodHaystack) {
                     
-                    double methodDiff = methodCandidate.computeSimilarityScore(methodNeedle);
+                    double methodSimilarityScore = methodCandidate.computeSimilarityScore(methodNeedle);
+                    double maxLength = Math.max(methodNeedle.euclideanNorm(), methodCandidate.euclideanNorm());
                     
-                    if(methodDiff > methodMatchThreshold) {
+                    if((methodSimilarityScore / maxLength) > methodMatchThreshold) {
                         
                         Fingerprint packageCandidate = service.getPackageHierarchyByMethod(methodCandidate);
                         
                         boolean continueFlag = false;
+                        
                         for(Fingerprint alreadyScored : matchesByScore) {
                             if(alreadyScored.getName().equals(packageCandidate.getName())) {
-                                System.out.println("   " + packageCandidate.getName() + " already in score table. next needle, please.");
                                 continueFlag = true;
                                 break;
                             }
@@ -161,9 +173,9 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                             result.setMatchByName(packageCandidate);
                         }
                         
-                        System.out.println("   " + packageNeedle.getName() + " - " + packageCandidate.getName() + " sim: " + packageScore);
+                        LOGGER.info("{} -> {} (sim: {} {})", packageNeedle.getName(), packageCandidate.getName(), packageScore, packageScore / perfectScore);
                         
-                        if(packageScore > packageMatchThreshold) {
+                        if((packageScore / perfectScore) > packageMatchThreshold) {
                             breakOut = true; 
                             break; 
                         }
@@ -171,10 +183,10 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                 }
                 
                 if(breakOut) {
-                    System.out.println("   found breakout");
+                    LOGGER.info("found breakout");
                     break;
                 } else {
-                    System.out.println("   continue new method :(");
+                    LOGGER.info("continue new method :(");
                 }
             }
             
@@ -188,6 +200,9 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         result.setMatchesByDistance(matchesByScore);
         
         if(result.getMatchByName() == null) {
+            
+            LOGGER.info("Did not find match by name for {}", packageNeedle.getName());
+            
             List<Fingerprint> packagesWithSameName = service.findPackageByName(packageNeedle.getName());
             
             if(!packagesWithSameName.isEmpty()) {

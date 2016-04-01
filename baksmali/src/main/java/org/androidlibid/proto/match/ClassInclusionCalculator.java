@@ -106,11 +106,23 @@ public class ClassInclusionCalculator {
         }
         
         if(bestMatchName.contains(":")) {
-            bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":"));
+            bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":") + 1);
+        }
+        if(bestMatchName.contains(":")) {
+            bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":") + 1);
+        }
+        if(bestMatchName.contains("(")) {
+            bestMatchName = bestMatchName.substring(0, bestMatchName.indexOf("("));
         }
         
         if(elementName.contains(":")) {
-            elementName = elementName.substring(elementName.indexOf(":"));
+            elementName = elementName.substring(elementName.indexOf(":") + 1);
+        }
+        if(elementName.contains(":")) {
+            elementName = elementName.substring(elementName.indexOf(":") + 1);
+        }
+        if(elementName.contains("(")) {
+            elementName = elementName.substring(0, elementName.indexOf("("));
         }
         
         LOGGER.info("| {} | {} | {} |", new Object[]{elementName, bestMatchName, score});

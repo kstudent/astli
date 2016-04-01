@@ -12,12 +12,16 @@ import org.junit.Test;
 import org.androidlibid.proto.ao.Package;
 import org.androidlibid.proto.ao.Clazz;
 import org.androidlibid.proto.ao.Method;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 public class mainTest {
+   
+    private static final Logger LOGGER = LogManager.getLogger(mainTest.class);
     
     @Test
     public void storeLibs() throws Exception {
@@ -39,6 +43,27 @@ public class mainTest {
     public void matchAPKLvl3() throws Exception {
         testFindLibrariesOfAPKLvl(3);
     }
+    
+    @Test
+    public void printMethodsOfPackage() throws SQLException {
+      
+        String packageName = "org.spongycastle.pqc.math.linearalgebra"; 
+        EntityService service = EntityServiceFactory.createService();
+        
+        List<Package> packages = service.findPackageByName(packageName);
+        
+        for(Package pckg : packages) {
+            for(Clazz clazz : pckg.getClazzes()) {
+                LOGGER.info("* " + clazz.getName());
+                for(Method m : clazz.getMethods()) {
+                    LOGGER.info("** " + m.getName());
+                    Fingerprint p = new Fingerprint(m);
+                    LOGGER.info(p);
+                }
+            }
+        }
+    }
+    
     
     public void testFindLibrariesOfAPK() throws IOException {
         String appApkPath = "./src/integration-test/resources/FingerprintAPKTest/app.apk";
