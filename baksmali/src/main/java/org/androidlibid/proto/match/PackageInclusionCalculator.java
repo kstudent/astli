@@ -13,11 +13,13 @@ import org.apache.logging.log4j.Logger;
 public class PackageInclusionCalculator {
     
     private final ClassInclusionCalculator calculator; 
+    private final boolean disableRepeatedMatches;
     
     private static final Logger LOGGER = LogManager.getLogger(PackageInclusionCalculator.class.getName());
-    
-    public PackageInclusionCalculator(ClassInclusionCalculator calculator) {
+
+    public PackageInclusionCalculator(ClassInclusionCalculator calculator, boolean disableRepeatedMatches) {
         this.calculator = calculator;
+        this.disableRepeatedMatches = disableRepeatedMatches;
     }
     
     public double computePackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
@@ -65,8 +67,12 @@ public class PackageInclusionCalculator {
             logResult(clazz, maxScoreClazz, maxScore);
             
             packageScore += maxScore;
-            if(!superSetCopy.remove(maxScoreClazz)) {
-                throw new RuntimeException("are you feeding the bugs again??");
+            
+            if(disableRepeatedMatches) {
+                if(!superSetCopy.remove(maxScoreClazz)) {
+                    throw new RuntimeException("Tried to remove element"
+                                + " that is not in the set.");
+                }
             }
         }
         
@@ -89,7 +95,6 @@ public class PackageInclusionCalculator {
             
             double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
             LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", clazzName, clazz.getChildren().size(), perfectScore); 
-            
         }
     }
 

@@ -74,7 +74,7 @@ public class PackageInclusionCalculatorTest {
     
     @Test
     public void testPackage1IsSimilarToPackage2() {
-        PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator);
+        PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator, true);
         
         double score = calc.computePackageInclusion(package1classes, package2classes);
         
@@ -83,7 +83,7 @@ public class PackageInclusionCalculatorTest {
     
     @Test
     public void testPackage1IsSimilarToPackage3() {
-        PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator);
+        PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator, true);
         
         double score = calc.computePackageInclusion(package1classes, package3classes);
         
@@ -92,7 +92,7 @@ public class PackageInclusionCalculatorTest {
     
     @Test
     public void testPackage1IsSimilarToPackage4() {
-        PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator);
+        PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator, true);
         
         double score = calc.computePackageInclusion(package1classes, package4classes);
         

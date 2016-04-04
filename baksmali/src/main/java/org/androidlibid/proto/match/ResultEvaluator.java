@@ -53,7 +53,11 @@ public class ResultEvaluator {
                 }
             }
             
-            LOGGER.info("* {} (max : {}) found at position {}", needle.getName(), frmt.format(needle.getInclusionScore()), position);
+            LOGGER.info("* {}{} (max : {}) found at position {}", 
+                    position > 0 ? "NEXT " : "",
+                    needle.getName(), 
+                    frmt.format(needle.getInclusionScore()), 
+                    position);
             
             LOGGER.debug("| {} | {} | {} | {} | {} | {} |", 
                 "pos",

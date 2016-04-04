@@ -13,11 +13,13 @@ import org.apache.logging.log4j.Logger;
 public class ClassInclusionCalculator {
 
     private final FingerprintMatcher matcher;
+    private final boolean disableRepeatedMatches;
     
     private static final Logger LOGGER = LogManager.getLogger(ClassInclusionCalculator.class.getName());
 
-    public ClassInclusionCalculator(FingerprintMatcher matcher) {
+    public ClassInclusionCalculator(FingerprintMatcher matcher, boolean disableRepeatedMatches) {
         this.matcher = matcher;
+        this.disableRepeatedMatches = disableRepeatedMatches;
     }
     
     /**
@@ -54,6 +56,7 @@ public class ClassInclusionCalculator {
             String elementName = element.getName();
             
             double score = 0;
+            double maxScore = element.euclideanNorm();
             
             if(result.getMatchesByDistance().size() > 0) {
                 Fingerprint closestElmentInBiggerSet = result.getMatchesByDistance().get(0);
@@ -62,9 +65,14 @@ public class ClassInclusionCalculator {
                 
                 String bestMatchName = closestElmentInBiggerSet.getName();
                 
-                logScore(elementName, bestMatchName, score);
-                                
-                superSetCopy.remove(closestElmentInBiggerSet);    
+                logScore(elementName, bestMatchName, score, maxScore);
+                    
+                if(disableRepeatedMatches) {
+                    if(!superSetCopy.remove(closestElmentInBiggerSet)) {
+                        throw new RuntimeException("Tried to remove element"
+                                + " that is not in the set.");
+                    }    
+                }
             }
             
             classScore += score;
@@ -93,43 +101,51 @@ public class ClassInclusionCalculator {
             return;
         } 
         
-        String superSetName = superClass.getName();
-        String subSetName   = subClass.getName();
-        LOGGER.info("**** {} ({}) -> {} ({}) ?", subSetName, subSet.size(), superSetName, superSet.size()); 
+        String superSetName = extractClassName(superClass.getName());
+        String subSetName   = extractClassName(subClass.getName());
+        LOGGER.info("**** {} (#Methods: {}, Length: {}) -> {} (#Methods: {}, Length: {}) ?", 
+            subSetName, 
+            subSet.size(),
+            subClass.euclideanNorm(),
+            superSetName, 
+            superSet.size(),
+            superClass.euclideanNorm()
+        ); 
         
     }
 
-    private void logScore(String elementName, String bestMatchName, double score) {
+    private void logScore(String elementName, String bestMatchName, double score, double maxScore) {
         
         if(!LOGGER.isInfoEnabled() || elementName.isEmpty() || bestMatchName.isEmpty() ) {
             return;
         }
         
-        if(bestMatchName.contains(":")) {
-            bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":") + 1);
-        }
-        if(bestMatchName.contains(":")) {
-            bestMatchName = bestMatchName.substring(bestMatchName.indexOf(":") + 1);
-        }
-        if(bestMatchName.contains("(")) {
-            bestMatchName = bestMatchName.substring(0, bestMatchName.indexOf("("));
-        }
-        
-        if(elementName.contains(":")) {
-            elementName = elementName.substring(elementName.indexOf(":") + 1);
-        }
-        if(elementName.contains(":")) {
-            elementName = elementName.substring(elementName.indexOf(":") + 1);
-        }
-        if(elementName.contains("(")) {
-            elementName = elementName.substring(0, elementName.indexOf("("));
-        }
-        
-        LOGGER.info("| {} | {} | {} |", new Object[]{elementName, bestMatchName, score});
+        LOGGER.info("| {} | {} | {} | {} |", 
+                extractClassName(elementName), 
+                extractClassName(bestMatchName), 
+                score,
+                maxScore
+        );
         
     }
 
     private void logClassScore(double classScore) {
         LOGGER.info("|  |  | {} |", classScore);
+    }
+    
+    private String extractClassName(String methodIdentifier) {
+        
+        if(methodIdentifier.contains(":")) {
+            methodIdentifier = methodIdentifier.substring(methodIdentifier.indexOf(":") + 1);
+        }
+        if(methodIdentifier.contains(":")) {
+            methodIdentifier = methodIdentifier.substring(methodIdentifier.indexOf(":") + 1);
+        }
+        if(methodIdentifier.contains("(")) {
+            methodIdentifier = methodIdentifier.substring(0, methodIdentifier.indexOf("("));
+        }
+        
+        return methodIdentifier; 
+        
     }
 }

@@ -38,10 +38,16 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
             FingerprintService fingerprintService = new FingerprintService(service);
             
+            boolean disableRepeatedMatching = true;
+            
             PackageInclusionCalculator packageInclusionCalculator = 
                     new PackageInclusionCalculator(
                             new ClassInclusionCalculator(
-                                    new FingerprintMatcher(1000)));
+                                    new FingerprintMatcher(1000), 
+                                    disableRepeatedMatching
+                            ),
+                            disableRepeatedMatching
+                    );
             
             MatchingStrategy strategy = new MatchOnMethodLevelWithInclusionStrategy(
                 fingerprintService, packageInclusionCalculator, 
