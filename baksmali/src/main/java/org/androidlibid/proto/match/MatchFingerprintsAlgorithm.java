@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
+import org.androidlibid.proto.ast.ASTClassDefinition;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -86,7 +88,12 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         PackageHierarchyGenerator phGen = new PackageHierarchyGenerator(
                 options, new ASTToFingerprintTransformer(), mappings);
         
-        return phGen.generatePackageHierarchyFromClassDefs(classDefs);
+        List<ASTClassDefinition> astClassDefs = new ArrayList<>(); 
+        for(ClassDef classDef: classDefs) {
+            astClassDefs.add(new ASTClassDefinition(options, classDef));
+        }
+        
+        return phGen.generatePackageHierarchyFromClassDefs(astClassDefs);
         
     }
 }

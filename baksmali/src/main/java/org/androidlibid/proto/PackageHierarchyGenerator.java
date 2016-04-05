@@ -44,16 +44,18 @@ public class PackageHierarchyGenerator {
         this.mappings = mappings;
     }
     
-    public Map<String, Fingerprint> generatePackageHierarchyFromClassDefs(List<? extends ClassDef> classDefs) throws IOException {
+    public Map<String, Fingerprint> generatePackageHierarchyFromClassDefs(List<ASTClassDefinition> astClassDefinitions) throws IOException {
         
         Map<String, Fingerprint> packagePrints = new HashMap<>();
             
-        for(ClassDef def : classDefs) {
-            String obfClassName = SmaliNameConverter.convertTypeFromSmali(def.getType());
+        for(ASTClassDefinition astClassDefinition : astClassDefinitions) {
+            ClassDef classDef = astClassDefinition.getClassDef();
+            
+            String obfClassName = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
             String className =    translateName(obfClassName);
             String packageName =  SmaliNameConverter.extractPackageNameFromClassName(className);
             
-            Fingerprint classFingerprint = transformClassDefToFingerprint(def, obfClassName);
+            Fingerprint classFingerprint = transformClassDefToFingerprint(astClassDefinition, obfClassName);
             
             if(classFingerprint.getChildren().isEmpty()) {
                 continue;
@@ -80,9 +82,9 @@ public class PackageHierarchyGenerator {
         return packagePrints;
     }
     
-    private Fingerprint transformClassDefToFingerprint(ClassDef classDef, String obfsClassName) throws IOException {
-        ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
-        Map<String, Node> ast = classDefinition.createASTwithNames();
+    private Fingerprint transformClassDefToFingerprint(ASTClassDefinition classDef, String obfsClassName) throws IOException {
+        
+        Map<String, Node> ast = classDef.createASTwithNames();
         
         List<Fingerprint> methods = new ArrayList<>(); 
         Fingerprint classFingerprint = new Fingerprint();
