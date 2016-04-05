@@ -83,7 +83,7 @@ public class ASTMethodDefinition implements MethodDefinition {
     @Nonnull private final List<Instruction> effectiveInstructions;
     @Nonnull private final ImmutableList<MethodParameter> methodParameters;
     private RegisterFormatter registerFormatter;
-
+    
     @Override
     public ClassDefinition getClassDef() {
         return classDef;
@@ -219,9 +219,6 @@ public class ASTMethodDefinition implements MethodDefinition {
             }
         }
 
-        ASTRegisterNodeCreator rfm = new ASTRegisterNodeCreator(classDef.getOptions(), methodImpl.getRegisterCount(),parameterRegisterCount);
-
-
         List<MethodItem> methodItems = getMethodItems();
         for (MethodItem methodItem: methodItems) {
             
@@ -248,31 +245,33 @@ public class ASTMethodDefinition implements MethodDefinition {
                     
                     FiveRegisterInstruction instruction = (FiveRegisterInstruction) ins;
                     
+                    int registerCount = methodImpl.getRegisterCount();
+                    
                     switch (instruction.getRegisterCount()) {
                         case 1:
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
+                            child.addChild(createRegisterNode(instruction.getRegisterC(), registerCount, parameterRegisterCount));
                             break;
                         case 2:
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterD()));
+                            child.addChild(createRegisterNode(instruction.getRegisterC(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterD(), registerCount, parameterRegisterCount));
                             break;
                         case 3:
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterD()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterE()));
+                            child.addChild(createRegisterNode(instruction.getRegisterC(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterD(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterE(), registerCount, parameterRegisterCount));
                             break;
                         case 4:
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterD()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterE()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterF()));
+                            child.addChild(createRegisterNode(instruction.getRegisterC(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterD(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterE(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterF(), registerCount, parameterRegisterCount));
                             break;
                         case 5:
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterC()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterD()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterE()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterF()));
-                            child.addChild(rfm.createRegisterNode(instruction.getRegisterG()));
+                            child.addChild(createRegisterNode(instruction.getRegisterC(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterD(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterE(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterF(), registerCount, parameterRegisterCount));
+                            child.addChild(createRegisterNode(instruction.getRegisterG(), registerCount, parameterRegisterCount));
                             break;
                     }
                     
@@ -590,6 +589,15 @@ public class ASTMethodDefinition implements MethodDefinition {
             labelMethodItem.setLabelSequence(labelSequence);
             nextLabelSequenceByType.put(labelMethodItem.getLabelPrefix(), labelSequence + 1);
         }
+    }
+    
+    private Node createRegisterNode(int register, int registerCount, int parameterRegisterCount) {
+        if (!classDef.getOptions().noParameterRegisters) {
+            if (register >= registerCount - parameterRegisterCount) {
+                return new Node(NodeType.PARAMETER);
+            }
+        }
+        return new Node(NodeType.LOCAL);
     }
 
 }
