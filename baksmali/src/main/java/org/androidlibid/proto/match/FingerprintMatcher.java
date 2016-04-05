@@ -34,7 +34,7 @@ public class FingerprintMatcher {
                 result.setMatchByName(candidate);
             }
 
-            if(needle.euclideanDiff(candidate) < diffThreshold) {
+            if(needle.getDistanceToFingerprint(candidate) < diffThreshold) {
                 matches.add(candidate);
             }  
 
@@ -43,8 +43,8 @@ public class FingerprintMatcher {
         Collections.sort(matches, new Comparator<Fingerprint>() {
             @Override
             public int compare(Fingerprint that, Fingerprint other) {
-                double diffNeedleThat  = needle.euclideanDiff(that);
-                double diffNeedleOther = needle.euclideanDiff(other);
+                double diffNeedleThat  = needle.getDistanceToFingerprint(that);
+                double diffNeedleOther = needle.getDistanceToFingerprint(other);
                 if (diffNeedleThat > diffNeedleOther) return  1;
                 if (diffNeedleThat < diffNeedleOther) return -1;
                 return 0;

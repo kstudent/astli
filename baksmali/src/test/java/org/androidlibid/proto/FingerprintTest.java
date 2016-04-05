@@ -71,7 +71,7 @@ public class FingerprintTest {
     public void testFingerprintWithNullVectorEntity() {
         Mockito.when(vector.getVector()).thenReturn(null);
         Fingerprint f = new Fingerprint(vector);
-        Vector fvector = f.getVector();
+        Vector fvector = f.getFeatureVector();
         assert(fvector.length() == Fingerprint.getFeaturesSize());
     }
 
@@ -83,7 +83,7 @@ public class FingerprintTest {
         Mockito.when(vector.getVector()).thenReturn(predefinedVector.toBinary());
         Fingerprint f = new Fingerprint(vector);
         
-        Vector fvector = f.getVector();
+        Vector fvector = f.getFeatureVector();
                 
         assert(fvector.length() == predefinedSize);
         assert(fvector.length() != Fingerprint.getFeaturesSize());
@@ -101,7 +101,7 @@ public class FingerprintTest {
         assert(f1.getFeatureCount(NodeType.METHOD) == 1);
         f2.incrementFeature(NodeType.METHOD);
         assert(f2.getFeatureCount(NodeType.METHOD) == 1);
-        f1.add(f2);
+        f1.sumFeatures(f2);
         assert(f1.getFeatureCount(NodeType.METHOD) == 2);    
     }
     
@@ -109,7 +109,7 @@ public class FingerprintTest {
     public void testSimilarityBetweenEqualVectors() {
         Fingerprint f1 = new Fingerprint(1, 1);
         Fingerprint f2 = new Fingerprint(1, 1);
-        double similarity = f1.computeSimilarityScore(f2);
+        double similarity = f1.getSimilarityScoreToFingerprint(f2);
         assert(doubleEquals(similarity, Math.sqrt(2)));
     }
     
@@ -118,8 +118,8 @@ public class FingerprintTest {
         Fingerprint f1 = new Fingerprint( 1, 2);
         Fingerprint f2 = new Fingerprint(.5, 1);
         
-        double similarity = f1.computeSimilarityScore(f2);
-        double expectedSimilarity = Math.max(f1.euclideanNorm(), f2.euclideanNorm()) - f1.euclideanDiff(f2);
+        double similarity = f1.getSimilarityScoreToFingerprint(f2);
+        double expectedSimilarity = Math.max(f1.getLength(), f2.getLength()) - f1.getDistanceToFingerprint(f2);
         assert(doubleEquals(similarity, expectedSimilarity));
     }
     
@@ -127,7 +127,7 @@ public class FingerprintTest {
     public void testSimilarityBetweenDistantVectors() {
         Fingerprint f1 = new Fingerprint(  1,  2);
         Fingerprint f2 = new Fingerprint(-.5, -1);
-        double similarity = f1.computeSimilarityScore(f2);
+        double similarity = f1.getSimilarityScoreToFingerprint(f2);
         assert(doubleEquals(similarity, 0));
     }
     
@@ -135,8 +135,8 @@ public class FingerprintTest {
     public void testSimilarityReflexivity() {
         Fingerprint f1 = new Fingerprint(  49,     35);
         Fingerprint f2 = new Fingerprint(  17,  8.014);
-        double similarity1 = f1.computeSimilarityScore(f2);
-        double similarity2 = f2.computeSimilarityScore(f1);
+        double similarity1 = f1.getSimilarityScoreToFingerprint(f2);
+        double similarity2 = f2.getSimilarityScoreToFingerprint(f1);
         assert(doubleEquals(similarity1, similarity2));
     }
     

@@ -58,8 +58,8 @@ public class MatchOnMethodLevelStrategy implements MatchingStrategy {
                 }
             }
             
-            for(Fingerprint classNeedle : packageNeedle.getChildren()) {
-                for(Fingerprint methodNeedle : classNeedle.getChildren()) {
+            for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
+                for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
                     FingerprintMatcher.Result matches = matcher.matchFingerprints(haystack, methodNeedle);
                     Status result = evaluator.evaluateResult(methodNeedle, matches);
                     stats.put(result, stats.get(result) + 1);

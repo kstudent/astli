@@ -84,15 +84,15 @@ public class FingerprintMatcherTest {
         
         List<Fingerprint> matchedPrints = matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
         
-        double diffto0 = needle.euclideanDiff(matchedPrints.get(0));
-        double diffto1 = needle.euclideanDiff(matchedPrints.get(1));
-        double diffto2 = needle.euclideanDiff(matchedPrints.get(2));
+        double diffto0 = needle.getDistanceToFingerprint(matchedPrints.get(0));
+        double diffto1 = needle.getDistanceToFingerprint(matchedPrints.get(1));
+        double diffto2 = needle.getDistanceToFingerprint(matchedPrints.get(2));
         
         assert(diffto0 <= diffto1);
         assert(diffto1 <= diffto2);
-        assert(matchedPrints.get(0).getVector().equals(v2));
-        assert(matchedPrints.get(1).getVector().equals(v1));
-        assert(matchedPrints.get(2).getVector().equals(v3));
+        assert(matchedPrints.get(0).getFeatureVector().equals(v2));
+        assert(matchedPrints.get(1).getFeatureVector().equals(v1));
+        assert(matchedPrints.get(2).getFeatureVector().equals(v3));
         
     }
     
@@ -113,9 +113,9 @@ public class FingerprintMatcherTest {
         
         List<Fingerprint> matchedPrints = matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
         
-        double diffto0 = needle.euclideanDiff(matchedPrints.get(0));
-        double diffto1 = needle.euclideanDiff(matchedPrints.get(1));
-        double diffto2 = needle.euclideanDiff(matchedPrints.get(2));
+        double diffto0 = needle.getDistanceToFingerprint(matchedPrints.get(0));
+        double diffto1 = needle.getDistanceToFingerprint(matchedPrints.get(1));
+        double diffto2 = needle.getDistanceToFingerprint(matchedPrints.get(2));
         
         assert(diffto0 == diffto1);
         assert(diffto1 == diffto2);

@@ -28,13 +28,13 @@ public class PackageHierarchyGenerator {
                 double[] array111 = { 0, 1, 2 };
                 double[] array112 = { 4, 3, 1 };
                 double[] array113 = { 2, 3, 6 };
-                method111.setVector(new BasicVector(array111));       
-                method112.setVector(new BasicVector(array112));
-                method113.setVector(new BasicVector(array113));
-                class11.addChild(method111);
-                class11.addChild(method112);
-                class11.addChild(method113);
-            pckg1.addChild(class11);
+                method111.setFeatureVector(new BasicVector(array111));       
+                method112.setFeatureVector(new BasicVector(array112));
+                method113.setFeatureVector(new BasicVector(array113));
+                class11.addChildFingerprint(method111);
+                class11.addChildFingerprint(method112);
+                class11.addChildFingerprint(method113);
+            pckg1.addChildFingerprint(class11);
             
             String class12Name   = pckg1Name + ".class2";
             Fingerprint class12  = new Fingerprint(class12Name);
@@ -47,13 +47,13 @@ public class PackageHierarchyGenerator {
                 double[] array121 = { 1, 1, 0 };
                 double[] array122 = { 9, 0, 1 };
                 double[] array123 = { 0, 2, 7 };
-                method121.setVector(new BasicVector(array121));
-                method122.setVector(new BasicVector(array122));
-                method123.setVector(new BasicVector(array123));
-                class12.addChild(method121);
-                class12.addChild(method122);
-                class12.addChild(method123);
-            pckg1.addChild(class12);
+                method121.setFeatureVector(new BasicVector(array121));
+                method122.setFeatureVector(new BasicVector(array122));
+                method123.setFeatureVector(new BasicVector(array123));
+                class12.addChildFingerprint(method121);
+                class12.addChildFingerprint(method122);
+                class12.addChildFingerprint(method123);
+            pckg1.addChildFingerprint(class12);
             
             String class13Name   = pckg1Name + ".class3";
             Fingerprint class13  = new Fingerprint(class13Name);
@@ -63,11 +63,11 @@ public class PackageHierarchyGenerator {
                 Fingerprint method132 = new Fingerprint(method132Name);
                 double[] array131 = { 1, 7, 2 };
                 double[] array132 = { 6, 8, 3 };
-                method131.setVector(new BasicVector(array131));
-                method132.setVector(new BasicVector(array132));
-                class13.addChild(method131);
-                class13.addChild(method132);
-            pckg1.addChild(class13);
+                method131.setFeatureVector(new BasicVector(array131));
+                method132.setFeatureVector(new BasicVector(array132));
+                class13.addChildFingerprint(method131);
+                class13.addChildFingerprint(method132);
+            pckg1.addChildFingerprint(class13);
             
         String pckg2Name     = "org.pckg2"; 
         Fingerprint pckg2     = new Fingerprint(pckg2Name);
@@ -83,13 +83,13 @@ public class PackageHierarchyGenerator {
                 double[] array211 = { 9,  1, 0 };
                 double[] array212 = { 6,  8, 1 };
                 double[] array213 = { 3, 21, 7 };
-                method211.setVector(new BasicVector(array211));       
-                method212.setVector(new BasicVector(array212));
-                method213.setVector(new BasicVector(array213));
-                class21.addChild(method211);
-                class21.addChild(method212);
-                class21.addChild(method213);
-            pckg2.addChild(class21);
+                method211.setFeatureVector(new BasicVector(array211));       
+                method212.setFeatureVector(new BasicVector(array212));
+                method213.setFeatureVector(new BasicVector(array213));
+                class21.addChildFingerprint(method211);
+                class21.addChildFingerprint(method212);
+                class21.addChildFingerprint(method213);
+            pckg2.addChildFingerprint(class21);
             
             String class22Name   = pckg2Name + ".class2";
             Fingerprint class22  = new Fingerprint(class22Name);
@@ -102,13 +102,13 @@ public class PackageHierarchyGenerator {
                 double[] array221 = { 0, 6 ,9 };
                 double[] array222 = { 6, 0, 7 };
                 double[] array223 = { 4, 5, 7 };
-                method221.setVector(new BasicVector(array221));
-                method222.setVector(new BasicVector(array222));
-                method223.setVector(new BasicVector(array223));
-                class22.addChild(method221);
-                class22.addChild(method222);
-                class22.addChild(method223);
-            pckg2.addChild(class22);
+                method221.setFeatureVector(new BasicVector(array221));
+                method222.setFeatureVector(new BasicVector(array222));
+                method223.setFeatureVector(new BasicVector(array223));
+                class22.addChildFingerprint(method221);
+                class22.addChildFingerprint(method222);
+                class22.addChildFingerprint(method223);
+            pckg2.addChildFingerprint(class22);
             
             String class23Name   = pckg2Name + ".class3";
             Fingerprint class23  = new Fingerprint(class23Name);
@@ -118,11 +118,11 @@ public class PackageHierarchyGenerator {
                 Fingerprint method232 = new Fingerprint(method232Name);
                 double[] array231 = { 3, 9, 0 };
                 double[] array232 = { 4, 8, 2 };
-                method231.setVector(new BasicVector(array231));
-                method232.setVector(new BasicVector(array232));
-                class23.addChild(method231);
-                class23.addChild(method232);
-            pckg2.addChild(class23);
+                method231.setFeatureVector(new BasicVector(array231));
+                method232.setFeatureVector(new BasicVector(array232));
+                class23.addChildFingerprint(method231);
+                class23.addChildFingerprint(method232);
+            pckg2.addChildFingerprint(class23);
         
         packageHierarchy.add(pckg1);
         packageHierarchy.add(pckg2);

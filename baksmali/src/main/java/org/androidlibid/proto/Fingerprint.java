@@ -1,9 +1,9 @@
 package org.androidlibid.proto;
 
+import java.util.ArrayList;
 import org.androidlibid.proto.ast.NodeType;
 import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.ao.VectorEntity;
@@ -14,9 +14,14 @@ public class Fingerprint {
 
     private String name;
     private Vector vector;
+    
+    @Nullable
     private Fingerprint parent; 
-    private List<Fingerprint> children = new LinkedList<>();
+    private List<Fingerprint> children = new ArrayList<>();
+    
+    @Nullable
     private VectorEntity entity;
+    
     private double inclusionScore; 
 
     private static final List<List<NodeType>> FEATURES;
@@ -40,6 +45,9 @@ public class Fingerprint {
         LONGEST_FEATURE = longestFeature;
     }
     
+    public static int getFeaturesSize() {
+        return FEATURES.size();
+    }
 
     public Fingerprint(VectorEntity entity) {
         byte[] byteVector = entity.getVector();
@@ -72,10 +80,6 @@ public class Fingerprint {
         this.vector = BasicVector.fromArray(array);
         this.name = "";
     }
-
-    public static int getFeaturesSize() {
-        return FEATURES.size();
-    }
     
     public void incrementFeature(NodeType... dimension) {
         Fingerprint.this.incrementFeature(Arrays.asList(dimension));
@@ -101,41 +105,23 @@ public class Fingerprint {
         return vector.get(index);
     }
 
-    public void add(Fingerprint that) {
+    public void sumFeatures(Fingerprint that) {
         this.vector = this.vector.add(that.vector);
     }
     
-    @Override
-    public String toString() {
-        StringBuilder string = new StringBuilder();
-        string.append(name).append(":\n");
-        
-        int numEntries = Math.min(FEATURES.size(), vector.length());
-        
-        for (int i = 0; i < numEntries; i++) {
-            if (vector.get(i) != 0.0) {
-                List<NodeType> feature = FEATURES.get(i);
-                String featureString = String.format("%-" + LONGEST_FEATURE + "s", feature.toString());
-                string = string.append(featureString).append(" : ").append(vector.get(i)).append("\n");
-            }
-        }
-        return string.toString();
+    public double getLength() {
+        return this.vector.euclideanNorm();
     }
     
-    public double euclideanDiff(Fingerprint that) {
+    public double getDistanceToFingerprint(Fingerprint that) {
         return vector.subtract(that.vector).euclideanNorm();
     }
     
-    public double computeSimilarityScore(Fingerprint that) {
+    public double getSimilarityScoreToFingerprint(Fingerprint that) {
         double diff = vector.subtract(that.vector).euclideanNorm();
         double length = Math.max(this.vector.euclideanNorm(), that.vector.euclideanNorm()); 
-        
-        if(length > 0) {
-            double similarityScore = length - diff; 
-            return (similarityScore > 0)? similarityScore : 0;
-        } else {
-            throw new RuntimeException("Cant norm by 0 length vector");
-        }
+        double similarityScore = length - diff; 
+        return (similarityScore > 0)? similarityScore : 0;
     }
     
     public String getName() {
@@ -146,23 +132,19 @@ public class Fingerprint {
         this.name = name;
     }
 
-    public Vector getVector() {
+    public Vector getFeatureVector() {
         return vector;
     }
 
-    public void setVector(Vector vector) {
+    public void setFeatureVector(Vector vector) {
         this.vector = vector;
     }
     
-    public double euclideanNorm() {
-        return this.vector.euclideanNorm();
-    }
-    
-    public List<Fingerprint> getChildren() {
+    public List<Fingerprint> getChildFingerprints() {
         return children;
     }
 
-    public void addChild(Fingerprint child) {
+    public void addChildFingerprint(Fingerprint child) {
         this.children.add(child);
         child.setParent(this);
     }
@@ -185,6 +167,23 @@ public class Fingerprint {
 
     public void setInclusionScore(double score) {
         this.inclusionScore = score;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append(name).append(":\n");
+        
+        int numEntries = Math.min(FEATURES.size(), vector.length());
+        
+        for (int i = 0; i < numEntries; i++) {
+            if (vector.get(i) != 0.0) {
+                List<NodeType> feature = FEATURES.get(i);
+                String featureString = String.format("%-" + LONGEST_FEATURE + "s", feature.toString());
+                string = string.append(featureString).append(" : ").append(vector.get(i)).append("\n");
+            }
+        }
+        return string.toString();
     }
     
 }

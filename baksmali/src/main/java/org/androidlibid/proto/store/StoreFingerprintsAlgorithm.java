@@ -88,7 +88,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
         Fingerprint libFingerprint = new Fingerprint(lib);  
         
-        if(libFingerprint.euclideanNorm() > 0.0d) {
+        if(libFingerprint.getLength() > 0.0d) {
             throw new RuntimeException("The Library " + libname + " already has a fingerprint.");
         }
 
@@ -99,16 +99,16 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             for(Clazz clazz : pckg.getClazzes()) {
                 Fingerprint clazzFingerprint = new Fingerprint(clazz);
 
-                pckgFingerprint.add(clazzFingerprint);
+                pckgFingerprint.sumFeatures(clazzFingerprint);
             }
 
-            pckg.setVector(pckgFingerprint.getVector().toBinary());
+            pckg.setVector(pckgFingerprint.getFeatureVector().toBinary());
             pckg.save();
 
-            libFingerprint.add(pckgFingerprint);
+            libFingerprint.sumFeatures(pckgFingerprint);
         }
 
-        lib.setVector(libFingerprint.getVector().toBinary());
+        lib.setVector(libFingerprint.getFeatureVector().toBinary());
         lib.save();
     }
     

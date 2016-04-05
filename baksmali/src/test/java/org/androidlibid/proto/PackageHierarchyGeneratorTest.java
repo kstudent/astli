@@ -57,7 +57,7 @@ public class PackageHierarchyGeneratorTest {
         assert(hierarchy.containsKey(packageName));
         
         Fingerprint pckg = hierarchy.get(packageName);
-        List<Fingerprint> classes = pckg.getChildren();
+        List<Fingerprint> classes = pckg.getChildFingerprints();
 
         assert(classes.size() == 3);
         
@@ -67,14 +67,14 @@ public class PackageHierarchyGeneratorTest {
             int classIndex = extractClassIndexFromClassIdentifier(pckgClassID, className);
             
             assert(classIndex >= 1 && classIndex <= 3);
-            assert(clazz.getChildren().size() == 1);
+            assert(clazz.getChildFingerprints().size() == 1);
             
-            Fingerprint methodFP = clazz.getChildren().get(0);
+            Fingerprint methodFP = clazz.getChildFingerprints().get(0);
             Fingerprint expectedMethodFP = perpareMethodFingerprint(classIndex);
             
             String expectedMethodName = expectedPckgClassID + classIndex + ":method" + classIndex + "():" + returnType;
             assert(methodFP.getName().equals(expectedMethodName));
-            assert(methodFP.getVector().equals(expectedMethodFP.getVector()));
+            assert(methodFP.getFeatureVector().equals(expectedMethodFP.getFeatureVector()));
         }
     } 
     
@@ -115,7 +115,7 @@ public class PackageHierarchyGeneratorTest {
         assert(hierarchy.containsKey(expectedPackageName));
         
         Fingerprint pckg = hierarchy.get(expectedPackageName);
-        List<Fingerprint> classes = pckg.getChildren();
+        List<Fingerprint> classes = pckg.getChildFingerprints();
 
         assert(classes.size() == 3);
         
@@ -125,14 +125,14 @@ public class PackageHierarchyGeneratorTest {
             int classIndex = extractClassIndexFromClassIdentifier(pckgClassID, expectedClassName);
             
             assert(classIndex >= 1 && classIndex <= 3);
-            assert(clazz.getChildren().size() == 1);
+            assert(clazz.getChildFingerprints().size() == 1);
             
-            Fingerprint methodFP = clazz.getChildren().get(0);
+            Fingerprint methodFP = clazz.getChildFingerprints().get(0);
             Fingerprint expectedMethodFP = perpareMethodFingerprint(classIndex);
             
             String expectedMethodName = expectedPckgClassID + classIndex + ":method" + classIndex + "():" + expectedPckgClassID;
             assert(methodFP.getName().equals(expectedMethodName));
-            assert(methodFP.getVector().equals(expectedMethodFP.getVector()));
+            assert(methodFP.getFeatureVector().equals(expectedMethodFP.getFeatureVector()));
         }
     } 
     

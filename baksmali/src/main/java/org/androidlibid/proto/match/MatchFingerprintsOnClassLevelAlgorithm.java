@@ -112,10 +112,10 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
 
             for(Node node : ast) {
                 Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
-                needle.add(methodFingerprint);
+                needle.sumFeatures(methodFingerprint);
             }
 
-            if (needle.euclideanNorm() == 0.0d) {
+            if (needle.getLength() == 0.0d) {
                 System.out.println(name + ": class length 0");
                 return MatchingStrategy.Status.CLASS_LENGTH_0;
             }

@@ -33,11 +33,11 @@ public class ClassInclusionCalculatorTest {
         classA.addAll(methods);
         
         double score = calculator.computeClassInclusion(classA, classA);
-        double expectedScore = methods.get(0).euclideanNorm() 
-                + methods.get(1).euclideanNorm()  
-                + methods.get(2).euclideanNorm()  
-                + methods.get(3).euclideanNorm()  
-                + methods.get(4).euclideanNorm(); 
+        double expectedScore = methods.get(0).getLength() 
+                + methods.get(1).getLength()  
+                + methods.get(2).getLength()  
+                + methods.get(3).getLength()  
+                + methods.get(4).getLength(); 
         
         assert(doubleEquals(score, expectedScore));
     }
@@ -55,9 +55,9 @@ public class ClassInclusionCalculatorTest {
         classB.add(methods.get(4));
         
         double score = calculator.computeClassInclusion(classA, classB);
-        double expectedScore = methods.get(0).euclideanNorm() 
-                + methods.get(2).euclideanNorm() 
-                + methods.get(4).euclideanNorm();
+        double expectedScore = methods.get(0).getLength() 
+                + methods.get(2).getLength() 
+                + methods.get(4).getLength();
         
         assert(doubleEquals(score, expectedScore));
     }
@@ -71,22 +71,22 @@ public class ClassInclusionCalculatorTest {
         
         for (int i = 0; i < methods.size(); i++) {
             Fingerprint method = methods.get(i);
-            classA.addChild(method);
+            classA.addChildFingerprint(method);
             method.setName("method" + i + "()");
         }
         
         Fingerprint classB = new Fingerprint();
         classB.setName("pckg:classB");
-        classB.addChild(methods.get(0));
-        classB.addChild(methods.get(2));
-        classB.addChild(methods.get(4));
+        classB.addChildFingerprint(methods.get(0));
+        classB.addChildFingerprint(methods.get(2));
+        classB.addChildFingerprint(methods.get(4));
         
-        double score = calculator.computeClassInclusion(classA.getChildren(), classB.getChildren());
-        double expectedScore = methods.get(0).euclideanNorm() 
-                + methods.get(2).euclideanNorm() 
-                + methods.get(4).euclideanNorm();
+        double score = calculator.computeClassInclusion(classA.getChildFingerprints(), classB.getChildFingerprints());
+        double expectedScore = methods.get(0).getLength() 
+                + methods.get(2).getLength() 
+                + methods.get(4).getLength();
         
-        double perfectScore = calculator.computeClassInclusion(classB.getChildren(), classB.getChildren());
+        double perfectScore = calculator.computeClassInclusion(classB.getChildFingerprints(), classB.getChildFingerprints());
         
         assert(doubleEquals(score, expectedScore));
         assert(doubleEquals(score, perfectScore));
@@ -108,11 +108,11 @@ public class ClassInclusionCalculatorTest {
 
         double score = calculator.computeClassInclusion(classB, classA);
 
-        double maxScore = methods.get(0).euclideanNorm() 
-                + methods.get(1).euclideanNorm()  
-                + methods.get(2).euclideanNorm()  
-                + methods.get(3).euclideanNorm()  
-                + methods.get(4).euclideanNorm(); 
+        double maxScore = methods.get(0).getLength() 
+                + methods.get(1).getLength()  
+                + methods.get(2).getLength()  
+                + methods.get(3).getLength()  
+                + methods.get(4).getLength(); 
         
         assert(score < maxScore);
         assert(score > maxScore * .8);
@@ -134,11 +134,11 @@ public class ClassInclusionCalculatorTest {
 
         double score = calculator.computeClassInclusion(classB, classA);
         
-        double maxScore = methods.get(0).euclideanNorm() 
-                + methods.get(1).euclideanNorm()  
-                + methods.get(2).euclideanNorm()  
-                + methods.get(3).euclideanNorm()  
-                + methods.get(4).euclideanNorm(); 
+        double maxScore = methods.get(0).getLength() 
+                + methods.get(1).getLength()  
+                + methods.get(2).getLength()  
+                + methods.get(3).getLength()  
+                + methods.get(4).getLength(); 
         
         assert(score < maxScore * .1);
     }

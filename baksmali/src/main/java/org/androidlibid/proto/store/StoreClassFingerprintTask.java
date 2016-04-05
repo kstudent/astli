@@ -41,11 +41,11 @@ public class StoreClassFingerprintTask implements Callable<Void> {
         
         for(Node node : ast) {
             Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
-                classFingerprint.add(methodFingerprint);
+                classFingerprint.sumFeatures(methodFingerprint);
             }
         
-        if(classFingerprint.euclideanNorm() > 0.0d) {
-            service.saveClass(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
+        if(classFingerprint.getLength() > 0.0d) {
+            service.saveClass(classFingerprint.getFeatureVector().toBinary(), className, packageName, mvnIdentifier);
         }
         
         return null;

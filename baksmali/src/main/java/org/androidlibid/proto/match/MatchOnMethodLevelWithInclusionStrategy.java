@@ -67,18 +67,12 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
         
-        
-//        String interestingPackage = "org.spongycastle.pqc.math.linearalgebra";
-//        if(!packageNeedle.getName().equals(interestingPackage)) {
-//            return result;
-//        }
-        
         List<Fingerprint> matchesByScore = new ArrayList<>();
         LOGGER.info("* {}", packageNeedle.getName());
         
         LOGGER.info("** match with myself");
         
-        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageNeedle.getChildren());
+        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildFingerprints(), packageNeedle.getChildFingerprints());
         packageNeedle.setInclusionScore(perfectScore);
 
         LOGGER.info("** perfect score was {}", perfectScore);
@@ -89,7 +83,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             
             Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
             
-            double packageScore = calculator.computePackageInclusion(packageHierarchy.getChildren(), packageNeedle.getChildren());
+            double packageScore = calculator.computePackageInclusion(packageHierarchy.getChildFingerprints(), packageNeedle.getChildFingerprints());
                         
             packageHierarchy.setInclusionScore(packageScore);
             
@@ -116,7 +110,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         FingerprintMatcher.Result result = new FingerprintMatcher.Result();
         result.setNeedle(packageNeedle);
         
-        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildren(), packageNeedle.getChildren());
+        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildFingerprints(), packageNeedle.getChildFingerprints());
         packageNeedle.setInclusionScore(perfectScore);
         
         List<Fingerprint> matchesByScore = new ArrayList<>();
@@ -125,9 +119,9 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
         
         LOGGER.info("* {} ({})", packageNeedle.getName(), perfectScore); 
         
-        for(Fingerprint classNeedle : packageNeedle.getChildren()) {
-            for(Fingerprint methodNeedle : classNeedle.getChildren()) {
-                double length = methodNeedle.euclideanNorm();
+        for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
+            for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
+                double length = methodNeedle.getLength();
                 double size   = length * (1 - methodMatchThreshold);
                 
                 if(length < minimalMethodLengthForNeedleLookup) {
@@ -142,8 +136,8 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                 
                 for(Fingerprint methodCandidate : methodHaystack) {
                     
-                    double methodSimilarityScore = methodCandidate.computeSimilarityScore(methodNeedle);
-                    double maxLength = Math.max(methodNeedle.euclideanNorm(), methodCandidate.euclideanNorm());
+                    double methodSimilarityScore = methodCandidate.getSimilarityScoreToFingerprint(methodNeedle);
+                    double maxLength = Math.max(methodNeedle.getLength(), methodCandidate.getLength());
                     
                     if((methodSimilarityScore / maxLength) > methodMatchThreshold) {
                         
@@ -159,8 +153,8 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
                         }
                         if (continueFlag) continue;
 
-                        List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildren());
-                        List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildren());
+                        List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildFingerprints());
+                        List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
 
                         double packageScore = calculator.computePackageInclusion(classSuperSet, classSubSet);
                         
@@ -208,8 +202,8 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             if(!packagesWithSameName.isEmpty()) {
                 Fingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));
                 
-                List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildren());
-                List<Fingerprint> classSuperSet = new LinkedList<>(matchByName.getChildren());
+                List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
+                List<Fingerprint> classSuperSet = new LinkedList<>(matchByName.getChildFingerprints());
                 
                 double score = calculator.computePackageInclusion(classSuperSet, classSubSet);
                 matchByName.setInclusionScore(score);

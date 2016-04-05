@@ -31,11 +31,11 @@ public class FingerprintService {
             
             for(Clazz classEntity : pckg.getClazzes()) {
                 Fingerprint classFingerprint = new Fingerprint(classEntity);
-                pckgFingerprint.addChild(classFingerprint);
+                pckgFingerprint.addChildFingerprint(classFingerprint);
                 
                 for (Method methodEntity : classEntity.getMethods()) {
                     Fingerprint methodFingerprint = new Fingerprint(methodEntity);
-                    classFingerprint.addChild(methodFingerprint);
+                    classFingerprint.addChildFingerprint(methodFingerprint);
 
                     haystack.add(methodFingerprint);
                 }
@@ -75,7 +75,7 @@ public class FingerprintService {
             throw new RuntimeException("Package.getEntity() was null."); 
         }
         
-        if(!pckg.getChildren().isEmpty()) {
+        if(!pckg.getChildFingerprints().isEmpty()) {
             throw new RuntimeException("Package already had children!"); 
         }
         
@@ -84,9 +84,9 @@ public class FingerprintService {
             
             for(Method methodEntity : clazzEntity.getMethods()) {
                 Fingerprint method = new Fingerprint(methodEntity);
-                clazz.addChild(method);
+                clazz.addChildFingerprint(method);
             }
-            pckg.addChild(clazz);
+            pckg.addChildFingerprint(clazz);
         }
         
         return pckg;

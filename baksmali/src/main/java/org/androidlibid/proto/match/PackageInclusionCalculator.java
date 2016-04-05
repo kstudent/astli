@@ -48,7 +48,7 @@ public class PackageInclusionCalculator {
             for (Fingerprint clazzCandidate : superSetCopy) {
                 
                 double score = calculator.computeClassInclusion(
-                        clazzCandidate.getChildren(), clazz.getChildren());
+                        clazzCandidate.getChildFingerprints(), clazz.getChildFingerprints());
                 
                 if(Double.isNaN(score) || score < 0) {
                     throw new RuntimeException("Like, srsly?");
@@ -93,8 +93,8 @@ public class PackageInclusionCalculator {
                 clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
             }
             
-            double perfectScore = calculator.computeClassInclusion(clazz.getChildren(), clazz.getChildren()); 
-            LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", clazzName, clazz.getChildren().size(), perfectScore); 
+            double perfectScore = calculator.computeClassInclusion(clazz.getChildFingerprints(), clazz.getChildFingerprints()); 
+            LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", clazzName, clazz.getChildFingerprints().size(), perfectScore); 
         }
     }
 

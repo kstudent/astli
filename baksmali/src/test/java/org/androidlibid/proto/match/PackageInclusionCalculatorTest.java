@@ -34,7 +34,7 @@ public class PackageInclusionCalculatorTest {
         
         for(int i = 0; i < 8; i++) {
             Fingerprint clazz = new Fingerprint(); 
-            allMethods.add(clazz.getChildren());
+            allMethods.add(clazz.getChildFingerprints());
             allClasses.add(clazz); 
         }
         

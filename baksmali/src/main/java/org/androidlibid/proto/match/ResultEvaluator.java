@@ -71,8 +71,8 @@ public class ResultEvaluator {
             for(int i = 0; i < result.getMatchesByDistance().size(); i++) {
                 Fingerprint matchByDistance = result.getMatchesByDistance().get(i);
                 
-                double maxLength = Math.max(matchByDistance.euclideanNorm(), needle.euclideanNorm());
-                double eucDiffR  = maxLength - matchByDistance.euclideanDiff(needle);
+                double maxLength = Math.max(matchByDistance.getLength(), needle.getLength());
+                double eucDiffR  = maxLength - matchByDistance.getDistanceToFingerprint(needle);
                
                 if(eucDiffR < 0) eucDiffR = 0;
                 eucDiffR = eucDiffR  / maxLength;
@@ -82,7 +82,7 @@ public class ResultEvaluator {
                         matchByDistance.getName(),
                         frmt.format(matchByDistance.getInclusionScore()), 
                         frmt.format(matchByDistance.getInclusionScore() / needle.getInclusionScore()), 
-                        frmt.format(matchByDistance.euclideanDiff(needle)), 
+                        frmt.format(matchByDistance.getDistanceToFingerprint(needle)), 
                         frmt.format(eucDiffR)
                 );
             }

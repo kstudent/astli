@@ -56,12 +56,12 @@ public class ClassInclusionCalculator {
             String elementName = element.getName();
             
             double score = 0;
-            double maxScore = element.euclideanNorm();
+            double maxScore = element.getLength();
             
             if(result.getMatchesByDistance().size() > 0) {
                 Fingerprint closestElmentInBiggerSet = result.getMatchesByDistance().get(0);
                 
-                score = element.computeSimilarityScore(closestElmentInBiggerSet);
+                score = element.getSimilarityScoreToFingerprint(closestElmentInBiggerSet);
                 
                 String bestMatchName = closestElmentInBiggerSet.getName();
                 
@@ -106,10 +106,10 @@ public class ClassInclusionCalculator {
         LOGGER.info("**** {} (#Methods: {}, Length: {}) -> {} (#Methods: {}, Length: {}) ?", 
             subSetName, 
             subSet.size(),
-            subClass.euclideanNorm(),
+            subClass.getLength(),
             superSetName, 
             superSet.size(),
-            superClass.euclideanNorm()
+            superClass.getLength()
         ); 
         
     }

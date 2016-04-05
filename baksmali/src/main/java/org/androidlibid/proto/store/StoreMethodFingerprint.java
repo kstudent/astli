@@ -53,18 +53,18 @@ public class StoreMethodFingerprint implements Callable<Void> {
             
             logMethod(methodSignature, node, methodFingerprint);
             
-            if(methodFingerprint.euclideanNorm() > 1.0d) {
+            if(methodFingerprint.getLength() > 1.0d) {
                 methodFingerprint.setName(className + ":" + methodSignature);
-                classFingerprint.add(methodFingerprint);
-                classFingerprint.addChild(methodFingerprint);
+                classFingerprint.sumFeatures(methodFingerprint);
+                classFingerprint.addChildFingerprint(methodFingerprint);
             } 
         }
         
-        if(classFingerprint.euclideanNorm() > 0.0d) {
-            Clazz clazz = service.saveClass(classFingerprint.getVector().toBinary(), className, packageName, mvnIdentifier);
+        if(classFingerprint.getLength() > 0.0d) {
+            Clazz clazz = service.saveClass(classFingerprint.getFeatureVector().toBinary(), className, packageName, mvnIdentifier);
             
-            for(Fingerprint method : classFingerprint.getChildren()) {
-                service.saveMethod(method.getVector().toBinary(), method.getName(), method.euclideanNorm(), clazz);
+            for(Fingerprint method : classFingerprint.getChildFingerprints()) {
+                service.saveMethod(method.getFeatureVector().toBinary(), method.getName(), method.getLength(), clazz);
             }
         }
         

@@ -30,8 +30,8 @@ public class PackageHierarchyGenerator {
     private final Comparator<Fingerprint> sortByEuclidDESCComparator = new Comparator<Fingerprint>() {
         @Override
         public int compare(Fingerprint that, Fingerprint other) {
-            double thatNeedleLength  = that.euclideanNorm();
-            double otherNeedleLength = other.euclideanNorm();
+            double thatNeedleLength  = that.getLength();
+            double otherNeedleLength = other.getLength();
             if (thatNeedleLength > otherNeedleLength) return -1;
             if (thatNeedleLength < otherNeedleLength) return  1;
             return 0;
@@ -57,7 +57,7 @@ public class PackageHierarchyGenerator {
             
             Fingerprint classFingerprint = transformClassDefToFingerprint(astClassDefinition, obfClassName);
             
-            if(classFingerprint.getChildren().isEmpty()) {
+            if(classFingerprint.getChildFingerprints().isEmpty()) {
                 continue;
             }
             
@@ -71,12 +71,12 @@ public class PackageHierarchyGenerator {
                 packagePrints.put(packageName, packageFingerprint);
             }
 
-            packageFingerprint.add(classFingerprint);
-            packageFingerprint.addChild(classFingerprint);
+            packageFingerprint.sumFeatures(classFingerprint);
+            packageFingerprint.addChildFingerprint(classFingerprint);
         }
         
         for(Fingerprint pckg : packagePrints.values()) {
-            Collections.sort(pckg.getChildren(), sortByEuclidDESCComparator);
+            Collections.sort(pckg.getChildFingerprints(), sortByEuclidDESCComparator);
         }
 
         return packagePrints;
@@ -103,17 +103,17 @@ public class PackageHierarchyGenerator {
             LOGGER.debug("** fingerprint" );
             LOGGER.debug(methodFingerprint);
             
-            if(methodFingerprint.euclideanNorm() > 1.0f) {
+            if(methodFingerprint.getLength() > 1.0f) {
                 methodFingerprint.setName(clearMethodSignature);
                 methods.add(methodFingerprint);
-                classFingerprint.add(methodFingerprint);
+                classFingerprint.sumFeatures(methodFingerprint);
             }
         }
         
         Collections.sort(methods, sortByEuclidDESCComparator);
         
         for(Fingerprint method : methods) {
-            classFingerprint.addChild(method);
+            classFingerprint.addChildFingerprint(method);
         }
         
         return classFingerprint;
