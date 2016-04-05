@@ -50,7 +50,7 @@ public class mainTest {
         String packageName = "org.spongycastle.pqc.math.linearalgebra"; 
         EntityService service = EntityServiceFactory.createService();
         
-        List<Package> packages = service.findPackageByName(packageName);
+        List<Package> packages = service.findPackagesByName(packageName);
         
         for(Package pckg : packages) {
             for(Clazz clazz : pckg.getClazzes()) {
