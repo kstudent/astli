@@ -54,7 +54,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.*;
 import org.androidlibid.proto.match.MatchFingerprintsOnClassLevelAlgorithm;
 import org.androidlibid.proto.match.MatchFingerprintsAlgorithm;
-import org.androidlibid.proto.StoreFingerprintsAlgorithm;
+import org.androidlibid.proto.store.StoreFingerprintsAlgorithm;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class baksmali {

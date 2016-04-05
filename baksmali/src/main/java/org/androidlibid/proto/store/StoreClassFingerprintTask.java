@@ -1,10 +1,12 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.store;
 
 import java.util.Collection;
 import org.androidlibid.proto.ast.Node;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import java.util.concurrent.Callable;
+import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.SmaliNameConverter;
 import org.androidlibid.proto.ao.EntityService;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;

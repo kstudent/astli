@@ -1,4 +1,4 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.store;
 
 import org.androidlibid.proto.match.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ao.Library;
