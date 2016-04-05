@@ -158,4 +158,20 @@ task integrationTest(type: Test) {
 test {
     exclude 'org/androidlibid/proto/integration/**'
     testLogging{ showStandardStreams = true }
-}   
+}
+
+apply plugin: "jacoco"
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
+    
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: 'org/jf/**')
+        })
+    }
+}
