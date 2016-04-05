@@ -48,13 +48,10 @@ public class StoreMethodFingerprint implements Callable<Void> {
                 
         for(String methodSignature : ast.keySet()) {
             
-            Fingerprint methodFingerprint = ast2fpt.createFingerprint(ast.get(methodSignature));
+            Node node = ast.get(methodSignature);
+            Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
             
-            LOGGER.debug("* {}", methodSignature);
-            LOGGER.debug("** ast" );
-            LOGGER.debug(ast.get(methodSignature));
-            LOGGER.debug("** fingerprint" );
-            LOGGER.debug(methodFingerprint);
+            logMethod(methodSignature, node, methodFingerprint);
             
             if(methodFingerprint.euclideanNorm() > 1.0d) {
                 methodFingerprint.setName(className + ":" + methodSignature);
@@ -73,5 +70,15 @@ public class StoreMethodFingerprint implements Callable<Void> {
         
         return null;
     }
-    
+
+    private void logMethod(String methodSignature, Node ast, Fingerprint methodFingerprint) {
+        
+        if(LOGGER.isDebugEnabled()) {
+            LOGGER.debug("* {}", methodSignature);
+            LOGGER.debug("** ast" );
+            LOGGER.debug(ast);
+            LOGGER.debug("** fingerprint" );
+            LOGGER.debug(methodFingerprint);
+        }
+    }
 }
