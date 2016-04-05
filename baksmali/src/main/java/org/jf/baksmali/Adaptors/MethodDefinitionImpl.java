@@ -398,7 +398,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
         return sparseSwitchMap.get(sparseSwitchPayloadCodeOffset, -1);
     }
 
-    private List<MethodItem> getMethodItems() {
+    public List<MethodItem> getMethodItems() {
         ArrayList<MethodItem> methodItems = new ArrayList<MethodItem>();
 
         if ((classDef.getOptions().registerInfo != 0) || (classDef.getOptions().normalizeVirtualMethods) ||

@@ -15,19 +15,13 @@
  */
 package org.jf.baksmali.Adaptors;
 
-import com.google.common.collect.ImmutableList;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import javax.annotation.Nonnull;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MethodImplementation;
-import org.jf.dexlib2.iface.MethodParameter;
-import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.util.ExceptionWithContext;
-import org.jf.util.IndentingWriter;
 
 /**
  *

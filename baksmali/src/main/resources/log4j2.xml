@@ -45,5 +45,7 @@
         
         <!--<Logger name="org.androidlibid.proto.StoreMethodFingerprint"                        level="debug"/>-->
         <!--<Logger name="" level="debug"/>-->
+        
+        <!--<Logger name="org.androidlibid.proto.ast.ASTMethodDefinitionTest"                   level="info"/>-->
     </Loggers>
 </Configuration>

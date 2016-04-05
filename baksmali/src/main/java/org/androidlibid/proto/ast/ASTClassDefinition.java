@@ -28,8 +28,6 @@
 
 package org.androidlibid.proto.ast;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 import org.jf.dexlib2.iface.*;
@@ -38,6 +36,7 @@ import java.io.IOException;
 import java.util.*;
 import org.androidlibid.proto.SmaliNameConverter;
 import org.jf.baksmali.Adaptors.ClassDefinition;
+import org.jf.baksmali.Adaptors.MethodDefinitionImpl;
 import org.jf.util.IndentingWriter;
 
 public class ASTClassDefinition implements ClassDefinition {
@@ -99,8 +98,8 @@ public class ASTClassDefinition implements ClassDefinition {
                         method.getName(), method.getParameterTypes(), 
                         method.getReturnType());
                 
-                ASTMethodDefinition methodASTBuilder = new ASTMethodDefinition(
-                        this, method, methodImpl);
+                ASTMethodDefinition methodASTBuilder = new ASTMethodDefinition(new MethodDefinitionImpl(
+                        this, method, methodImpl), options.noParameterRegisters);
                 
                 methodASTs.put(signature, methodASTBuilder.createAST());
             }
