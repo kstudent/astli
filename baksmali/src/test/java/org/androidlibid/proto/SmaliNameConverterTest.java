@@ -1,5 +1,7 @@
 package org.androidlibid.proto;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 
 /**
@@ -85,5 +87,21 @@ public class SmaliNameConverterTest {
         String type = "[[B";
         String transformedType = SmaliNameConverter.convertTypeFromSmali(type);
         assert(transformedType.equals("byte[][]"));
+    }
+
+    @Test
+    public void testBuildMethodSignature() throws Exception {
+
+        String methodName = "<init>";
+        List<String> smaliParameterTypes = new ArrayList<>();
+        smaliParameterTypes.add("[[B");
+        smaliParameterTypes.add("[D");
+        smaliParameterTypes.add("Ltld.domain.subdomain.project.package.ClassName;");
+        String smaliReturnType = "[[[I"; 
+        String expectedSignature = "<init>(byte[][],double[],tld.domain.subdomain.project.package:ClassName):int[][][]";
+        
+        String signature = SmaliNameConverter.buildMethodSignature(methodName, smaliParameterTypes, smaliReturnType);
+
+        assert(expectedSignature.equals(signature));
     }
 }
