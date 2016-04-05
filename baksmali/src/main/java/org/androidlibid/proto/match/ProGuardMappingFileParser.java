@@ -3,7 +3,6 @@ package org.androidlibid.proto.match;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 import org.androidlibid.proto.SmaliNameConverter;
@@ -16,41 +15,34 @@ import org.androidlibid.proto.utils.StringUtils;
 public class ProGuardMappingFileParser {
     
     BiMap<String, String> mapping = HashBiMap.create();
-    String mappingFilePath; 
 
-    public ProGuardMappingFileParser(String mappingFilePath) {
-        this.mappingFilePath = mappingFilePath;
-    }
-
-    public Map<String, String> parseMappingFileOnClassLevel() throws IOException {
+    public Map<String, String> parseMappingFileOnClassLevel(
+            BufferedReader reader) throws IOException {
         
-        try (BufferedReader br = new BufferedReader(new FileReader(mappingFilePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if(line.startsWith("    ")) continue;
-                parseClassLine(line, true);
-            }
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if(isMethodLine(line)) continue;
+            parseClassLine(line, true);
         }
         
         return mapping;
     }
     
-    public Map<String, String> parseMappingFileOnMethodLevel() throws IOException {
+    public Map<String, String> parseMappingFileOnMethodLevel(
+            BufferedReader classReader, BufferedReader methodReader) throws IOException {
         
-        parseMappingFileOnClassLevel();
+        parseMappingFileOnClassLevel(classReader);
         
-        try (BufferedReader br = new BufferedReader(new FileReader(mappingFilePath))) {
-            String line;
-            
-            String[] classNames = {"", ""}; 
-            
-            while ((line = br.readLine()) != null) {
-                
-                if(line.startsWith("    ")) {
-                    parseMethodLine(line.substring(4), classNames[0], classNames[1]);
-                } else {
-                    classNames = parseClassLine(line, false);
-                }
+        String line;
+
+        String[] classNames = {"", ""}; 
+
+        while ((line = methodReader.readLine()) != null) {
+
+            if(isMethodLine(line)) {
+                parseMethodLine(line.substring(4), classNames[0], classNames[1]);
+            } else {
+                classNames = parseClassLine(line, false);
             }
         }
         
@@ -61,14 +53,14 @@ public class ProGuardMappingFileParser {
         String[] pieces = line.split(" -> ");
 
         if(pieces.length != 2) {
-            throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
+            throw new RuntimeException("Mapping file: format error");
         }
 
         String obfuscatedClassName = pieces[1].substring(0, pieces[1].length() - 1);
         String clearClassName = pieces[0];
 
-        if(obfuscatedClassName.length() == 0 || clearClassName.length() == 0) {
-            throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
+        if(obfuscatedClassName.isEmpty() || clearClassName.isEmpty()) {
+            throw new RuntimeException("Mapping file: format error");
         }
 
         obfuscatedClassName = StringUtils.replaceLastOccurrence(obfuscatedClassName, ".", ":");
@@ -97,7 +89,7 @@ public class ProGuardMappingFileParser {
     private void parseMethodLine(String line, String obfuscatedClassName, String clearClassName) {
         String[] pieces = line.split(" -> ");
         if(pieces.length != 2) {
-            throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
+            throw new RuntimeException("Mapping file: format error");
         }
         
         String clearNameString = pieces[0]; 
@@ -122,7 +114,7 @@ public class ProGuardMappingFileParser {
         
         if(obfuscatedClassName.isEmpty() || clearClassName.isEmpty()
                 || clearMethodName.isEmpty() || obfuscatedMethodName.isEmpty()) {
-            throw new RuntimeException("Mapping file " + mappingFilePath + ": format error");
+            throw new RuntimeException("Mapping file: format error");
         }
        
         String obfuscatedKey  = obfuscatedClassName + ":" + obfuscatedMethodName + "(" + obfuscatedArguments + "):" + obfuscatedReturnType; 
@@ -223,5 +215,9 @@ public class ProGuardMappingFileParser {
         }
         
         return clearArguments.toString();
+    }
+
+    private boolean isMethodLine(String line) {
+        return line.startsWith("    ");
     }
 }

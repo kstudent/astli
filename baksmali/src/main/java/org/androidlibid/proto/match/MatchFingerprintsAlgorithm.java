@@ -1,5 +1,7 @@
 package org.androidlibid.proto.match;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -73,8 +75,12 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         Map<String, String> mappings = new HashMap<>();
 
         if(options.isObfuscated) {
-            ProGuardMappingFileParser parser = new ProGuardMappingFileParser(options.mappingFile); 
-            mappings = parser.parseMappingFileOnMethodLevel();
+            
+            BufferedReader classReader  = new BufferedReader(new FileReader(options.mappingFile));
+            BufferedReader methodReader = new BufferedReader(new FileReader(options.mappingFile));
+            
+            ProGuardMappingFileParser parser = new ProGuardMappingFileParser(); 
+            mappings = parser.parseMappingFileOnMethodLevel(classReader, methodReader);
         } 
 
         PackageHierarchyGenerator phGen = new PackageHierarchyGenerator(
