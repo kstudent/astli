@@ -162,6 +162,23 @@ public class EntityServicePackageTest {
         
     }
     
+    @Test
+    public void testFindPackagesByName() throws SQLException {
+        List<Package> foundPackages = service.findPackagesByName("package1");
+        
+        assert(foundPackages.size() == 1);
+        assert( foundPackages.contains(package1));
+        assert(!foundPackages.contains(package2));
+    }
+    
+    @Test
+    public void testFindPackages() throws SQLException {
+        List<Package> foundPackages = service.findPackages();
+        
+        assert(foundPackages.size() == 2);
+        assert(foundPackages.contains(package1));
+        assert(foundPackages.contains(package2));
+    }
     
     public static final class MyDatabaseUpdater implements DatabaseUpdater
     {

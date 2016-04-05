@@ -1,6 +1,7 @@
 package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
+import java.util.List;
 import net.java.ao.EntityManager;
 import net.java.ao.schema.CamelCaseFieldNameConverter;
 import net.java.ao.test.converters.NameConverters;
@@ -95,6 +96,14 @@ public class EntityServiceLibraryTest {
         
         assert(em.find(Library.class, "NAME = ?", mvnIdentifier).length == 1);
         
+    }
+    
+    @Test 
+    public void findLibaries() throws Exception {
+        List<Library> foundLibs = service.findLibraries();
+        
+        assert(foundLibs.contains(lib1));
+        assert(foundLibs.contains(lib2));
     }
     
     public static final class MyDatabaseUpdater implements DatabaseUpdater

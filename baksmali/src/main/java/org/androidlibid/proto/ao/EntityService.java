@@ -171,7 +171,7 @@ public class EntityService {
         return libraries[0];
     }
 
-    public List<Package> findPackageByName(String name) throws SQLException {
+    public List<Package> findPackagesByName(String name) throws SQLException {
         return Arrays.asList(em.find(Package.class, "NAME = ?", name ));
     }
 }

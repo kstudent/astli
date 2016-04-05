@@ -95,7 +95,7 @@ public class FingerprintService {
     List<Fingerprint> findPackageByName(String name) throws SQLException{
         List<Fingerprint> pckgFingerprints = new ArrayList<>();
         
-        for(Package pckg : service.findPackageByName(name)) {
+        for(Package pckg : service.findPackagesByName(name)) {
             pckgFingerprints.add(new Fingerprint(pckg));
         }
                 
