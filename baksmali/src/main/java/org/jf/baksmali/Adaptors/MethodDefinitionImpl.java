@@ -87,6 +87,12 @@ public class MethodDefinitionImpl implements MethodDefinition {
     public MethodImplementation getMethodImpl() {
         return methodImpl;
     }
+    
+    @Override
+    public ImmutableList<MethodParameter> getMethodParameters() {
+        return methodParameters;
+    }
+    
 
     public ImmutableList<Instruction> getInstructions() {
         return instructions;
@@ -96,9 +102,6 @@ public class MethodDefinitionImpl implements MethodDefinition {
         return effectiveInstructions;
     }
 
-    public ImmutableList<MethodParameter> getMethodParameters() {
-        return methodParameters;
-    }
 
     @Override
     public RegisterFormatter getRegisterFormatter() {
@@ -398,6 +401,7 @@ public class MethodDefinitionImpl implements MethodDefinition {
         return sparseSwitchMap.get(sparseSwitchPayloadCodeOffset, -1);
     }
 
+    @Override
     public List<MethodItem> getMethodItems() {
         ArrayList<MethodItem> methodItems = new ArrayList<MethodItem>();
 

@@ -15,12 +15,15 @@
  */
 package org.jf.baksmali.Adaptors;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import javax.annotation.Nonnull;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MethodImplementation;
+import org.jf.dexlib2.iface.MethodParameter;
 import org.jf.util.ExceptionWithContext;
 
 /**
@@ -45,6 +48,10 @@ public interface MethodDefinition {
     RegisterFormatter getRegisterFormatter();
 
     int getSparseSwitchBaseAddress(int sparseSwitchPayloadCodeOffset);
+    
+    public ImmutableList<MethodParameter> getMethodParameters();
+    
+    public List<MethodItem> getMethodItems();
     
     public static class LabelCache {
             protected HashMap<LabelMethodItem, LabelMethodItem> labels = new HashMap<LabelMethodItem, LabelMethodItem>();

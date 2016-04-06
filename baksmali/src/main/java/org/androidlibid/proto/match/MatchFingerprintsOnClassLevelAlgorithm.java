@@ -104,8 +104,8 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
         @Override public MatchingStrategy.Status call() throws Exception {
             String name = classDef.getType();
 
-            ASTBuilderFactory factory = new ASTBuilderFactory();
-            ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, factory);
+            ASTBuilderFactory factory = new ASTBuilderFactory(options);
+            ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, factory);
             
             Iterable<Node> ast = astClassBuilder.buildASTs().values();
 

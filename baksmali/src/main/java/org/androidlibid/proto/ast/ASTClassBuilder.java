@@ -28,43 +28,27 @@
 
 package org.androidlibid.proto.ast;
 
-import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 import org.jf.dexlib2.iface.*;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
 import org.androidlibid.proto.SmaliNameConverter;
-import org.jf.baksmali.Adaptors.ClassDefinition;
-import org.jf.util.IndentingWriter;
 
-public class ASTClassBuilder implements ClassDefinition {
+public class ASTClassBuilder {
     
-    @Nonnull private final baksmaliOptions options;
     @Nonnull private final ClassDef classDef;
-
-    protected boolean validationErrors;
     private final ASTBuilderFactory astBuilderFactory;
 
-    @Override
-    public baksmaliOptions getOptions() {
-        return options;
-    }
-
-    @Override
-    public ClassDef getClassDef() {
-        return classDef;
-    }
-    
-    public ASTClassBuilder(@Nonnull baksmaliOptions options, @Nonnull ClassDef classDef, ASTBuilderFactory astBuilderFactory) {
-        this.options = options;
+    public ASTClassBuilder(
+            ClassDef classDef, 
+            ASTBuilderFactory astBuilderFactory) {
         this.classDef = classDef;
         this.astBuilderFactory = astBuilderFactory;
     }
-
-    @Override
-    public boolean hadValidationErrors() {
-        return validationErrors;
+    
+    public String getClassName() {
+        return classDef.getType();
     }
 
     public Map<String, Node> buildASTs() throws IOException {
@@ -100,7 +84,7 @@ public class ASTClassBuilder implements ClassDefinition {
                         method.getReturnType());
                 
                 ASTBuilder methodASTBuilder = astBuilderFactory.createASTBuilder(
-                        this, method, methodImpl, options.noParameterRegisters);
+                        classDef, method, methodImpl);
                 
                 methodASTs.put(signature, methodASTBuilder.buildAST());
             }
@@ -109,8 +93,4 @@ public class ASTClassBuilder implements ClassDefinition {
         return methodASTs;
     }
     
-    @Override
-    public void writeTo(IndentingWriter writer) throws IOException {
-        throw new UnsupportedOperationException("Not intendet for writing.");
-    }
 }

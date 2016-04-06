@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.Method;
@@ -24,8 +23,6 @@ import static org.mockito.Mockito.any;
  */
 public class ASTClassDefinitionTest {
     
-    private baksmaliOptions options;
-    
     private List<Method> virtualMethods;
     private List<Method> directMethods;
     private ASTBuilderFactory factory;
@@ -35,7 +32,6 @@ public class ASTClassDefinitionTest {
     
     @Before
     public void setUp() throws IOException {
-        options    = new baksmaliOptions();
         factory    = mock(ASTBuilderFactory.class);
         astBuilder = mock(ASTBuilder.class);
         
@@ -43,11 +39,10 @@ public class ASTClassDefinitionTest {
         directMethods  = new ArrayList<Method>();
         
         when(factory.createASTBuilder(
-                any(ASTClassBuilder.class), 
+                any(ClassDef.class), 
                 any(Method.class), 
-                any(MethodImplementation.class), 
-                any(Boolean.class)))
-            .thenReturn(astBuilder);
+                any(MethodImplementation.class)
+            )).thenReturn(astBuilder);
         when(astBuilder.buildAST()).thenReturn(new Node(NodeType.METHOD));
     }
         
@@ -55,7 +50,7 @@ public class ASTClassDefinitionTest {
     public void testBuildClassASTs() throws IOException {
         ClassDef classDef = createClassDef();
         
-        ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, factory);
+        ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, factory);
         
         addMethod(true,  "doVirtualSuchAndSuch", "I",                "I", "Z");
         addMethod(false, "doDirectSuchAndSuch",  "Ltld/pckg/Class;", "I", "Ltld/pckg/AnotherClass;");
@@ -80,7 +75,7 @@ public class ASTClassDefinitionTest {
     public void testBuildClassASTsWithDexBackendClassDef() throws IOException {
         ClassDef classDef = createClassDefWithDexBackend();
         
-        ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, factory);
+        ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, factory);
         addMethod(true,  "doVirtualSuchAndSuch", "I",                "I", "Z");
         addMethod(false, "doDirectSuchAndSuch",  "Ltld/pckg/Class;", "I", "Ltld/pckg/AnotherClass;");
         

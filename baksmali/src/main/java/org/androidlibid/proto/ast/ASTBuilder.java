@@ -37,7 +37,7 @@ import org.jf.dexlib2.util.TypeUtils;
 import java.io.IOException;
 import java.util.*;
 import org.jf.baksmali.Adaptors.Format.InstructionMethodItem;
-import org.jf.baksmali.Adaptors.MethodDefinitionImpl;
+import org.jf.baksmali.Adaptors.MethodDefinition;
 import org.jf.baksmali.Adaptors.MethodItem;
 import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 
@@ -49,10 +49,10 @@ import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 
 public class ASTBuilder {
 
-    private final MethodDefinitionImpl methodDefinition;
+    private final MethodDefinition methodDefinition;
     private final boolean noParameterRegisters;
 
-    public ASTBuilder(MethodDefinitionImpl methodDefinition, boolean noParameterRegisters) {
+    public ASTBuilder(MethodDefinition methodDefinition, boolean noParameterRegisters) {
         this.methodDefinition     = methodDefinition;
         this.noParameterRegisters = noParameterRegisters;
     }

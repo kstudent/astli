@@ -35,7 +35,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options   = options;
         this.classDefs = classDefs;
-        astBuilderFactory = new ASTBuilderFactory();
+        astBuilderFactory = new ASTBuilderFactory(options);
     }
     
     @Override
@@ -93,7 +93,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         List<ASTClassBuilder> astClassBuilders = new ArrayList<>(); 
         for(ClassDef classDef: classDefs) {
-            ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, astBuilderFactory);
+            ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
             astClassBuilders.add(astClassBuilder);
         }
         

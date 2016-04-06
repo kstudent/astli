@@ -13,7 +13,6 @@ import org.jf.baksmali.baksmaliOptions;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.when;
-import org.jf.dexlib2.iface.ClassDef;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -141,9 +140,7 @@ public class PackageHierarchyGeneratorTest {
     private ASTClassBuilder prepareClassDefinition(int i, String packageName, String className, String returnValueType) throws IOException {
         ASTClassBuilder astC = mock(ASTClassBuilder.class);
         
-        ClassDef cd = mock(ClassDef.class);
-        when(cd.getType()).thenReturn("L" + packageName + "." + className + i + ";");
-        when(astC.getClassDef()).thenReturn(cd);
+        when(astC.getClassName()).thenReturn("L" + packageName + "." + className + i + ";");
 
         Node methodNode = new Node(NodeType.METHOD);
         Map<String, Node> methodsofClass = new HashMap<>();

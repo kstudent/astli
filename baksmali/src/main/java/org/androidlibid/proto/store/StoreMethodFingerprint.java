@@ -35,8 +35,9 @@ public class StoreMethodFingerprint implements Callable<Void> {
     
     @Override public Void call() throws Exception {
         
-        ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory();
-        ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, astBuilderFactory);
+        ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(options);
+        ASTClassBuilder astClassBuilder = new ASTClassBuilder(
+                classDef, astBuilderFactory);
         
         Map<String, Node> ast = astClassBuilder.buildASTs();
         

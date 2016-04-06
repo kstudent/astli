@@ -29,9 +29,9 @@ public class StoreClassFingerprintTask implements Callable<Void> {
     
     @Override public Void call() throws Exception {
         
-        ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory();
-        ASTClassBuilder classDefinition = new ASTClassBuilder(options, classDef, astBuilderFactory);
-        Iterable<Node> ast = classDefinition.buildASTs().values();
+        ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(options);
+        ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
+        Iterable<Node> ast = astClassBuilder.buildASTs().values();
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
         String className     = SmaliNameConverter.convertTypeFromSmali(classDef.getType());

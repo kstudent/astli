@@ -13,7 +13,6 @@ import org.androidlibid.proto.ast.Node;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
-import org.jf.dexlib2.iface.ClassDef;
 
 /**
  * 
@@ -49,9 +48,9 @@ public class PackageHierarchyGenerator {
         Map<String, Fingerprint> packagePrints = new HashMap<>();
             
         for(ASTClassBuilder astClassBuilder : astClassBuilders) {
-            ClassDef classDef = astClassBuilder.getClassDef();
+            String smaliClassName = astClassBuilder.getClassName();
             
-            String obfClassName = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
+            String obfClassName = SmaliNameConverter.convertTypeFromSmali(smaliClassName);
             String className =    translateName(obfClassName);
             String packageName =  SmaliNameConverter.extractPackageNameFromClassName(className);
             
