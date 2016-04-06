@@ -15,7 +15,7 @@ import org.jf.dexlib2.iface.MethodImplementation;
  */
 public class ASTBuilderFactory {
     
-    baksmaliOptions options;
+    private final baksmaliOptions options;
 
     public ASTBuilderFactory(baksmaliOptions options) {
         this.options = options;

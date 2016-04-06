@@ -3,6 +3,8 @@ package org.androidlibid.proto.store;
 import org.androidlibid.proto.match.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -12,11 +14,13 @@ import java.util.concurrent.Future;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
-import org.androidlibid.proto.ao.Library;
-import org.androidlibid.proto.ao.Package;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
-import org.androidlibid.proto.ao.Clazz;
+import org.androidlibid.proto.ast.ASTBuilderFactory;
+import org.androidlibid.proto.ast.ASTClassBuilder;
+import org.androidlibid.proto.ast.Node;
+import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,37 +32,62 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
 
     private final List<? extends ClassDef> classDefs;
     private final baksmaliOptions options;
-    private EntityService service;
     
     private static final Logger LOGGER = LogManager.getLogger(StoreFingerprintsAlgorithm.class);
+    private EntityService service;
 
     public StoreFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
-        this.options = options;
+        this.options   = options;
         this.classDefs = classDefs;
     }
     
     @Override
     public boolean run() {   
-        
         try {
-            this.service = EntityServiceFactory.createService();
+            service = EntityServiceFactory.createService();
             generateClassFingerprints();
-            generateLibAndPackageFingerprints();
+            LibaryFingerprintDBUpdater updater = new LibaryFingerprintDBUpdater(service);
+            updater.update(options.mvnIdentifier);
         } catch (SQLException | InterruptedException | ExecutionException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
         return true;
     }
     
-    private void generateClassFingerprints() throws InterruptedException, ExecutionException {
-//        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
-        ExecutorService executor = Executors.newFixedThreadPool(1);
+    private void generateClassFingerprints() throws InterruptedException, ExecutionException, SQLException {
+        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
         
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
         
+        final ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(options);
+        
+        final FingerprintService fpService = new FingerprintService(service);
+        
         for (final ClassDef classDef: classDefs) {
-//            completionService.submit(new StoreClassFingerprintTask(classDef, options, service));
-            completionService.submit(new StoreMethodFingerprint(classDef, options, service));
+            
+            Callable<Void> storeFingerprints = new Callable<Void>() {
+                
+                @Override
+                public Void call() throws Exception {
+                    
+                    ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
+                    
+                    Map<String, Node> methodASTs = astClassBuilder.buildASTs();
+                    
+                    ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
+                    ClassFingerprintCreator classFPCreator = new ClassFingerprintCreator(ast2fpt);
+                    
+                    Fingerprint classFingerprint = classFPCreator.createClassFingerprint(methodASTs, classDef.getType(), options.storeOnMethodLevel);
+                    
+                    if(classFingerprint.getLength() > 0.0d) {
+                        fpService.saveClass(classFingerprint, options.mvnIdentifier);
+                    }
+                    
+                    return null;
+                }
+            };
+                    
+            completionService.submit(storeFingerprints);
         }
         
         int count = 0;
@@ -77,41 +106,5 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             executor.shutdown();
         }
     }
-
-    private void generateLibAndPackageFingerprints() throws SQLException {
-        String libname = options.mvnIdentifier; 
-        Library lib = service.findLibraryByMvnIdentifier(libname);
-        
-        if(lib == null) {
-            throw new RuntimeException("The Library " + libname + " could not be found.");
-        }
-            
-        Fingerprint libFingerprint = new Fingerprint(lib);  
-        
-        if(libFingerprint.getLength() > 0.0d) {
-            throw new RuntimeException("The Library " + libname + " already has a fingerprint.");
-        }
-
-        //could go multithread
-        for(Package pckg : lib.getPackages()) {
-            Fingerprint pckgFingerprint = new Fingerprint(pckg);
-
-            for(Clazz clazz : pckg.getClazzes()) {
-                Fingerprint clazzFingerprint = new Fingerprint(clazz);
-
-                pckgFingerprint.sumFeatures(clazzFingerprint);
-            }
-
-            pckg.setVector(pckgFingerprint.getFeatureVector().toBinary());
-            pckg.save();
-
-            libFingerprint.sumFeatures(pckgFingerprint);
-        }
-
-        lib.setVector(libFingerprint.getFeatureVector().toBinary());
-        lib.save();
-    }
-    
-    
     
 }

@@ -52,9 +52,9 @@ import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
-import org.androidlibid.proto.match.MatchFingerprintsOnClassLevelAlgorithm;
 import org.androidlibid.proto.match.MatchFingerprintsAlgorithm;
 import org.androidlibid.proto.store.StoreFingerprintsAlgorithm;
+import org.apache.commons.lang.NotImplementedException;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class baksmali {
@@ -146,6 +146,10 @@ public class baksmali {
         final ClassFileNameHandler fileNameHandler = new ClassFileNameHandler(outputDirectoryFile, ".smali");
         
         if (options.aliFingerprintJAR || options.aliFingerprintAPK) {
+            
+            if(options.jobs != 1) {
+                throw new NotImplementedException("Multithreaded Fingerprinting has not been tested yet!");
+            }
             
             AndroidLibIDAlgorithm alg;
             

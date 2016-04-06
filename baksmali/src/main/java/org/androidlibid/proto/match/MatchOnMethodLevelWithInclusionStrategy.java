@@ -1,5 +1,6 @@
 package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.ao.FingerprintService;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,5 +1,6 @@
 package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.ao.FingerprintService;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

@@ -70,7 +70,7 @@ public class mainTest {
         File appApk = new File(appApkPath);
             assert(appApk.exists() && appApk.canRead());
         
-        String arg[] = {"-y", appApkPath};
+        String arg[] = {"-y", appApkPath, "j", "1"};
         main.main(arg); 
     }
 
@@ -84,7 +84,7 @@ public class mainTest {
         File mappingFile = new File(mappingFilePath);
         assert(mappingFile.exists() && mappingFile.canRead());
         
-        String arg[] = {"-y", appApkPath, "-Z", mappingFilePath};
+        String arg[] = {"-y", appApkPath, "-Z", mappingFilePath, "j", "1"};
         main.main(arg); 
     }
     
@@ -92,7 +92,7 @@ public class mainTest {
         String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_core.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
-        String arg[] = {"-z", "com.madgag.spongycastle:core:1.54.0.0", jarPath};
+        String arg[] = {"-z", "com.madgag.spongycastle:core:1.54.0.0", jarPath, "j", "1"};
         main.main(arg); 
     }
 
@@ -100,7 +100,7 @@ public class mainTest {
         String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_prov.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
-        String arg[] = {"-z", "com.madgag.spongycastle:prov:1.54.0.0", jarPath};
+        String arg[] = {"-z", "com.madgag.spongycastle:prov:1.54.0.0", jarPath, "j", "1"};
         main.main(arg); 
     }
     

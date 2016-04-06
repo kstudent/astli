@@ -77,11 +77,14 @@ public class baksmaliOptions {
     public boolean checkPackagePrivateAccess = false;
     public boolean useImplicitReferences = false;
     public boolean normalizeVirtualMethods = false;
+    
     public boolean aliFingerprintAPK = false;
     public boolean aliFingerprintJAR = false;
     public String mvnIdentifier = "";
     public boolean isObfuscated = false;
     public String mappingFile = "";
+    public boolean storeOnMethodLevel = true;
+    
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;
     public int registerInfo = 0;
