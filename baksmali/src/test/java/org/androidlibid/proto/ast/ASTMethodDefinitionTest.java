@@ -39,9 +39,9 @@ public class ASTMethodDefinitionTest {
         int accessFlags = 0;
         int methodRegisterCount = 0;
         
-        ASTMethodDefinition methodDefinition = createASTMethodDefinition(accessFlags, methodRegisterCount, noParameterRegister);
+        ASTBuilder methodDefinition = createASTMethodDefinition(accessFlags, methodRegisterCount, noParameterRegister);
         
-        Node method = methodDefinition.createAST();
+        Node method = methodDefinition.buildAST();
         
         assert(method.getType().equals(NodeType.METHOD));
         assert(method.getChildren().isEmpty());
@@ -55,14 +55,14 @@ public class ASTMethodDefinitionTest {
         int accessFlags = 0;
         int methodRegisterCount = 4;
         
-        ASTMethodDefinition methodDefinition = createASTMethodDefinition(accessFlags, methodRegisterCount, noParameterRegister);
+        ASTBuilder methodDefinition = createASTMethodDefinition(accessFlags, methodRegisterCount, noParameterRegister);
         addInstruction(Opcode.INVOKE_DIRECT,  1, 0);
         addInstruction(Opcode.INVOKE_VIRTUAL, 5, 0,1,2,3,4);
         addInstruction(Opcode.INVOKE_DIRECT,  5, 5,6,7,8,9);
         addInstruction(Opcode.INVOKE_DIRECT,  0);
         addParameter("I");
         
-        Node method = methodDefinition.createAST();
+        Node method = methodDefinition.buildAST();
 
         assert(method.getType().equals(NodeType.METHOD));
         assert(method.getChildren().size() == 5);
@@ -98,7 +98,7 @@ public class ASTMethodDefinitionTest {
         
     } 
 
-    private ASTMethodDefinition createASTMethodDefinition(int accessFlags, int methodRegisterCount, boolean noParameterRegister) {        
+    private ASTBuilder createASTMethodDefinition(int accessFlags, int methodRegisterCount, boolean noParameterRegister) {        
         methodDefinitionImpl = mock(MethodDefinitionImpl.class);
 
         Method method = mock(Method.class);
@@ -116,7 +116,7 @@ public class ASTMethodDefinitionTest {
         when(methodDefinitionImpl.getMethodParameters())
                 .thenAnswer(new CreateImmutableCopyOfMethodParameters());
         
-        return new ASTMethodDefinition(methodDefinitionImpl, noParameterRegister);
+        return new ASTBuilder(methodDefinitionImpl, noParameterRegister);
     }
     
     private void addInstruction(Opcode opcode, int registerCount, int... registerValues) {

@@ -47,17 +47,17 @@ import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 
-public class ASTMethodDefinition {
+public class ASTBuilder {
 
     private final MethodDefinitionImpl methodDefinition;
     private final boolean noParameterRegisters;
 
-    public ASTMethodDefinition(MethodDefinitionImpl methodDefinition, boolean noParameterRegisters) {
+    public ASTBuilder(MethodDefinitionImpl methodDefinition, boolean noParameterRegisters) {
         this.methodDefinition     = methodDefinition;
         this.noParameterRegisters = noParameterRegisters;
     }
     
-    public Node createAST() throws IOException {
+    public Node buildAST() throws IOException {
         
         Node root = new Node(NodeType.METHOD);
         

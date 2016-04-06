@@ -99,10 +99,10 @@ public class ASTClassDefinition implements ClassDefinition {
                         method.getName(), method.getParameterTypes(), 
                         method.getReturnType());
                 
-                ASTMethodDefinition methodASTBuilder = astBuilderFactory.createASTBuilder(
+                ASTBuilder methodASTBuilder = astBuilderFactory.createASTBuilder(
                         this, method, methodImpl, options.noParameterRegisters);
                 
-                methodASTs.put(signature, methodASTBuilder.createAST());
+                methodASTs.put(signature, methodASTBuilder.buildAST());
             }
         }
         

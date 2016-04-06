@@ -29,7 +29,7 @@ public class ASTClassDefinitionTest {
     private List<Method> virtualMethods;
     private List<Method> directMethods;
     private ASTBuilderFactory factory;
-    private ASTMethodDefinition astBuilder;
+    private ASTBuilder astBuilder;
     
     private static final Logger LOGGER = LogManager.getLogger(ASTClassDefinitionTest.class);
     
@@ -37,7 +37,7 @@ public class ASTClassDefinitionTest {
     public void setUp() throws IOException {
         options    = new baksmaliOptions();
         factory    = mock(ASTBuilderFactory.class);
-        astBuilder = mock(ASTMethodDefinition.class);
+        astBuilder = mock(ASTBuilder.class);
         
         virtualMethods = new ArrayList<Method>();
         directMethods  = new ArrayList<Method>();
@@ -48,7 +48,7 @@ public class ASTClassDefinitionTest {
                 any(MethodImplementation.class), 
                 any(Boolean.class)))
             .thenReturn(astBuilder);
-        when(astBuilder.createAST()).thenReturn(new Node(NodeType.METHOD));
+        when(astBuilder.buildAST()).thenReturn(new Node(NodeType.METHOD));
     }
         
     @Test
