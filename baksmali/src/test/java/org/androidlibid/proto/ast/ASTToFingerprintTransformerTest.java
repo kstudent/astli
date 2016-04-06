@@ -1,8 +1,6 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.ast;
 
-import org.androidlibid.proto.ast.NodeType;
-import org.androidlibid.proto.ast.Node;
-import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
+import org.androidlibid.proto.Fingerprint;
 import org.junit.Test;
 
 /**

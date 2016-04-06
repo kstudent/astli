@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.androidlibid.proto;
+package org.androidlibid.proto.ast;
 
-import org.androidlibid.proto.ast.NodeType;
-import org.androidlibid.proto.ast.Node;
-import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
