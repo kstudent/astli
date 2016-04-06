@@ -1,5 +1,6 @@
 package org.androidlibid.proto.store;
 
+import org.androidlibid.proto.ao.LibraryFingerprintDBUpdater;
 import org.androidlibid.proto.match.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
 import java.util.List;
@@ -46,7 +47,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         try {
             service = EntityServiceFactory.createService();
             generateClassFingerprints();
-            LibaryFingerprintDBUpdater updater = new LibaryFingerprintDBUpdater(service);
+            LibraryFingerprintDBUpdater updater = new LibraryFingerprintDBUpdater(service);
             updater.update(options.mvnIdentifier);
         } catch (SQLException | InterruptedException | ExecutionException ex) {
             LOGGER.error(ex.getMessage(), ex);

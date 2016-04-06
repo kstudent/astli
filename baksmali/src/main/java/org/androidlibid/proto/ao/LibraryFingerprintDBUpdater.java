@@ -1,21 +1,17 @@
-package org.androidlibid.proto.store;
+package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.ao.Package;
-import org.androidlibid.proto.ao.Clazz;
-import org.androidlibid.proto.ao.EntityService;
-import org.androidlibid.proto.ao.Library;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class LibaryFingerprintDBUpdater {
+public class LibraryFingerprintDBUpdater {
     
     private final EntityService service;
 
-    public LibaryFingerprintDBUpdater(EntityService service) {
+    public LibraryFingerprintDBUpdater(EntityService service) {
         this.service = service;
     }
     

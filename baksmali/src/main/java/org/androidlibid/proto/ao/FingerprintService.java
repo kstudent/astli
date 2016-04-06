@@ -89,7 +89,7 @@ public class FingerprintService {
         return pckg;
     }
     
-    public List<Fingerprint> findPackageByName(String name) throws SQLException{
+    public List<Fingerprint> findPackagesByName(String name) throws SQLException{
         List<Fingerprint> pckgFingerprints = new ArrayList<>();
         
         for(Package pckg : service.findPackagesByName(name)) {

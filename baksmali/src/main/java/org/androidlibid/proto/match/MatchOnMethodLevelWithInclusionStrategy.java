@@ -198,7 +198,7 @@ public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy
             
             LOGGER.info("Did not find match by name for {}", packageNeedle.getName());
             
-            List<Fingerprint> packagesWithSameName = service.findPackageByName(packageNeedle.getName());
+            List<Fingerprint> packagesWithSameName = service.findPackagesByName(packageNeedle.getName());
             
             if(!packagesWithSameName.isEmpty()) {
                 Fingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));

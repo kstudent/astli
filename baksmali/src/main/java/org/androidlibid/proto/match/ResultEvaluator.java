@@ -32,7 +32,7 @@ public class ResultEvaluator {
                 
         if(nameMatch == null) {
             try { 
-                List<Fingerprint> packagesWithTheSameName = service.findPackageByName(needleName);
+                List<Fingerprint> packagesWithTheSameName = service.findPackagesByName(needleName);
                 if(packagesWithTheSameName.isEmpty()) {
                     LOGGER.info("{}: not matched by name", needleName);
                     return MatchingStrategy.Status.NO_MATCH_BY_NAME;
