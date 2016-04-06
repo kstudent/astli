@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.*;
 import org.androidlibid.proto.SmaliNameConverter;
 import org.jf.baksmali.Adaptors.ClassDefinition;
-import org.jf.baksmali.Adaptors.MethodDefinitionImpl;
 import org.jf.util.IndentingWriter;
 
 public class ASTClassDefinition implements ClassDefinition {
@@ -45,6 +44,7 @@ public class ASTClassDefinition implements ClassDefinition {
     @Nonnull private final ClassDef classDef;
 
     protected boolean validationErrors;
+    private final ASTBuilderFactory astBuilderFactory;
 
     @Override
     public baksmaliOptions getOptions() {
@@ -56,9 +56,10 @@ public class ASTClassDefinition implements ClassDefinition {
         return classDef;
     }
     
-    public ASTClassDefinition(@Nonnull baksmaliOptions options, @Nonnull ClassDef classDef) {
+    public ASTClassDefinition(@Nonnull baksmaliOptions options, @Nonnull ClassDef classDef, ASTBuilderFactory astBuilderFactory) {
         this.options = options;
         this.classDef = classDef;
+        this.astBuilderFactory = astBuilderFactory;
     }
 
     @Override
@@ -98,8 +99,8 @@ public class ASTClassDefinition implements ClassDefinition {
                         method.getName(), method.getParameterTypes(), 
                         method.getReturnType());
                 
-                ASTMethodDefinition methodASTBuilder = new ASTMethodDefinition(new MethodDefinitionImpl(
-                        this, method, methodImpl), options.noParameterRegisters);
+                ASTMethodDefinition methodASTBuilder = astBuilderFactory.createASTBuilder(
+                        this, method, methodImpl, options.noParameterRegisters);
                 
                 methodASTs.put(signature, methodASTBuilder.createAST());
             }

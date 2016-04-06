@@ -12,6 +12,7 @@ import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
+import org.androidlibid.proto.ast.ASTBuilderFactory;
 import org.androidlibid.proto.ast.ASTClassDefinition;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.apache.logging.log4j.LogManager;
@@ -29,10 +30,12 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private final List<? extends ClassDef> classDefs;
     
     private static final Logger LOGGER = LogManager.getLogger( MatchFingerprintsAlgorithm.class.getName() );
+    private ASTBuilderFactory astBuilderFactory;
        
     public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options   = options;
         this.classDefs = classDefs;
+        astBuilderFactory = new ASTBuilderFactory();
     }
     
     @Override
@@ -90,7 +93,8 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         List<ASTClassDefinition> astClassDefs = new ArrayList<>(); 
         for(ClassDef classDef: classDefs) {
-            astClassDefs.add(new ASTClassDefinition(options, classDef));
+            ASTClassDefinition astClassDefinition = new ASTClassDefinition(options, classDef, astBuilderFactory);
+            astClassDefs.add(astClassDefinition);
         }
         
         return phGen.generatePackageHierarchyFromClassDefs(astClassDefs);

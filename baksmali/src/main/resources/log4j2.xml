@@ -47,5 +47,8 @@
         <!--<Logger name="" level="debug"/>-->
         
         <!--<Logger name="org.androidlibid.proto.ast.ASTMethodDefinitionTest"                   level="info"/>-->
+        
+        <!--<Logger name="org.androidlibid.proto.ast.ASTClassDefinitionTest"                    level="info"/>-->
+        
     </Loggers>
 </Configuration>

@@ -9,6 +9,7 @@ import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.SmaliNameConverter;
 import org.androidlibid.proto.ao.Clazz;
 import org.androidlibid.proto.ao.EntityService;
+import org.androidlibid.proto.ast.ASTBuilderFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
@@ -34,7 +35,8 @@ public class StoreMethodFingerprint implements Callable<Void> {
     
     @Override public Void call() throws Exception {
         
-        ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef);
+        ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory();
+        ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef, astBuilderFactory);
         
         Map<String, Node> ast = classDefinition.createASTwithNames();
         
