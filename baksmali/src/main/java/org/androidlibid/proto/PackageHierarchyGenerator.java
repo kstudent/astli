@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.androidlibid.proto.ast.ASTClassDefinition;
+import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.Node;
 import org.apache.logging.log4j.LogManager;
@@ -44,18 +44,18 @@ public class PackageHierarchyGenerator {
         this.mappings = mappings;
     }
     
-    public Map<String, Fingerprint> generatePackageHierarchyFromClassDefs(List<ASTClassDefinition> astClassDefinitions) throws IOException {
+    public Map<String, Fingerprint> generatePackageHierarchyFromClassBuilders(List<ASTClassBuilder> astClassBuilders) throws IOException {
         
         Map<String, Fingerprint> packagePrints = new HashMap<>();
             
-        for(ASTClassDefinition astClassDefinition : astClassDefinitions) {
-            ClassDef classDef = astClassDefinition.getClassDef();
+        for(ASTClassBuilder astClassBuilder : astClassBuilders) {
+            ClassDef classDef = astClassBuilder.getClassDef();
             
             String obfClassName = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
             String className =    translateName(obfClassName);
             String packageName =  SmaliNameConverter.extractPackageNameFromClassName(className);
             
-            Fingerprint classFingerprint = transformClassDefToFingerprint(astClassDefinition, obfClassName);
+            Fingerprint classFingerprint = transformClassDefToFingerprint(astClassBuilder, obfClassName);
             
             if(classFingerprint.getChildFingerprints().isEmpty()) {
                 continue;
@@ -82,9 +82,9 @@ public class PackageHierarchyGenerator {
         return packagePrints;
     }
     
-    private Fingerprint transformClassDefToFingerprint(ASTClassDefinition classDef, String obfsClassName) throws IOException {
+    private Fingerprint transformClassDefToFingerprint(ASTClassBuilder astClassBuilder, String obfsClassName) throws IOException {
         
-        Map<String, Node> ast = classDef.createASTwithNames();
+        Map<String, Node> ast = astClassBuilder.buildASTs();
         
         List<Fingerprint> methods = new ArrayList<>(); 
         Fingerprint classFingerprint = new Fingerprint();

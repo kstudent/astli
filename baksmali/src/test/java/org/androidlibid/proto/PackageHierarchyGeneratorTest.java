@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.androidlibid.proto.ast.ASTClassDefinition;
+import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.Node;
 import org.androidlibid.proto.ast.NodeType;
 import org.jf.baksmali.baksmaliOptions;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.jf.dexlib2.iface.ClassDef;
+import static org.mockito.Mockito.mock;
 
 /**
  *
@@ -22,7 +22,7 @@ import org.jf.dexlib2.iface.ClassDef;
  */
 public class PackageHierarchyGeneratorTest {
 
-    List<ASTClassDefinition> astClassDefinitions;
+    List<ASTClassBuilder> astClassBuilders;
     ASTToFingerprintTransformer ast2fpt;
     baksmaliOptions options; 
     
@@ -31,7 +31,7 @@ public class PackageHierarchyGeneratorTest {
         
         options = new baksmaliOptions();
         ast2fpt = mock(ASTToFingerprintTransformer.class);
-        astClassDefinitions = new ArrayList<>();
+        astClassBuilders = new ArrayList<>();
     }
     
     @Test 
@@ -43,7 +43,7 @@ public class PackageHierarchyGeneratorTest {
         String returnType          = "int";
     
         for(int i = 1; i <= 3; i++) {
-            astClassDefinitions.add(
+            astClassBuilders.add(
                 prepareClassDefinition(i, packageName, className, returnType)); 
         }        
         
@@ -52,7 +52,7 @@ public class PackageHierarchyGeneratorTest {
         
         PackageHierarchyGenerator phg = new PackageHierarchyGenerator(options, ast2fpt, mappings);
         
-        Map<String, Fingerprint> hierarchy = phg.generatePackageHierarchyFromClassDefs(astClassDefinitions);
+        Map<String, Fingerprint> hierarchy = phg.generatePackageHierarchyFromClassBuilders(astClassBuilders);
         
         assert(hierarchy.containsKey(packageName));
         
@@ -93,7 +93,7 @@ public class PackageHierarchyGeneratorTest {
         mappings.put(obfuscatedPckgClassID, expectedPckgClassID);
         
         for(int i = 1; i <= 3; i++) {
-            astClassDefinitions.add(
+            astClassBuilders.add(
                     prepareClassDefinition(
                             i, obfuscatedPackageName, obfuscatedClassName, 
                             obfuscatedPckgClassID)
@@ -110,7 +110,7 @@ public class PackageHierarchyGeneratorTest {
         
         PackageHierarchyGenerator phg = new PackageHierarchyGenerator(options, ast2fpt, mappings);
         
-        Map<String, Fingerprint> hierarchy = phg.generatePackageHierarchyFromClassDefs(astClassDefinitions);
+        Map<String, Fingerprint> hierarchy = phg.generatePackageHierarchyFromClassBuilders(astClassBuilders);
         
         assert(hierarchy.containsKey(expectedPackageName));
         
@@ -138,8 +138,8 @@ public class PackageHierarchyGeneratorTest {
     
     //test if empty methdos stay away!
 
-    private ASTClassDefinition prepareClassDefinition(int i, String packageName, String className, String returnValueType) throws IOException {
-        ASTClassDefinition astC = mock(ASTClassDefinition.class);
+    private ASTClassBuilder prepareClassDefinition(int i, String packageName, String className, String returnValueType) throws IOException {
+        ASTClassBuilder astC = mock(ASTClassBuilder.class);
         
         ClassDef cd = mock(ClassDef.class);
         when(cd.getType()).thenReturn("L" + packageName + "." + className + i + ";");
@@ -149,7 +149,7 @@ public class PackageHierarchyGeneratorTest {
         Map<String, Node> methodsofClass = new HashMap<>();
         methodsofClass.put("method" + i + "():" + returnValueType, methodNode);
 
-        when(astC.createASTwithNames()).thenReturn(methodsofClass);
+        when(astC.buildASTs()).thenReturn(methodsofClass);
 
         Fingerprint methodFingerprint = perpareMethodFingerprint(i);
         when(ast2fpt.createFingerprint(methodNode)).thenReturn(methodFingerprint);

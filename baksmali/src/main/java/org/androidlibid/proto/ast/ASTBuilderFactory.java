@@ -11,13 +11,13 @@ import org.jf.dexlib2.iface.MethodImplementation;
 public class ASTBuilderFactory {
     
     public ASTBuilder createASTBuilder(
-            ASTClassDefinition classDefinition, 
+            ASTClassBuilder classBuilder, 
             Method method, 
             MethodImplementation methodImpl, 
             boolean noParameterRegisters) {
         
         return new ASTBuilder(new MethodDefinitionImpl(
-                classDefinition, method, methodImpl), 
+                classBuilder, method, methodImpl), 
             noParameterRegisters);
         
     }

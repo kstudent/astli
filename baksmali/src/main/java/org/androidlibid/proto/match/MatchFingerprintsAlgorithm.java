@@ -13,7 +13,7 @@ import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ast.ASTBuilderFactory;
-import org.androidlibid.proto.ast.ASTClassDefinition;
+import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,13 +91,13 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         PackageHierarchyGenerator phGen = new PackageHierarchyGenerator(
                 options, new ASTToFingerprintTransformer(), mappings);
         
-        List<ASTClassDefinition> astClassDefs = new ArrayList<>(); 
+        List<ASTClassBuilder> astClassBuilders = new ArrayList<>(); 
         for(ClassDef classDef: classDefs) {
-            ASTClassDefinition astClassDefinition = new ASTClassDefinition(options, classDef, astBuilderFactory);
-            astClassDefs.add(astClassDefinition);
+            ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, astBuilderFactory);
+            astClassBuilders.add(astClassBuilder);
         }
         
-        return phGen.generatePackageHierarchyFromClassDefs(astClassDefs);
+        return phGen.generatePackageHierarchyFromClassBuilders(astClassBuilders);
         
     }
 }

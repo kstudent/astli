@@ -43,7 +43,7 @@ public class ASTClassDefinitionTest {
         directMethods  = new ArrayList<Method>();
         
         when(factory.createASTBuilder(
-                any(ASTClassDefinition.class), 
+                any(ASTClassBuilder.class), 
                 any(Method.class), 
                 any(MethodImplementation.class), 
                 any(Boolean.class)))
@@ -52,15 +52,15 @@ public class ASTClassDefinitionTest {
     }
         
     @Test
-    public void testASTClassDef() throws IOException {
+    public void testBuildClassASTs() throws IOException {
         ClassDef classDef = createClassDef();
         
-        ASTClassDefinition astClassDef = new ASTClassDefinition(options, classDef, factory);
+        ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, factory);
         
         addMethod(true,  "doVirtualSuchAndSuch", "I",                "I", "Z");
         addMethod(false, "doDirectSuchAndSuch",  "Ltld/pckg/Class;", "I", "Ltld/pckg/AnotherClass;");
         
-        Map<String, Node> asts = astClassDef.createASTwithNames();
+        Map<String, Node> asts = astClassBuilder.buildASTs();
         
         for(String signature : asts.keySet()) {
             LOGGER.info("{} : {}", signature, asts.get(signature));
@@ -77,14 +77,14 @@ public class ASTClassDefinitionTest {
     }
     
     @Test
-    public void testASTClassDefwithDexBackendClassDef() throws IOException {
+    public void testBuildClassASTsWithDexBackendClassDef() throws IOException {
         ClassDef classDef = createClassDefWithDexBackend();
         
-        ASTClassDefinition astClassDef = new ASTClassDefinition(options, classDef, factory);
+        ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, factory);
         addMethod(true,  "doVirtualSuchAndSuch", "I",                "I", "Z");
         addMethod(false, "doDirectSuchAndSuch",  "Ltld/pckg/Class;", "I", "Ltld/pckg/AnotherClass;");
         
-        Map<String, Node> asts = astClassDef.createASTwithNames();
+        Map<String, Node> asts = astClassBuilder.buildASTs();
         
         for(String signature : asts.keySet()) {
             LOGGER.info("{} : {}", signature, asts.get(signature));

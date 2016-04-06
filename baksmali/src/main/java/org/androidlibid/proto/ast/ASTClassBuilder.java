@@ -38,7 +38,7 @@ import org.androidlibid.proto.SmaliNameConverter;
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.util.IndentingWriter;
 
-public class ASTClassDefinition implements ClassDefinition {
+public class ASTClassBuilder implements ClassDefinition {
     
     @Nonnull private final baksmaliOptions options;
     @Nonnull private final ClassDef classDef;
@@ -56,7 +56,7 @@ public class ASTClassDefinition implements ClassDefinition {
         return classDef;
     }
     
-    public ASTClassDefinition(@Nonnull baksmaliOptions options, @Nonnull ClassDef classDef, ASTBuilderFactory astBuilderFactory) {
+    public ASTClassBuilder(@Nonnull baksmaliOptions options, @Nonnull ClassDef classDef, ASTBuilderFactory astBuilderFactory) {
         this.options = options;
         this.classDef = classDef;
         this.astBuilderFactory = astBuilderFactory;
@@ -67,7 +67,7 @@ public class ASTClassDefinition implements ClassDefinition {
         return validationErrors;
     }
 
-    public Map<String, Node> createASTwithNames() throws IOException {
+    public Map<String, Node> buildASTs() throws IOException {
         
         Iterable<? extends Method> virtualMethods, directMethods;
         if (classDef instanceof DexBackedClassDef) {

@@ -19,7 +19,7 @@ import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ao.VectorEntity;
 import org.androidlibid.proto.ast.ASTBuilderFactory;
-import org.androidlibid.proto.ast.ASTClassDefinition;
+import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.Node;
 import org.jf.baksmali.baksmali;
@@ -105,9 +105,9 @@ public class MatchFingerprintsOnClassLevelAlgorithm implements AndroidLibIDAlgor
             String name = classDef.getType();
 
             ASTBuilderFactory factory = new ASTBuilderFactory();
-            ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef, factory);
+            ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, factory);
             
-            Iterable<Node> ast = classDefinition.createASTwithNames().values();
+            Iterable<Node> ast = astClassBuilder.buildASTs().values();
 
             ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
 

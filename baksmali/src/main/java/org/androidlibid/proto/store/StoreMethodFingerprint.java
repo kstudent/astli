@@ -3,7 +3,7 @@ package org.androidlibid.proto.store;
 import java.util.Map;
 import org.androidlibid.proto.ast.Node;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
-import org.androidlibid.proto.ast.ASTClassDefinition;
+import org.androidlibid.proto.ast.ASTClassBuilder;
 import java.util.concurrent.Callable;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.SmaliNameConverter;
@@ -36,9 +36,9 @@ public class StoreMethodFingerprint implements Callable<Void> {
     @Override public Void call() throws Exception {
         
         ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory();
-        ASTClassDefinition classDefinition = new ASTClassDefinition(options, classDef, astBuilderFactory);
+        ASTClassBuilder astClassBuilder = new ASTClassBuilder(options, classDef, astBuilderFactory);
         
-        Map<String, Node> ast = classDefinition.createASTwithNames();
+        Map<String, Node> ast = astClassBuilder.buildASTs();
         
         ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
