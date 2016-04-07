@@ -18,8 +18,8 @@ import static org.mockito.Mockito.times;
  */
 public class FingerprintServiceTest {
     
-    private FingerprintService fpService;
-    private EntityService service;
+    private FingerprintService service;
+    private EntityService entityService;
     private Package[] packages;
     private Clazz[]   clazzes;
     private Method[]  methodsOfClazz0;
@@ -27,8 +27,8 @@ public class FingerprintServiceTest {
     
     @Before 
     public void setUp() {
-        service   = mock(EntityService.class);
-        fpService = new FingerprintService(service);
+        entityService   = mock(EntityService.class);
+        service = new FingerprintService(entityService);
         
         methodsOfClazz0 = new Method[] {mock(Method.class), mock(Method.class)};
         methodsOfClazz1 = new Method[] {mock(Method.class), mock(Method.class), mock(Method.class)};
@@ -50,22 +50,22 @@ public class FingerprintServiceTest {
     @Test
     public void testFindMethodsByLength() throws SQLException {
         
-        when(service.findMethodsByLength(1, 1)).thenReturn(Arrays.asList(methodsOfClazz0));
+        when(entityService.findMethodsByLength(1, 1)).thenReturn(Arrays.asList(methodsOfClazz0));
         
-        List<Fingerprint> methodFingerprints = fpService.findMethodsByLength(1, 1);
+        List<Fingerprint> methodFingerprints = service.findMethodsByLength(1, 1);
         
         assert(methodFingerprints.size() == 2);
         for(int i = 0; i < 2; i++) {
             assert(methodsOfClazz0[i].equals(methodFingerprints.get(i).getEntity()));
         }
-    } 
+    }
 
     @Test
-    public void testFindPackagesByDepth() throws SQLException {
+    public void testFindMethodsByPackageDepth() throws SQLException {
         
-        when(service.findPackagesByDepth(10)).thenReturn(Arrays.asList(packages));
+        when(entityService.findPackagesByDepth(10)).thenReturn(Arrays.asList(packages));
         
-        List<Fingerprint> methodFingerprints = fpService.findMethodsByPackageDepth(10);
+        List<Fingerprint> methodFingerprints = service.findMethodsByPackageDepth(10);
         
         List<Method> expectedMethods = new ArrayList<>(Arrays.asList(methodsOfClazz0));
         expectedMethods.addAll(Arrays.asList(methodsOfClazz1));
@@ -75,15 +75,38 @@ public class FingerprintServiceTest {
             assert(expectedMethods.get(i).equals(methodFingerprints.get(i).getEntity()));
         }
     
+    }
+    
+    @Test
+    public void testFindClassesByPackageDepth() throws SQLException {
+        
+        when(entityService.findPackagesByDepth(10)).thenReturn(Arrays.asList(packages));
+        
+        List<Fingerprint> classFingerprints = service.findClassesByPackageDepth(10);
+        
+        assert(classFingerprints.size() == 2);
+        assert(clazzes[0].equals(classFingerprints.get(0).getEntity()));
+        assert(clazzes[1].equals(classFingerprints.get(1).getEntity()));
+    } 
+    
+    @Test
+    public void testFindPackagesDepth() throws SQLException {
+        
+        when(entityService.findPackagesByDepth(10)).thenReturn(Arrays.asList(packages));
+        
+        List<Fingerprint> packagePrints = service.findPackagesByDepth(10);
+        
+        assert(packagePrints.size() == 1);
+        assert(packages[0].equals(packagePrints.get(0).getEntity()));
     } 
     
     @Test
     public void testFindPackagesByName() throws SQLException {
         
         String packageName = "tld.pckg";
-        when(service.findPackagesByName(packageName)).thenReturn(Arrays.asList(packages));
+        when(entityService.findPackagesByName(packageName)).thenReturn(Arrays.asList(packages));
         
-        List<Fingerprint> packageFingerprints = fpService.findPackagesByName(packageName);
+        List<Fingerprint> packageFingerprints = service.findPackagesByName(packageName);
         
         assert(packageFingerprints.size() == 1);
         assert(packageFingerprints.get(0).getEntity().equals(packages[0]));
@@ -93,9 +116,9 @@ public class FingerprintServiceTest {
     @Test
     public void testFindPackages() throws SQLException {
         
-        when(service.findPackages()).thenReturn(Arrays.asList(packages));
+        when(entityService.findPackages()).thenReturn(Arrays.asList(packages));
         
-        List<Fingerprint> packageFingerprints = fpService.findPackages();
+        List<Fingerprint> packageFingerprints = service.findPackages();
         
         assert(packageFingerprints.size() == 1);
         assert(packageFingerprints.get(0).getEntity().equals(packages[0]));
@@ -107,7 +130,7 @@ public class FingerprintServiceTest {
         
         Fingerprint packagePrint = new Fingerprint(packages[0]);
         
-        Fingerprint packageHierarchy = fpService.getPackageHierarchy(packagePrint);
+        Fingerprint packageHierarchy = service.getPackageHierarchy(packagePrint);
         
         List<Fingerprint> classesOfPackage = packageHierarchy.getChildFingerprints();
         
@@ -136,7 +159,7 @@ public class FingerprintServiceTest {
     public void testGetPackageHierarchyByMethod() {
         Fingerprint methodFingerprint = new Fingerprint(methodsOfClazz1[0]);
         
-        Fingerprint packageHierarchy = fpService.getPackageHierarchyByMethod(methodFingerprint);
+        Fingerprint packageHierarchy = service.getPackageHierarchyByMethod(methodFingerprint);
         
         List<Fingerprint> classesOfPackage = packageHierarchy.getChildFingerprints();
         
@@ -170,18 +193,18 @@ public class FingerprintServiceTest {
         String mvnIdentifier = "libX:v1.2";
         Clazz clazzEntity = mock(Clazz.class);
         
-        when(service.saveClass(
+        when(entityService.saveClass(
                 classFingerprint.getFeatureVector().toBinary(), 
                 classFingerprint.getName(), "pckg", mvnIdentifier))
             .thenReturn(clazzEntity);
         
-        fpService.saveClass(classFingerprint, mvnIdentifier);
+        service.saveClass(classFingerprint, mvnIdentifier);
         
-        verify(service, times(1)).saveClass(
+        verify(entityService, times(1)).saveClass(
                 classFingerprint.getFeatureVector().toBinary(), 
                 classFingerprint.getName(), "pckg", mvnIdentifier);
         
-        verify(service, times(1)).saveMethod(
+        verify(entityService, times(1)).saveMethod(
                 methodFingerprint.getFeatureVector().toBinary(), 
                 methodFingerprint.getName(), methodFingerprint.getLength(), 
                 clazzEntity);

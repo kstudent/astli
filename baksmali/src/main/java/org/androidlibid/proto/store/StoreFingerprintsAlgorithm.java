@@ -1,7 +1,7 @@
 package org.androidlibid.proto.store;
 
 import org.androidlibid.proto.ao.LibraryFingerprintDBUpdater;
-import org.androidlibid.proto.match.AndroidLibIDAlgorithm;
+import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;

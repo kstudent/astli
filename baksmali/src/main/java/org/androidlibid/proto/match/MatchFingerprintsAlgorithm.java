@@ -1,5 +1,6 @@
 package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import org.androidlibid.proto.ao.FingerprintService;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -31,7 +32,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private final List<? extends ClassDef> classDefs;
     
     private static final Logger LOGGER = LogManager.getLogger( MatchFingerprintsAlgorithm.class.getName() );
-    private ASTBuilderFactory astBuilderFactory;
+    private final ASTBuilderFactory astBuilderFactory;
        
     public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options   = options;
@@ -57,9 +58,9 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
                             disableRepeatedMatching
                     );
             
-            MatchingStrategy strategy = new MatchOnMethodLevelWithInclusionStrategy(
+            MatchingStrategy strategy = new MatchWithInclusionStrategy(
                 fingerprintService, packageInclusionCalculator, 
-                    new ResultEvaluator(fingerprintService));
+                    new WriteResultsToLog(fingerprintService));
             
             Map<String, Fingerprint> packagePrints = generatePackagePrints();
             

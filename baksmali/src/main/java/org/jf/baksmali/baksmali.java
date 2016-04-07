@@ -28,7 +28,7 @@
 
 package org.jf.baksmali;
 
-import org.androidlibid.proto.match.AndroidLibIDAlgorithm;
+import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;

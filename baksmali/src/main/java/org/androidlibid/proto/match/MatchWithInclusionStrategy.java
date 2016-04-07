@@ -18,18 +18,18 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchOnMethodLevelWithInclusionStrategy implements MatchingStrategy {
+public class MatchWithInclusionStrategy implements MatchingStrategy {
 
     private final FingerprintService service;
     private final PackageInclusionCalculator calculator;
-    private final ResultEvaluator evaluator; 
+    private final WriteResultsToLog evaluator; 
     private final double methodMatchThreshold  = 0.9999d;
     private final double packageMatchThreshold = 0.8d;
     private final double minimalMethodLengthForNeedleLookup = 12;
     
-    private static final Logger LOGGER = LogManager.getLogger( MatchOnMethodLevelWithInclusionStrategy.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(MatchWithInclusionStrategy.class.getName());
 
-    public MatchOnMethodLevelWithInclusionStrategy(FingerprintService service, PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
+    public MatchWithInclusionStrategy(FingerprintService service, PackageInclusionCalculator calculator, WriteResultsToLog evaluator) {
         this.service = service;
         this.calculator = calculator;
         this.evaluator = evaluator;

@@ -105,10 +105,10 @@ public class EntityService {
         return Arrays.asList(em.find(Package.class));
     }
     
-    public List<Package> findPackagesByDepth(int level) throws SQLException {
+    public List<Package> findPackagesByDepth(int depth) throws SQLException {
         List<Package> packages = new LinkedList<>();
         for(Package pckg : em.find(Package.class)) {
-            if (StringUtils.countMatches(pckg.getName(), ".") == level) {
+            if (StringUtils.countMatches(pckg.getName(), ".") == depth) {
                 packages.add(pckg);
             } 
         }

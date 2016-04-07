@@ -18,7 +18,35 @@ public class FingerprintService {
     public FingerprintService(EntityService service) {
         this.service = service;
     }
+    
+    public List<Fingerprint> findPackagesByDepth(int depth) throws SQLException {
+        
+        List<Fingerprint> pckgFingerprints = new ArrayList<>();
+        
+        for(Package pckg : service.findPackagesByDepth(depth)) {
+            pckgFingerprints.add(new Fingerprint(pckg));
+        }
+                
+        return pckgFingerprints;
+    }
 
+    public List<Fingerprint> findClassesByPackageDepth(int depth) throws SQLException {
+        
+        List<Fingerprint> haystack = new ArrayList<>();
+        
+        for (Package pckg : service.findPackagesByDepth(depth)) {
+            Fingerprint pckgFingerprint = new Fingerprint(pckg);
+            
+            for(Clazz classEntity : pckg.getClazzes()) {
+                Fingerprint classFingerprint = new Fingerprint(classEntity);
+                pckgFingerprint.addChildFingerprint(classFingerprint);
+                haystack.add(classFingerprint);
+            }
+        }
+        
+        return haystack; 
+    }
+    
     public List<Fingerprint> findMethodsByPackageDepth(int depth) throws SQLException {
         
         List<Fingerprint> haystack = new ArrayList<>();
@@ -109,7 +137,7 @@ public class FingerprintService {
                 
         return pckgFingerprints;
     }
-
+    
     public void saveClass(Fingerprint classFingerprint, String mvnIdentifier) throws SQLException {
         
         String className = classFingerprint.getName();
