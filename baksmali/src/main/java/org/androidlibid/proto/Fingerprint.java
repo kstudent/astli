@@ -140,6 +140,16 @@ public class Fingerprint {
         this.vector = vector;
     }
     
+    public void setFeatureValues(int... values) {
+        for(int i = 0; i < values.length; i++) {
+            this.vector.set(i, (double) values[i]);
+        }
+    }
+    
+    public double getFeatureCount(int index) {
+        return this.vector.get(index);
+    }
+    
     public List<Fingerprint> getChildFingerprints() {
         return children;
     }

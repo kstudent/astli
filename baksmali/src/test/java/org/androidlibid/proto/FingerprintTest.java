@@ -17,6 +17,8 @@ package org.androidlibid.proto;
 
 import org.androidlibid.proto.ao.VectorEntity;
 import org.androidlibid.proto.ast.NodeType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.la4j.Vector;
@@ -31,6 +33,8 @@ public class FingerprintTest {
 
     private VectorEntity vector;
 
+    private static final Logger LOGGER = LogManager.getLogger(FingerprintTest.class);
+    
     @Before
     public void setUp() {
         vector = Mockito.mock(VectorEntity.class);
@@ -139,6 +143,36 @@ public class FingerprintTest {
         double similarity2 = f2.getSimilarityScoreToFingerprint(f1);
         assert(doubleEquals(similarity1, similarity2));
     }
+    
+    @Test 
+    public void testSetFeatureValues() {
+        Fingerprint f = new Fingerprint();
+        f.setFeatureValues(1, 2, 3, 0);
+        assert(f.getFeatureCount(0) == 1);
+        assert(f.getFeatureCount(1) == 2);
+        assert(f.getFeatureCount(2) == 3);
+        assert(f.getFeatureCount(3) == 0);
+    }
+    
+    @Test
+    public void testGetFeatureCount() {
+        Fingerprint f = new Fingerprint(0,1,2,3,100,7);
+        
+        assert(f.getFeatureCount(0) == 0);
+        assert(f.getFeatureCount(1) == 1);
+        assert(f.getFeatureCount(2) == 2);
+        assert(f.getFeatureCount(3) == 3);
+        assert(f.getFeatureCount(4) == 100);
+        assert(f.getFeatureCount(5) == 7);
+    }
+    
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testGetFeatureCountOutOfBounce() {
+        Fingerprint f = new Fingerprint(1,2,3);
+        
+        f.getFeatureCount(1000);
+    }
+    
     
     private boolean doubleEquals(double a, double b) {
         return Math.abs(a - b) < 0.00001;
