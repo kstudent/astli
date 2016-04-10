@@ -1,6 +1,7 @@
 package org.androidlibid.proto.match;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -58,7 +59,7 @@ public class FingerprintMatcher {
     }
     
     public static class Result {
-        private List<Fingerprint> matchesByDistance;
+        private Collection<Fingerprint> matchesByDistance;
         @Nullable
         private Fingerprint matchByName;
         private Fingerprint needle;
@@ -66,11 +67,11 @@ public class FingerprintMatcher {
         public Result() {
         }
 
-        public List<Fingerprint> getMatchesByDistance() {
+        public Collection<Fingerprint> getMatchesByDistance() {
             return matchesByDistance;
         }
 
-        public void setMatchesByDistance(List<Fingerprint> matchesByDistance) {
+        public void setMatchesByDistance(Collection<Fingerprint> matchesByDistance) {
             this.matchesByDistance = matchesByDistance;
         }
 

@@ -3,8 +3,10 @@ package org.androidlibid.proto.match;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.apache.commons.lang.StringUtils;
@@ -74,7 +76,10 @@ public class MatchWithVectorDifferenceStrategy implements MatchingStrategy {
                 
                 for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
                     for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
-                        FingerprintMatcher.Result result = matcher.matchFingerprints(haystack, methodNeedle);
+                        FingerprintMatcher.Result methodResult = matcher.matchFingerprints(haystack, methodNeedle);
+                        
+                        FingerprintMatcher.Result result = postProcessMethodResult(methodResult);
+                        
                         stats.add(evaluator.evaluateResult(methodNeedle, result));
                     }
                 }
@@ -85,7 +90,10 @@ public class MatchWithVectorDifferenceStrategy implements MatchingStrategy {
                 haystack = service.findClassesByPackageDepth(packageDepth);
                 
                 for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
-                    FingerprintMatcher.Result result = matcher.matchFingerprints(haystack, classNeedle);
+                    FingerprintMatcher.Result classResult = matcher.matchFingerprints(haystack, classNeedle);
+                    
+                    FingerprintMatcher.Result result = postProcessClassResult(classResult);
+                    
                     stats.add(evaluator.evaluateResult(classNeedle, result));
                 }
                     
@@ -99,6 +107,55 @@ public class MatchWithVectorDifferenceStrategy implements MatchingStrategy {
         }
         
         return stats;
+    }
+
+    private FingerprintMatcher.Result postProcessClassResult(FingerprintMatcher.Result classResult) {
+        
+        FingerprintMatcher.Result result = new FingerprintMatcher.Result();
+        
+        if(classResult.getMatchByName() != null) {
+            result.setMatchByName(classResult.getMatchByName().getParent());
+        }
+        
+        if(classResult.getNeedle() != null) {
+            result.setNeedle(classResult.getNeedle().getParent());
+        }
+        
+        Set<Fingerprint> matchesByDistance = new HashSet<>();
+        
+        for(Fingerprint matchByDistance : classResult.getMatchesByDistance()) {
+            matchesByDistance.add(matchByDistance.getParent());
+        }
+        
+        result.setMatchesByDistance(matchesByDistance);
+        
+        return result;
+    }
+    
+    private FingerprintMatcher.Result postProcessMethodResult(FingerprintMatcher.Result methodResult) {
+    
+        FingerprintMatcher.Result result = new FingerprintMatcher.Result();
+        
+        if(methodResult.getMatchByName() != null && methodResult.getMatchByName().getParent() != null) {
+            result.setMatchByName(methodResult.getMatchByName().getParent().getParent());
+        }
+        
+        if(methodResult.getNeedle() != null && methodResult.getNeedle().getParent() != null) {
+            result.setNeedle(methodResult.getNeedle().getParent().getParent());
+        }
+        
+        Set<Fingerprint> matchesByDistance = new HashSet<>();
+        
+        for(Fingerprint matchByDistance : methodResult.getMatchesByDistance()) {
+            if(matchByDistance.getParent() != null) {
+                matchesByDistance.add(matchByDistance.getParent());
+            }
+        }
+        
+        result.setMatchesByDistance(matchesByDistance);
+        
+        return result;
+    
     }
     
     public static enum Level {

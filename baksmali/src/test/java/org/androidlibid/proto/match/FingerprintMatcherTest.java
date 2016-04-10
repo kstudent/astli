@@ -1,18 +1,14 @@
 package org.androidlibid.proto.match;
 
-import org.androidlibid.proto.match.FingerprintMatcher;
 import java.sql.SQLException;
 import java.util.ArrayList; 
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.ao.EntityService;
 import org.junit.Before;
 import org.junit.Test;
-import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.androidlibid.proto.ao.VectorEntity;
 import org.androidlibid.proto.ao.Clazz;
 
 /**
@@ -82,7 +78,7 @@ public class FingerprintMatcherTest {
         fingerprints.add(new Fingerprint(entity2));
         fingerprints.add(new Fingerprint(entity3));
         
-        List<Fingerprint> matchedPrints = matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
+        List<Fingerprint> matchedPrints = (List<Fingerprint>) matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
         
         double diffto0 = needle.getDistanceToFingerprint(matchedPrints.get(0));
         double diffto1 = needle.getDistanceToFingerprint(matchedPrints.get(1));
@@ -111,7 +107,7 @@ public class FingerprintMatcherTest {
         fingerprints.add(new Fingerprint(entity2));
         fingerprints.add(new Fingerprint(entity3));
         
-        List<Fingerprint> matchedPrints = matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
+        List<Fingerprint> matchedPrints = (List<Fingerprint>) matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
         
         double diffto0 = needle.getDistanceToFingerprint(matchedPrints.get(0));
         double diffto1 = needle.getDistanceToFingerprint(matchedPrints.get(1));

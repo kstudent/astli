@@ -59,7 +59,7 @@ public class ClassInclusionCalculator {
             double maxScore = element.getLength();
             
             if(result.getMatchesByDistance().size() > 0) {
-                Fingerprint closestElmentInBiggerSet = result.getMatchesByDistance().get(0);
+                Fingerprint closestElmentInBiggerSet = result.getMatchesByDistance().iterator().next();
                 
                 score = element.getSimilarityScoreToFingerprint(closestElmentInBiggerSet);
                 

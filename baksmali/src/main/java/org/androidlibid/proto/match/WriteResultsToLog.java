@@ -4,6 +4,7 @@ import org.androidlibid.proto.ao.FingerprintService;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +30,8 @@ public class WriteResultsToLog implements ResultEvaluator  {
         
         String needleName = needle.getName();
         Fingerprint nameMatch = result.getMatchByName();
-        List<Fingerprint> matchesByDistance = result.getMatchesByDistance();
+        
+        Collection<Fingerprint> matchesByDistance = result.getMatchesByDistance();
                 
         if(nameMatch == null) {
             try { 
@@ -47,11 +49,13 @@ public class WriteResultsToLog implements ResultEvaluator  {
             }
         } else {
             
-            int position;
+            int position = 0;
             
-            for (position = 0; position < matchesByDistance.size(); position++) {
-                if(matchesByDistance.get(position).getName().equals(needleName)) {
+            for (Fingerprint matchByDistance : matchesByDistance) {
+                if(matchByDistance.getName().equals(needleName)) {
                     break;
+                } else {
+                    position++;
                 }
             }
             
@@ -70,8 +74,9 @@ public class WriteResultsToLog implements ResultEvaluator  {
                 "eucDiffN"
             );
             
-            for(int i = 0; i < result.getMatchesByDistance().size(); i++) {
-                Fingerprint matchByDistance = result.getMatchesByDistance().get(i);
+            int i = 1; 
+            
+            for(Fingerprint matchByDistance : result.getMatchesByDistance()) {
                 
                 double maxLength = Math.max(matchByDistance.getLength(), needle.getLength());
                 double eucDiffR  = maxLength - matchByDistance.getDistanceToFingerprint(needle);
@@ -87,6 +92,8 @@ public class WriteResultsToLog implements ResultEvaluator  {
                         frmt.format(matchByDistance.getDistanceToFingerprint(needle)), 
                         frmt.format(eucDiffR)
                 );
+                
+                i++;
             }
             
             if(position == 0) {
