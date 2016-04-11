@@ -14,7 +14,7 @@ public class ClassInclusionCalculatorTest {
 
     private FingerprintMatcher matcher;
     private ArrayList<Fingerprint> methods;
-    ClassInclusionCalculator calculator;
+    private ClassInclusionCalculator calculator;
     
     @Before 
     public void setUp() {
@@ -136,6 +136,23 @@ public class ClassInclusionCalculatorTest {
         
         assert(score < maxScore * .1);
     }
+    
+    @Test
+    public void testNameMismatchWarning() {
+        List<Fingerprint> classA = new ArrayList<>();
+        List<Fingerprint> classB = new ArrayList<>();
+        
+        Fingerprint fpA = new Fingerprint(1, 1, 1);
+        Fingerprint fpB = new Fingerprint(1, 1, 1);
+        
+        fpA.setName("fpA");
+        fpB.setName("fpB");
+        
+        classA.add(fpA);
+        classB.add(fpB);
+        
+        calculator.computeClassInclusion(classA, classB, true);
+    }    
     
     @Test
     public void testEmptyClasses() {
