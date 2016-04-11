@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.androidlibid.proto.SmaliNameConverter;
 import org.androidlibid.proto.utils.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -15,6 +17,8 @@ import org.androidlibid.proto.utils.StringUtils;
 public class ProGuardMappingFileParser {
     
     BiMap<String, String> mapping = HashBiMap.create();
+    
+    private static final Logger LOGGER = LogManager.getLogger(ProGuardMappingFileParser.class);
 
     public Map<String, String> parseMappingFileOnClassLevel(
             BufferedReader reader) throws IOException {
@@ -123,8 +127,7 @@ public class ProGuardMappingFileParser {
         try {
             mapping.put(obfuscatedKey, clearNameValue);
         } catch (IllegalArgumentException ex) {
-            //TODO: Logger
-            System.out.println("Duplicate pair: " + obfuscatedKey + "->" + clearNameValue);
+            LOGGER.warn("Duplicate pair: " + obfuscatedKey + "->" + clearNameValue);
         }
     }
 

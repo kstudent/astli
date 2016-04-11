@@ -16,7 +16,7 @@
 package org.androidlibid.proto.ast;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 
@@ -43,47 +43,66 @@ public class NodeTest {
         child3.addChild(child5);
         child3.addChild(child6);
 
-        System.out.println(root.toString());
+        String rootString = root.toString();
+        
+        String expectedString = 
+            "method\n" +
+            "  argument\n" +
+            "  direct\n" +
+            "    local\n" +
+            "  virtual\n" +
+            "    local\n" +
+            "    parameter\n";
+        
+        assert(rootString.equals(expectedString));
     }
 
     @Test
     public void testHorizontalFeatures() {
-        System.out.println("horizontal features: ");
-        
         FeatureGenerator fg = new FeatureGenerator();
         
-        for(List<NodeType> feature : fg.generateHorizontalFeatures()) {
-            System.out.println(feature);
+        List<List<NodeType>> expectedFeatures = new ArrayList<>();
+        expectedFeatures.add(createFeature(NodeType.ARGUMENT, NodeType.ARGUMENT));
+        expectedFeatures.add(createFeature(NodeType.PARAMETER, NodeType.PARAMETER));
+        expectedFeatures.add(createFeature(NodeType.PARAMETER, NodeType.LOCAL));
+        expectedFeatures.add(createFeature(NodeType.LOCAL, NodeType.PARAMETER));
+        expectedFeatures.add(createFeature(NodeType.LOCAL, NodeType.LOCAL));
+        
+        List<List<NodeType>> horizontalFeatures = fg.generateHorizontalFeatures();
+        
+        assert(horizontalFeatures.size() == expectedFeatures.size());
+        
+        for(List<NodeType> feature : horizontalFeatures) {
+            assert(expectedFeatures.contains(feature));
         }
     }
     
     @Test
     public void testVerticalFeatures() {
-        System.out.println("vertical features: ");
-        
         FeatureGenerator fg = new FeatureGenerator();
         
-        for(List<NodeType> feature : fg.generateVerticalFeatures()) {
-            System.out.println(feature);
+        List<List<NodeType>> expectedFeatures = new ArrayList<>();
+        expectedFeatures.add(createFeature(NodeType.METHOD));
+        expectedFeatures.add(createFeature(NodeType.VIRTUAL));
+        expectedFeatures.add(createFeature(NodeType.DIRECT));
+        expectedFeatures.add(createFeature(NodeType.ARGUMENT));
+        expectedFeatures.add(createFeature(NodeType.PARAMETER));
+        expectedFeatures.add(createFeature(NodeType.LOCAL));
+        expectedFeatures.add(createFeature(NodeType.VIRTUAL, NodeType.PARAMETER));
+        expectedFeatures.add(createFeature(NodeType.VIRTUAL, NodeType.LOCAL));
+        expectedFeatures.add(createFeature(NodeType.DIRECT,  NodeType.PARAMETER));
+        expectedFeatures.add(createFeature(NodeType.DIRECT,  NodeType.LOCAL));
+        
+        List<List<NodeType>> verticalFeatures = fg.generateVerticalFeatures();
+        
+        assert(verticalFeatures.size() == expectedFeatures.size());
+        
+        for(List<NodeType> feature : verticalFeatures) {
+            assert(expectedFeatures.contains(feature));
         }
     }
-
-    @Test
-    public void testEqualsOnLists() {
-        List<Integer> list1 = new ArrayList<>();
-        List<Integer> list2 = new LinkedList<>();
-        
-        list1.add(new Integer(17));
-        list1.add(new Integer(18));
-        list1.add(new Integer(19));
-        
-        list2.add(new Integer(17));
-        list2.add(new Integer(18));
-        list2.add(new Integer(19));
-        
-        assert(list1.equals(list2));
-        
     
+    private List<NodeType> createFeature(NodeType... types) {
+        return Arrays.asList(types);
     }
-    
 }

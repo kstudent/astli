@@ -152,7 +152,7 @@ public class mainTest {
     }
 
     public void testFindLibrariesOfAPKLvl(int lvl, int algId) throws IOException {
-        System.out.println("analyzing lvl " + lvl);
+        LOGGER.info("analyzing lvl " + lvl);
         String appApkPath     =  "./src/integration-test/resources/FingerprintAPKTest/app.obflvl" + lvl + ".apk";
         String mappingFilePath = "./src/integration-test/resources/MappingFiles/mapping.obflvl"   + lvl + ".txt";
         
@@ -183,14 +183,14 @@ public class mainTest {
     
      public void countMethods() throws Exception {
         EntityService service = EntityServiceFactory.createService();
-        System.out.println("methods: " + service.countMethods());
+        LOGGER.info("methods: " + service.countMethods());
     } 
     
     public void clearDB() throws Exception {
         EntityService service = EntityServiceFactory.createService();
-        System.out.println("Fingerprint.count(): " + service.countClasses());
+        LOGGER.info("Fingerprint.count(): " + service.countClasses());
         service.truncateTables();
-        System.out.println("... after deleting : " + service.countClasses());
+        LOGGER.info("... after deleting : " + service.countClasses());
     } 
     
     public void testListClassFingerprintsFromDB() throws Exception {
@@ -198,7 +198,7 @@ public class mainTest {
         
         int counter = 0;
         
-        System.out.println("---list-of-class-fingerprints---");
+        LOGGER.info("---list-of-class-fingerprints---");
         for(Clazz entity : service.findClasses()) {
             
             assert(entity != null);
@@ -206,10 +206,10 @@ public class mainTest {
             
             Fingerprint print = new Fingerprint(entity);
             counter++;
-            System.out.println("  " + print.getName());
+            LOGGER.info("  " + print.getName());
         }
         
-        System.out.println("amount of classes: " + counter);
+        LOGGER.info("amount of classes: " + counter);
     }
 
     private void testListPackageFingerprintsFromDB() throws SQLException {
@@ -217,7 +217,7 @@ public class mainTest {
         
         int counter = 0;
         
-        System.out.println("---list-of-package-fingerprints---");
+        LOGGER.info("---list-of-package-fingerprints---");
         for(Package entity : service.findPackages()) {
             
             assert(entity != null);
@@ -225,10 +225,10 @@ public class mainTest {
             
             Fingerprint print = new Fingerprint(entity);
             counter++;
-            System.out.println("  " + print.getName());
+            LOGGER.info("  " + print.getName());
         }
         
-        System.out.println("amount of packages: " + counter);
+        LOGGER.info("amount of packages: " + counter);
     }
 
     private void printSomeMethods() throws SQLException {
@@ -239,10 +239,10 @@ public class mainTest {
         
         for(int i = 0; i < upper_bound; i++) {
             Clazz clazz = classes.get(i);
-            System.out.println(clazz.getName());
+            LOGGER.info(clazz.getName());
             for(Method m : clazz.getMethods()) {
                 Fingerprint p = new Fingerprint(m);
-                System.out.println(p);  
+                LOGGER.info(p);  
             }
         }
     }
@@ -255,7 +255,7 @@ public class mainTest {
         for(int i = 0; i < classes.size(); i++) {
             Clazz clazz = classes.get(i);
             for(Method m : clazz.getMethods()) {
-                System.out.print(m.getLength() + ", ");
+                LOGGER.info(m.getLength() + ", ");
             }
         }
     }

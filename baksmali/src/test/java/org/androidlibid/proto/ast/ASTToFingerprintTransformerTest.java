@@ -27,13 +27,24 @@ public class ASTToFingerprintTransformerTest {
         child3.addChild(child5);
         child3.addChild(child6);
         
-        ASTToFingerprintTransformer fingerPrinter = new ASTToFingerprintTransformer();
+        ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         
-        Fingerprint fingerprint = fingerPrinter.createFingerprint(root);
+        Fingerprint fingerprint = ast2fpt.createFingerprint(root);
         
-        System.out.println(root);
-        System.out.println(fingerprint);
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.METHOD), 1));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.VIRTUAL), 1));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.DIRECT), 1));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.ARGUMENT), 1));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.PARAMETER), 1));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.LOCAL), 2));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.VIRTUAL, NodeType.LOCAL), 1));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.DIRECT, NodeType.LOCAL), 1));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.PARAMETER, NodeType.LOCAL), 1));
+        assert(doubleEquals(fingerprint.getFeatureCount(NodeType.LOCAL, NodeType.PARAMETER), 1));
         
-        
+    }
+
+    private boolean doubleEquals(double a, double b) {
+        return Math.abs(a - b) < 0.00001;
     }
 }
