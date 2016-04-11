@@ -103,8 +103,6 @@ public class main {
         baksmaliOptions options = new baksmaliOptions();
 
         boolean disassemble = true;
-        boolean doDump = false;
-        String dumpFileName = null;
         boolean setBootClassPath = false;
 
         String[] remainingArgs = commandLine.getArgs();
@@ -224,13 +222,6 @@ public class main {
         boolean errorOccurred = false;
         if (disassemble) {
             errorOccurred = !baksmali.disassembleDexFile(dexFile, options);
-        }
-
-        if (doDump) {
-            if (dumpFileName == null) {
-                dumpFileName = commandLine.getOptionValue(inputDexFileName + ".dump");
-            }
-            dump.dump(dexFile, dumpFileName, options.apiLevel, options.experimental);
         }
 
         if (errorOccurred) {
