@@ -84,6 +84,7 @@ public class baksmaliOptions {
     public boolean isObfuscated = false;
     public String mappingFile = "";
     public boolean storeOnMethodLevel = true;
+    public int algorithmID = 1;
     
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;

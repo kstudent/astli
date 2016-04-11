@@ -40,7 +40,7 @@ public class WriteResultsToLog implements ResultEvaluator  {
                     LOGGER.info("{}: not matched by name", needleName);
                     return MatchingStrategy.Status.NO_MATCH_BY_NAME;
                 } else {
-                    LOGGER.info("{}: not matched by name, but its in the db {} time(s)", new Object[]{needleName, packagesWithTheSameName.size()});
+                    LOGGER.info("{}: not matched by name, but its in the db {} time(s)", needleName, packagesWithTheSameName.size());
                     return MatchingStrategy.Status.NO_MATCH_BY_NAME_ALTHOUGH_IN_DB;
                 }
             } catch (SQLException ex) {
@@ -84,11 +84,16 @@ public class WriteResultsToLog implements ResultEvaluator  {
                 if(eucDiffR < 0) eucDiffR = 0;
                 eucDiffR = eucDiffR  / maxLength;
                 
+                double incScoreN = 0.0d;
+                if(needle.getInclusionScore() > 0.0d) {
+                    incScoreN = matchByDistance.getInclusionScore() / needle.getInclusionScore();
+                }
+                
                 LOGGER.debug("| {} | {} | {} | {} | {} | {} |", 
                         i, 
                         matchByDistance.getName(),
                         frmt.format(matchByDistance.getInclusionScore()), 
-                        frmt.format(matchByDistance.getInclusionScore() / needle.getInclusionScore()), 
+                        frmt.format(incScoreN), 
                         frmt.format(matchByDistance.getDistanceToFingerprint(needle)), 
                         frmt.format(eucDiffR)
                 );

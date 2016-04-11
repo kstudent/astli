@@ -127,122 +127,28 @@ public class main {
                     }
                     usage(false);
                     return;
-                case 'o':
-                    options.outputDirectory = commandLine.getOptionValue("o");
-                    break;
-                case 'p':
-                    options.noParameterRegisters = true;
-                    break;
-                case 'l':
-                    options.useLocalsDirective = true;
-                    break;
-                case 's':
-                    options.useSequentialLabels = true;
-                    break;
-                case 'b':
-                    options.outputDebugInfo = false;
-                    break;
-                case 'd':
-                    options.bootClassPathDirs.add(option.getValue());
-                    break;
-                case 'f':
-                    options.addCodeOffsets = true;
-                    break;
-                case 'r':
-                    String[] values = commandLine.getOptionValues('r');
-                    int registerInfo = 0;
 
-                    if (values == null || values.length == 0) {
-                        registerInfo = baksmaliOptions.ARGS | baksmaliOptions.DEST;
-                    } else {
-                        for (String value: values) {
-                            if (value.equalsIgnoreCase("ALL")) {
-                                registerInfo |= baksmaliOptions.ALL;
-                            } else if (value.equalsIgnoreCase("ALLPRE")) {
-                                registerInfo |= baksmaliOptions.ALLPRE;
-                            } else if (value.equalsIgnoreCase("ALLPOST")) {
-                                registerInfo |= baksmaliOptions.ALLPOST;
-                            } else if (value.equalsIgnoreCase("ARGS")) {
-                                registerInfo |= baksmaliOptions.ARGS;
-                            } else if (value.equalsIgnoreCase("DEST")) {
-                                registerInfo |= baksmaliOptions.DEST;
-                            } else if (value.equalsIgnoreCase("MERGE")) {
-                                registerInfo |= baksmaliOptions.MERGE;
-                            } else if (value.equalsIgnoreCase("FULLMERGE")) {
-                                registerInfo |= baksmaliOptions.FULLMERGE;
-                            } else {
-                                usage();
-                                return;
-                            }
-                        }
-
-                        if ((registerInfo & baksmaliOptions.FULLMERGE) != 0) {
-                            registerInfo &= ~baksmaliOptions.MERGE;
-                        }
-                    }
-                    options.registerInfo = registerInfo;
-                    break;
-                case 'c':
-                    String bcp = commandLine.getOptionValue("c");
-                    if (bcp != null && bcp.charAt(0) == ':') {
-                        options.addExtraClassPath(bcp);
-                    } else {
-                        setBootClassPath = true;
-                        options.setBootClassPath(bcp);
-                    }
-                    break;
-                case 'x':
-                    options.deodex = true;
-                    break;
                 case 'y':
                     options.aliFingerprintAPK = true;
                     break;
                 case 'z':
                     options.mvnIdentifier = commandLine.getOptionValue('z');
                     options.aliFingerprintJAR = true;
+                    break;
                 case 'Z':
                     options.mappingFile = commandLine.getOptionValue('Z');
                     options.isObfuscated = true;
-                case 'X':
-                    options.experimental = true;
-                    break;
-                case 'm':
-                    options.noAccessorComments = true;
                     break;
                 case 'a':
-                    options.apiLevel = Integer.parseInt(commandLine.getOptionValue("a"));
+                    int algId = Integer.parseInt(commandLine.getOptionValue('a'));
+                    if(algId < 1 || algId > 5) {
+                        usage();
+                        return;
+                    }
+                    options.algorithmID = algId; 
                     break;
                 case 'j':
                     options.jobs = Integer.parseInt(commandLine.getOptionValue("j"));
-                    break;
-                case 'i':
-                    String rif = commandLine.getOptionValue("i");
-                    options.setResourceIdFiles(rif);
-                    break;
-                case 't':
-                    options.useImplicitReferences = true;
-                    break;
-                case 'e':
-                    options.dexEntry = commandLine.getOptionValue("e");
-                    break;
-                case 'k':
-                    options.checkPackagePrivateAccess = true;
-                    break;
-                case 'n':
-                    options.normalizeVirtualMethods = true;
-                    break;
-                case 'N':
-                    disassemble = false;
-                    break;
-                case 'D':
-                    doDump = true;
-                    dumpFileName = commandLine.getOptionValue("D");
-                    break;
-                case 'I':
-                    options.ignoreErrors = true;
-                    break;
-                case 'T':
-                    options.customInlineDefinitions = new File(commandLine.getOptionValue("T"));
                     break;
                 default:
                     assert false;
@@ -356,9 +262,9 @@ public class main {
      * Prints the version message.
      */
     protected static void version() {
-        System.out.println("baksmali " + VERSION + " (http://smali.googlecode.com)");
-        System.out.println("Copyright (C) 2010 Ben Gruver (JesusFreke@JesusFreke.com)");
-        System.out.println("BSD license (http://www.opensource.org/licenses/bsd-license.php)");
+        System.out.println("androidlibid " + VERSION);
+        System.out.println("Copyright...?");
+        System.out.println("Licence...?");
         System.exit(0);
     }
 
@@ -372,22 +278,6 @@ public class main {
                 .withDescription("prints the help message then exits. Specify twice for debug options")
                 .create("?");
 
-        Option outputDirOption = OptionBuilder.withLongOpt("output")
-                .withDescription("the directory where the disassembled files will be placed. The default is out")
-                .hasArg()
-                .withArgName("DIR")
-                .create("o");
-
-        Option noParameterRegistersOption = OptionBuilder.withLongOpt("no-parameter-registers")
-                .withDescription("use the v<n> syntax instead of the p<n> syntax for registers mapped to method " +
-                        "parameters")
-                .create("p");
-
-        Option deodexerantOption = OptionBuilder.withLongOpt("deodex")
-                .withDescription("deodex the given odex file. This option is ignored if the input file is not an " +
-                        "odex file")
-                .create("x");
-        
         Option aliFingerprintAPK = OptionBuilder.withLongOpt("ali-apk")
                 .withDescription("try to identify libraries in an android app (.apk)")
                 .create("y");
@@ -406,68 +296,18 @@ public class main {
                         + "used together with --ali-apk option)")
                 .create("Z");
         
-        Option experimentalOption = OptionBuilder.withLongOpt("experimental")
-                .withDescription("enable experimental opcodes to be disassembled, even if they aren't necessarily supported in the Android runtime yet")
-                .create("X");
-
-        Option useLocalsOption = OptionBuilder.withLongOpt("use-locals")
-                .withDescription("output the .locals directive with the number of non-parameter registers, rather" +
-                        " than the .register directive with the total number of register")
-                .create("l");
-
-        Option sequentialLabelsOption = OptionBuilder.withLongOpt("sequential-labels")
-                .withDescription("create label names using a sequential numbering scheme per label type, rather than " +
-                        "using the bytecode address")
-                .create("s");
-
-        Option noDebugInfoOption = OptionBuilder.withLongOpt("no-debug-info")
-                .withDescription("don't write out debug info (.local, .param, .line, etc.)")
-                .create("b");
-
-        Option registerInfoOption = OptionBuilder.withLongOpt("register-info")
-                .hasOptionalArgs()
-                .withArgName("REGISTER_INFO_TYPES")
-                .withValueSeparator(',')
-                .withDescription("print the specificed type(s) of register information for each instruction. " +
-                        "\"ARGS,DEST\" is the default if no types are specified.\nValid values are:\nALL: all " +
-                        "pre- and post-instruction registers.\nALLPRE: all pre-instruction registers\nALLPOST: all " +
-                        "post-instruction registers\nARGS: any pre-instruction registers used as arguments to the " +
-                        "instruction\nDEST: the post-instruction destination register, if any\nMERGE: Any " +
-                        "pre-instruction register has been merged from more than 1 different post-instruction " +
-                        "register from its predecessors\nFULLMERGE: For each register that would be printed by " +
-                        "MERGE, also show the incoming register types that were merged")
-                .create("r");
-
-        Option classPathOption = OptionBuilder.withLongOpt("bootclasspath")
-                .withDescription("A colon-separated list of bootclasspath jar/oat files to use for analysis. Add an " +
-                        "initial colon to specify that the jars/oats should be appended to the default bootclasspath " +
-                        "instead of replacing it")
-                .hasOptionalArg()
-                .withArgName("BOOTCLASSPATH")
-                .create("c");
-
-        Option classPathDirOption = OptionBuilder.withLongOpt("bootclasspath-dir")
-                .withDescription("the base folder to look for the bootclasspath files in. Defaults to the current " +
-                        "directory")
+        Option algorithmOption = OptionBuilder.withLongOpt("algorithm")
                 .hasArg()
-                .withArgName("DIR")
-                .create("d");
-
-        Option codeOffsetOption = OptionBuilder.withLongOpt("code-offsets")
-                .withDescription("add comments to the disassembly containing the code offset for each address")
-                .create("f");
-
-        Option noAccessorCommentsOption = OptionBuilder.withLongOpt("no-accessor-comments")
-                .withDescription("don't output helper comments for synthetic accessors")
-                .create("m");
-
-        Option apiLevelOption = OptionBuilder.withLongOpt("api-level")
-                .withDescription("The numeric api-level of the file being disassembled. If not " +
-                        "specified, it defaults to 15 (ICS).")
-                .hasArg()
-                .withArgName("API_LEVEL")
+                .withArgName("algorithm-ID")
+                .withDescription("choose matching algorithm (can only be "
+                        + "used together with --ali-apk option):\n"
+                        + "1: vector-difference on package level\n"
+                        + "2: vector-difference on class level\n"
+                        + "3: vector-difference on method level\n"
+                        + "4: inclusion-strategy with method needle, repeated matching enabled\n"
+                        + "5: inclusion-strategy with method needle, repeated matching disabled\n")
                 .create("a");
-
+        
         Option jobsOption = OptionBuilder.withLongOpt("jobs")
                 .withDescription("The number of threads to use. Defaults to the number of cores available, up to a " +
                         "maximum of 6")
@@ -475,86 +315,13 @@ public class main {
                 .withArgName("NUM_THREADS")
                 .create("j");
 
-        Option resourceIdFilesOption = OptionBuilder.withLongOpt("resource-id-files")
-                .withDescription("the resource ID files to use, for analysis. A colon-separated list of prefix=file " +
-                        "pairs.  For example R=res/values/public.xml:" +
-                        "android.R=$ANDROID_HOME/platforms/android-19/data/res/values/public.xml")
-                .hasArg()
-                .withArgName("FILES")
-                .create("i");
-
-        Option noImplicitReferencesOption = OptionBuilder.withLongOpt("implicit-references")
-                .withDescription("Use implicit (type-less) method and field references")
-                .create("t");
-
-        Option checkPackagePrivateAccessOption = OptionBuilder.withLongOpt("check-package-private-access")
-                .withDescription("When deodexing, use the package-private access check when calculating vtable " +
-                        "indexes. It should only be needed for 4.2.0 odexes. The functionality was reverted for " +
-                        "4.2.1.")
-                .create("k");
-
-        Option normalizeVirtualMethods = OptionBuilder.withLongOpt("normalize-virtual-methods")
-                .withDescription("Normalize virtual method references to the reference the base method.")
-                .create("n");
-
-        Option dumpOption = OptionBuilder.withLongOpt("dump-to")
-                .withDescription("dumps the given dex file into a single annotated dump file named FILE" +
-                        " (<dexfile>.dump by default), along with the normal disassembly")
-                .hasOptionalArg()
-                .withArgName("FILE")
-                .create("D");
-
-        Option ignoreErrorsOption = OptionBuilder.withLongOpt("ignore-errors")
-                .withDescription("ignores any non-fatal errors that occur while disassembling/deodexing," +
-                        " ignoring the class if needed, and continuing with the next class. The default" +
-                        " behavior is to stop disassembling and exit once an error is encountered")
-                .create("I");
-
-        Option noDisassemblyOption = OptionBuilder.withLongOpt("no-disassembly")
-                .withDescription("suppresses the output of the disassembly")
-                .create("N");
-
-        Option inlineTableOption = OptionBuilder.withLongOpt("inline-table")
-                .withDescription("specify a file containing a custom inline method table to use for deodexing")
-                .hasArg()
-                .withArgName("FILE")
-                .create("T");
-
-        Option dexEntryOption = OptionBuilder.withLongOpt("dex-file")
-                .withDescription("looks for dex file named DEX_FILE, defaults to classes.dex")
-                .withArgName("DEX_FILE")
-                .hasArg()
-                .create("e");
-
         basicOptions.addOption(versionOption);
         basicOptions.addOption(helpOption);
-        basicOptions.addOption(outputDirOption);
-        basicOptions.addOption(noParameterRegistersOption);
-        basicOptions.addOption(deodexerantOption);
         basicOptions.addOption(aliFingerprintAPK);
         basicOptions.addOption(aliFingerprintJAR);
         basicOptions.addOption(verifyObfuscationWithMapping);
-        basicOptions.addOption(experimentalOption);
-        basicOptions.addOption(useLocalsOption);
-        basicOptions.addOption(sequentialLabelsOption);
-        basicOptions.addOption(noDebugInfoOption);
-        basicOptions.addOption(registerInfoOption);
-        basicOptions.addOption(classPathOption);
-        basicOptions.addOption(classPathDirOption);
-        basicOptions.addOption(codeOffsetOption);
-        basicOptions.addOption(noAccessorCommentsOption);
-        basicOptions.addOption(apiLevelOption);
+        basicOptions.addOption(algorithmOption);
         basicOptions.addOption(jobsOption);
-        basicOptions.addOption(resourceIdFilesOption);
-        basicOptions.addOption(noImplicitReferencesOption);
-        basicOptions.addOption(dexEntryOption);
-        basicOptions.addOption(checkPackagePrivateAccessOption);
-        basicOptions.addOption(normalizeVirtualMethods);
-
-        debugOptions.addOption(dumpOption);
-        debugOptions.addOption(ignoreErrorsOption);
-        debugOptions.addOption(noDisassemblyOption);
-        debugOptions.addOption(inlineTableOption);
 
         for (Object option: basicOptions.getOptions()) {
             options.addOption((Option)option);

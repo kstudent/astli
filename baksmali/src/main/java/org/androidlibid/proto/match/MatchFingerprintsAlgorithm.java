@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
+import static org.androidlibid.proto.match.MatchWithVectorDifferenceStrategy.Level;
 
 /**
  *
@@ -43,26 +44,10 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     @Override
     public boolean run() {
         try {
-            EntityService service = EntityServiceFactory.createService();
-            
-            FingerprintService fingerprintService = new FingerprintService(service);
-            
-            boolean disableRepeatedMatching = true;
-            
-            PackageInclusionCalculator packageInclusionCalculator = 
-                    new PackageInclusionCalculator(
-                            new ClassInclusionCalculator(
-                                    new FingerprintMatcher(1000), 
-                                    disableRepeatedMatching
-                            ),
-                            disableRepeatedMatching
-                    );
-            
-            MatchingStrategy strategy = new MatchWithInclusionStrategy(
-                fingerprintService, packageInclusionCalculator, 
-                    new WriteResultsToLog(fingerprintService));
             
             Map<String, Fingerprint> packagePrints = generatePackagePrints();
+            
+            MatchingStrategy strategy = setupStrategy(); 
             
             Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(packagePrints);
             
@@ -101,5 +86,45 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         return phGen.generatePackageHierarchyFromClassBuilders(astClassBuilders);
         
+    }
+
+    private MatchingStrategy setupStrategy() throws SQLException {
+        
+        EntityService service = EntityServiceFactory.createService();
+        FingerprintService fingerprintService = new FingerprintService(service);
+        FingerprintMatcher fingeprintMatcher  = new FingerprintMatcher(1000);
+        ResultEvaluator evaluator = new WriteResultsToLog(fingerprintService);
+        
+        if(options.algorithmID <= 3) {
+            Level level = Level.PACKAGE;
+            
+            switch(options.algorithmID) {
+                case 2: 
+                    level = Level.CLASS;
+                    break;
+                case 3:
+                    level = Level.METHOD;
+                    break;
+            }
+            return new MatchWithVectorDifferenceStrategy(fingerprintService, evaluator, fingeprintMatcher, level);
+        } else {
+            
+            boolean disableRepeatedMatching = (options.algorithmID == 5);
+
+            PackageInclusionCalculator packageInclusionCalculator = 
+                    new PackageInclusionCalculator(
+                            new ClassInclusionCalculator(
+                                    fingeprintMatcher, 
+                                    disableRepeatedMatching
+                            ),
+                            disableRepeatedMatching
+                    );
+
+            MatchingStrategy strategy = new MatchWithInclusionStrategy(
+                fingerprintService, packageInclusionCalculator, 
+                    evaluator);
+
+            return strategy;
+        }
     }
 }

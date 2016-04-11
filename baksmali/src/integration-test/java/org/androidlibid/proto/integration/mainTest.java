@@ -33,15 +33,92 @@ public class mainTest {
     
     @Test
     public void matchAPKLvl1() throws Exception {
-        testFindLibrariesOfAPKLvl(1);
+        testFindLibrariesOfAPKLvl(1, 1);
     }
+    
     @Test
     public void matchAPKLvl2() throws Exception {
-        testFindLibrariesOfAPKLvl(2);
+        testFindLibrariesOfAPKLvl(2, 1);
     }
+    
     @Test
     public void matchAPKLvl3() throws Exception {
-        testFindLibrariesOfAPKLvl(3);
+        testFindLibrariesOfAPKLvl(3, 1);
+    }
+    
+    @Test
+    public void matchAPKLvl1Alg1() throws Exception {
+        testFindLibrariesOfAPKLvl(1, 1);
+    }
+    
+    @Test
+    public void matchAPKLvl2Alg1() throws Exception {
+        testFindLibrariesOfAPKLvl(2, 1);
+    }
+    
+    @Test
+    public void matchAPKLvl3Alg1() throws Exception {
+        testFindLibrariesOfAPKLvl(3, 1);
+    }
+    
+    @Test
+    public void matchAPKLvl1Alg2() throws Exception {
+        testFindLibrariesOfAPKLvl(1, 2);
+    }
+    
+    @Test
+    public void matchAPKLvl2Alg2() throws Exception {
+        testFindLibrariesOfAPKLvl(2, 2);
+    }
+    
+    @Test
+    public void matchAPKLvl3Alg2() throws Exception {
+        testFindLibrariesOfAPKLvl(3, 2);
+    }
+    
+    @Test
+    public void matchAPKLvl1Alg3() throws Exception {
+        testFindLibrariesOfAPKLvl(1, 3);
+    }
+    
+    @Test
+    public void matchAPKLvl2Alg3() throws Exception {
+        testFindLibrariesOfAPKLvl(2, 3);
+    }
+    
+    @Test
+    public void matchAPKLvl3Alg3() throws Exception {
+        testFindLibrariesOfAPKLvl(3, 3);
+    }
+    
+    @Test
+    public void matchAPKLvl1Alg4() throws Exception {
+        testFindLibrariesOfAPKLvl(1, 4);
+    }
+    
+    @Test
+    public void matchAPKLvl2Alg4() throws Exception {
+        testFindLibrariesOfAPKLvl(2, 4);
+    }
+    
+    @Test
+    public void matchAPKLvl3Alg4() throws Exception {
+        testFindLibrariesOfAPKLvl(3, 4);
+    }
+    
+    @Test
+    public void matchAPKLvl1Alg5() throws Exception {
+        testFindLibrariesOfAPKLvl(1, 5);
+    }
+    
+    @Test
+    public void matchAPKLvl2Alg5() throws Exception {
+        testFindLibrariesOfAPKLvl(2, 5);
+    }
+    
+    @Test
+    public void matchAPKLvl3Alg5() throws Exception {
+        testFindLibrariesOfAPKLvl(3, 5);
     }
     
     @Test
@@ -74,7 +151,7 @@ public class mainTest {
         main.main(arg); 
     }
 
-    public void testFindLibrariesOfAPKLvl(int lvl) throws IOException {
+    public void testFindLibrariesOfAPKLvl(int lvl, int algId) throws IOException {
         System.out.println("analyzing lvl " + lvl);
         String appApkPath     =  "./src/integration-test/resources/FingerprintAPKTest/app.obflvl" + lvl + ".apk";
         String mappingFilePath = "./src/integration-test/resources/MappingFiles/mapping.obflvl"   + lvl + ".txt";
@@ -84,7 +161,7 @@ public class mainTest {
         File mappingFile = new File(mappingFilePath);
         assert(mappingFile.exists() && mappingFile.canRead());
         
-        String arg[] = {"-y", appApkPath, "-Z", mappingFilePath, "j", "1"};
+        String arg[] = {"-y", appApkPath, "-Z", mappingFilePath, "-j", "1", "-a", Integer.toString(algId)};
         main.main(arg); 
     }
     

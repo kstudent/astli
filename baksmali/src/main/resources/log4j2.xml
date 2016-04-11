@@ -27,7 +27,7 @@
             <!--<AppenderRef ref="ROLLINGFILE"/>-->
         </Root>
         <Logger name="org.androidlibid.proto.Log4JTest"                                     level="trace"/>
-        <Logger name="org.androidlibid.proto.match.ResultEvaluator"                         level="debug"/>
+        <Logger name="org.androidlibid.proto.match.WriteResultsToLog"                         level="debug"/>
         
         <!--<Logger name="org.androidlibid.proto.match.MatchFingerprintsAlgorithm"              level="info"/>-->
         <!--<Logger name="org.androidlibid.proto.match.MatchFingerprintsAlgorithm"              level="debug"/>-->
