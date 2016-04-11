@@ -110,15 +110,13 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         } else {
             FingerprintMatcher matcher = new FingerprintMatcher();
             
-            boolean disableRepeatedMatching = (options.algorithmID == 5);
-
             PackageInclusionCalculator packageInclusionCalculator = 
                     new PackageInclusionCalculator(
                             new ClassInclusionCalculator(
                                     matcher, 
-                                    disableRepeatedMatching
+                                    options.allowRepeatedMatching
                             ),
-                            disableRepeatedMatching
+                            options.allowRepeatedMatching
                     );
 
             MatchingStrategy strategy = new MatchWithInclusionStrategy(

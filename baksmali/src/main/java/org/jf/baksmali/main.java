@@ -143,7 +143,11 @@ public class main {
                         usage();
                         return;
                     }
-                    options.algorithmID = algId; 
+                    options.algorithmID = algId;
+                    if(algId == 5) {
+                        options.allowRepeatedMatching = false;
+                    }
+                    
                     break;
                 case 'j':
                     options.jobs = Integer.parseInt(commandLine.getOptionValue("j"));
@@ -295,8 +299,8 @@ public class main {
                         + "1: vector-difference on package level\n"
                         + "2: vector-difference on class level\n"
                         + "3: vector-difference on method level\n"
-                        + "4: inclusion-strategy with method needle, repeated matching enabled\n"
-                        + "5: inclusion-strategy with method needle, repeated matching disabled\n")
+                        + "4: inclusion-strategy with method needle, repeated matching (of classes and methods) allowed\n"
+                        + "5: inclusion-strategy with method needle, repeated matching (of classes and methods) disabled\n")
                 .create("a");
         
         Option jobsOption = OptionBuilder.withLongOpt("jobs")

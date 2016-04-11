@@ -80,20 +80,24 @@ public class baksmaliOptions {
     
     public boolean aliFingerprintAPK = false;
     public boolean aliFingerprintJAR = false;
+    public int jobs = -1;
     public String mvnIdentifier = "";
     public boolean isObfuscated = false;
     public String mappingFile = "";
     public boolean storeOnMethodLevel = true;
     public int algorithmID = 1;
     
+    //inclusion strategy settings
+    public boolean allowRepeatedMatching = true;
+    
+    //vectorDiff strategy settings
+    public double similarityThreshold = .5;
+    
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;
     public int registerInfo = 0;
     public ClassPath classPath = null;
-    public int jobs = -1;
     
-    //used vectorDiff strategy
-    public double similarityThreshold = .5;
 
     public SyntheticAccessorResolver syntheticAccessorResolver = null;
 

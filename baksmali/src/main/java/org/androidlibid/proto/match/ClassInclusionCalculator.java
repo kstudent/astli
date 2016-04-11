@@ -13,13 +13,13 @@ import org.apache.logging.log4j.Logger;
 public class ClassInclusionCalculator {
 
     private final FingerprintMatcher matcher;
-    private final boolean disableRepeatedMatches;
+    private final boolean allowRepeatedMatching;
     
     private static final Logger LOGGER = LogManager.getLogger(ClassInclusionCalculator.class.getName());
 
-    public ClassInclusionCalculator(FingerprintMatcher matcher, boolean disableRepeatedMatches) {
+    public ClassInclusionCalculator(FingerprintMatcher matcher, boolean allowRepeatedMatching) {
         this.matcher = matcher;
-        this.disableRepeatedMatches = disableRepeatedMatches;
+        this.allowRepeatedMatching = allowRepeatedMatching;
     }
     
     /**
@@ -67,7 +67,7 @@ public class ClassInclusionCalculator {
                 
                 logScore(elementName, bestMatchName, score, maxScore);
                     
-                if(disableRepeatedMatches) {
+                if(!allowRepeatedMatching) {
                     if(!superSetCopy.remove(closestElmentInBiggerSet)) {
                         throw new RuntimeException("Tried to remove element"
                                 + " that is not in the set.");

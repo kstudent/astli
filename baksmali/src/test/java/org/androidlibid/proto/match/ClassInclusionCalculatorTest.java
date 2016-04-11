@@ -14,6 +14,7 @@ public class ClassInclusionCalculatorTest {
 
     private FingerprintMatcher matcher;
     private ArrayList<Fingerprint> methods;
+    ClassInclusionCalculator calculator;
     
     @Before 
     public void setUp() {
@@ -24,11 +25,12 @@ public class ClassInclusionCalculatorTest {
         methods.add(new Fingerprint(50, 50, 50));
         methods.add(new Fingerprint(70, 10,  0));
         methods.add(new Fingerprint(5,   9, 99));
+        calculator = new ClassInclusionCalculator(matcher, false);
+        
     }
     
     @Test
     public void testClassAIsClassA() {
-        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher, true);
         List<Fingerprint> classA = new ArrayList<>();
         classA.addAll(methods);
         
@@ -44,8 +46,6 @@ public class ClassInclusionCalculatorTest {
     
     @Test
     public void testClassAIsSuperSetOfB() {
-        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher, true);
-        
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
         
@@ -64,8 +64,6 @@ public class ClassInclusionCalculatorTest {
     
     @Test
     public void testClassAIsSubSetOfB() {
-        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher, true);
-        
         Fingerprint classA = new Fingerprint();
         classA.setName("pckg:classA");
         
@@ -94,8 +92,6 @@ public class ClassInclusionCalculatorTest {
     
     @Test
     public void testClassAIsSomehowSimilarToB() {
-        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher, true);
-        
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
         
@@ -120,8 +116,6 @@ public class ClassInclusionCalculatorTest {
     
     @Test
     public void testClassAIsBarelySimilarToB() {
-        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher, true);
-        
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
         
@@ -145,8 +139,6 @@ public class ClassInclusionCalculatorTest {
     
     @Test
     public void testEmptyClasses() {
-        ClassInclusionCalculator calculator = new ClassInclusionCalculator(matcher, true);
-        
         List<Fingerprint> classA = new ArrayList<>();
         List<Fingerprint> classB = new ArrayList<>();
         classA.addAll(methods);
