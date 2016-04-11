@@ -55,9 +55,13 @@ import java.util.concurrent.*;
 import org.androidlibid.proto.match.MatchFingerprintsAlgorithm;
 import org.androidlibid.proto.store.StoreFingerprintsAlgorithm;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
 
 public class baksmali {
+    
+    private static final Logger LOGGER = LogManager.getLogger(baksmali.class);
 
     public static boolean disassembleDexFile(DexFile dexFile, final baksmaliOptions options) {
         if (options.registerInfo != 0 || options.deodex || options.normalizeVirtualMethods) {
@@ -78,8 +82,7 @@ public class baksmali {
                             options.customInlineDefinitions);
                 }
             } catch (Exception ex) {
-                System.err.println("\n\nError occurred while loading boot class path files. Aborting.");
-                ex.printStackTrace(System.err);
+                LOGGER.error("\n\nError occurred while loading boot class path files. Aborting.", ex);
                 return false;
             }
         }
@@ -128,7 +131,7 @@ public class baksmali {
         File outputDirectoryFile = new File(options.outputDirectory);
         if (!outputDirectoryFile.exists()) {
             if (!outputDirectoryFile.mkdirs()) {
-                System.err.println("Can't create the output directory " + options.outputDirectory);
+                LOGGER.error("Can't create the output directory " + options.outputDirectory);
                 return false;
             }
         }
@@ -210,7 +213,7 @@ public class baksmali {
         //validate that the descriptor is formatted like we expect
         if (classDescriptor.charAt(0) != 'L' ||
                 classDescriptor.charAt(classDescriptor.length()-1) != ';') {
-            System.err.println("Unrecognized class descriptor - " + classDescriptor + " - skipping class");
+            LOGGER.error("Unrecognized class descriptor - " + classDescriptor + " - skipping class");
             return false;
         }
 
@@ -228,7 +231,7 @@ public class baksmali {
                 if (!smaliParent.mkdirs()) {
                     // check again, it's likely it was created in a different thread
                     if (!smaliParent.exists()) {
-                        System.err.println("Unable to create directory " + smaliParent.toString() + " - skipping class");
+                        LOGGER.error("Unable to create directory " + smaliParent.toString() + " - skipping class");
                         return false;
                     }
                 }
@@ -236,7 +239,7 @@ public class baksmali {
 
             if (!smaliFile.exists()){
                 if (!smaliFile.createNewFile()) {
-                    System.err.println("Unable to create file " + smaliFile.toString() + " - skipping class");
+                    LOGGER.error("Unable to create file " + smaliFile.toString() + " - skipping class");
                     return false;
                 }
             }
@@ -256,8 +259,7 @@ public class baksmali {
             writer = new IndentingWriter(bufWriter);
             classDefinition.writeTo((IndentingWriter)writer);
         } catch (Exception ex) {
-            System.err.println("\n\nError occurred while disassembling class " + classDescriptor.replace('/', '.') + " - skipping class");
-            ex.printStackTrace();
+            LOGGER.error("\n\nError occurred while disassembling class " + classDescriptor.replace('/', '.') + " - skipping class", ex);
             // noinspection ResultOfMethodCallIgnored
             smaliFile.delete();
             return false;
@@ -268,8 +270,7 @@ public class baksmali {
                 try {
                     writer.close();
                 } catch (Throwable ex) {
-                    System.err.println("\n\nError occurred while closing file " + smaliFile.toString());
-                    ex.printStackTrace();
+                    LOGGER.error("\n\nError occurred while closing file " + smaliFile.toString(), ex);
                 }
             }
         }

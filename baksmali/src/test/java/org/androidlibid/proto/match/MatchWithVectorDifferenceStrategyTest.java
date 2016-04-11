@@ -36,6 +36,7 @@ public class MatchWithVectorDifferenceStrategyTest {
     private List<Fingerprint> pckgsD2, pckgsD3, clsssD2, clsssD3, mthdsD2, mthdsD3;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() throws SQLException {
         service   = mock(FingerprintService.class);
         matcher   = mock(FingerprintMatcher.class);
@@ -74,6 +75,7 @@ public class MatchWithVectorDifferenceStrategyTest {
         
         when(matcher.matchFingerprints(any(List.class), any(Fingerprint.class))).thenAnswer(new Answer<Result>(){
             @Override
+            @SuppressWarnings("unchecked")
             public Result answer(InvocationOnMock invocation) throws Throwable {
                 List<Fingerprint> hayStack = (List<Fingerprint>) invocation.getArguments()[0];
                 Fingerprint needle = (Fingerprint) invocation.getArguments()[1];
@@ -89,6 +91,7 @@ public class MatchWithVectorDifferenceStrategyTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
     public void testMatchOnPackageLevel() throws SQLException {
         Level level = Level.PACKAGE;
                  
@@ -103,6 +106,7 @@ public class MatchWithVectorDifferenceStrategyTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
     public void testMatchOnClassLevel() throws SQLException {
         Level level = Level.CLASS;
                  
@@ -117,6 +121,7 @@ public class MatchWithVectorDifferenceStrategyTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
     public void testMatchOnMethodLevel() throws SQLException {
         Level level = Level.METHOD;
                  

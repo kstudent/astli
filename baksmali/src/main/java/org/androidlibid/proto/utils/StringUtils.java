@@ -9,12 +9,12 @@ public class StringUtils {
     /**
      * Replaces the last occurrence of a string with another string
      * 
-     * @source: https://stackoverflow.com/questions/16665387/replace-last-occurrence-of-a-character-in-a-string
+     * @see <a href="https://stackoverflow.com/questions/16665387/replace-last-occurrence-of-a-character-in-a-string">Stack Overflow: Replace Last Occurrence of a character in a string</a>
      * 
      * @param string
      * @param substring
      * @param replacement
-     * @return 
+     * @return String, with last occurrence replaced.
      */
     public static String replaceLastOccurrence(String string, String substring,
             String replacement) {

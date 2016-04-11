@@ -46,6 +46,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class main {
 
@@ -54,6 +56,8 @@ public class main {
     private static final Options basicOptions;
     private static final Options debugOptions;
     private static final Options options;
+    
+    private static final Logger LOGGER = LogManager.getLogger(main.class);
 
     static {
         options = new Options();
@@ -173,7 +177,7 @@ public class main {
 
         File dexFileFile = new File(inputDexFileName);
         if (!dexFileFile.exists()) {
-            System.err.println("Can't find the file " + inputDexFileName);
+            LOGGER.error("Can't find the file " + inputDexFileName);
             System.exit(1);
         }
         
@@ -188,20 +192,20 @@ public class main {
         try {
             dexFile = DexFileFactory.loadDexFile(dexFileFile, options.dexEntry, options.apiLevel, options.experimental);
         } catch (MultipleDexFilesException ex) {
-            System.err.println(String.format("%s contains multiple dex files. You must specify which one to " +
+            LOGGER.error(String.format("%s contains multiple dex files. You must specify which one to " +
                     "disassemble with the -e option", dexFileFile.getName()));
-            System.err.println("Valid entries include:");
+            LOGGER.error("Valid entries include:");
             for (OatDexFile oatDexFile: ex.oatFile.getDexFiles()) {
-                System.err.println(oatDexFile.filename);
+                LOGGER.error(oatDexFile.filename);
             }
             System.exit(1);
         }
 
         if (dexFile.hasOdexOpcodes()) {
             if (!options.deodex) {
-                System.err.println("Warning: You are disassembling an odex file without deodexing it. You");
-                System.err.println("won't be able to re-assemble the results unless you deodex it with the -x");
-                System.err.println("option");
+                LOGGER.error("Warning: You are disassembling an odex file without deodexing it. You");
+                LOGGER.error("won't be able to re-assemble the results unless you deodex it with the -x");
+                LOGGER.error("option");
                 options.allowOdex = true;
             }
         } else {
@@ -246,7 +250,7 @@ public class main {
         formatter.setWidth(consoleWidth);
 
         formatter.printHelp("java -jar baksmali.jar [options] <dex-file>",
-                "/opt/smali/baksmali. srsly. disassembles and/or dumps a dex file", basicOptions, printDebugOptions?debugOptions:null);
+                "find library dependencies in android apk", basicOptions, printDebugOptions?debugOptions:null);
     }
 
     private static void usage() {
@@ -257,9 +261,9 @@ public class main {
      * Prints the version message.
      */
     protected static void version() {
-        System.out.println("androidlibid " + VERSION);
-        System.out.println("Copyright...?");
-        System.out.println("Licence...?");
+        LOGGER.info("androidlibid " + VERSION);
+        LOGGER.info("Copyright...?");
+        LOGGER.info("Licence...?");
         System.exit(0);
     }
 

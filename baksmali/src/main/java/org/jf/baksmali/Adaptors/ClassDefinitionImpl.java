@@ -44,6 +44,8 @@ import org.jf.util.StringUtils;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ClassDefinitionImpl implements ClassDefinition {
     
@@ -53,6 +55,8 @@ public class ClassDefinitionImpl implements ClassDefinition {
 
     protected boolean validationErrors;
 
+    private static final Logger LOGGER = LogManager.getLogger(ClassDefinitionImpl.class);
+    
     @Override
     public baksmaliOptions getOptions() {
         return options;
@@ -212,7 +216,7 @@ public class ClassDefinitionImpl implements ClassDefinition {
             if (!writtenFields.add(fieldString)) {
                 writer.write("# duplicate field ignored\n");
                 fieldWriter = new CommentingIndentingWriter(writer);
-                System.err.println(String.format("Ignoring duplicate field: %s->%s", classDef.getType(), fieldString));
+                LOGGER.error(String.format("Ignoring duplicate field: %s->%s", classDef.getType(), fieldString));
                 setInStaticConstructor = false;
             } else {
                 setInStaticConstructor = fieldsSetInStaticConstructor.contains(fieldString);
@@ -246,11 +250,11 @@ public class ClassDefinitionImpl implements ClassDefinition {
             if (!writtenFields.add(fieldString)) {
                 writer.write("# duplicate field ignored\n");
                 fieldWriter = new CommentingIndentingWriter(writer);
-                System.err.println(String.format("Ignoring duplicate field: %s->%s", classDef.getType(), fieldString));
+                LOGGER.error(String.format("Ignoring duplicate field: %s->%s", classDef.getType(), fieldString));
             } else if (staticFields.contains(fieldString)) {
-                System.err.println(String.format("Duplicate static+instance field found: %s->%s",
+                LOGGER.error(String.format("Duplicate static+instance field found: %s->%s",
                         classDef.getType(), fieldString));
-                System.err.println("You will need to rename one of these fields, including all references.");
+                LOGGER.error("You will need to rename one of these fields, including all references.");
 
                 writer.write("# There is both a static and instance field with this signature.\n" +
                              "# You will need to rename one of these fields, including all references.\n");
@@ -327,9 +331,9 @@ public class ClassDefinitionImpl implements ClassDefinition {
             } else if (directMethods.contains(methodString)) {
                 writer.write("# There is both a direct and virtual method with this signature.\n" +
                              "# You will need to rename one of these methods, including all references.\n");
-                System.err.println(String.format("Duplicate direct+virtual method found: %s->%s",
+                LOGGER.error(String.format("Duplicate direct+virtual method found: %s->%s",
                         classDef.getType(), methodString));
-                System.err.println("You will need to rename one of these methods, including all references.");
+                LOGGER.error("You will need to rename one of these methods, including all references.");
             }
 
             MethodImplementation methodImpl = method.getImplementation();

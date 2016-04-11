@@ -74,8 +74,8 @@ public class SmaliNameConverter {
     /**
      * Tells, whether <type> is primitive or not.
      * 
-     * @param type, e.g. "void", "int", "byte"...
-     * @return 
+     * @param type e.g. "void", "int", "byte"...
+     * @return true if type is primitive
      */
     public static boolean isPrimitiveType(String type) {
         return PRIMITIVE_TYPES.containsValue(type);
@@ -84,8 +84,8 @@ public class SmaliNameConverter {
     /**
      * Tells, whether <smaliType> is primitive or not.
      * 
-     * @param smaliType, e.g. "V", "I", "B"...
-     * @return 
+     * @param smaliType e.g. "V", "I", "B"...
+     * @return true if smali type is primitive
      */
     public static boolean isPrimitiveSmaliType(String smaliType) {
         return PRIMITIVE_TYPES.containsKey(smaliType);

@@ -95,6 +95,7 @@ public class ASTClassDefinitionTest {
         assert(directMethod.getType().equals(NodeType.METHOD));
     }
     
+    @SuppressWarnings("unchecked")
     private void addMethod(boolean isVirtual, String name, String returnType, String... parameterTypes) {
         
         Method method = mock(Method.class);
@@ -112,6 +113,7 @@ public class ASTClassDefinitionTest {
         } 
     }
 
+    @SuppressWarnings("unchecked")
     private ClassDef createClassDef() {
         ClassDef classdef = mock(ClassDef.class);
         when(classdef.getVirtualMethods()).thenReturn((Iterable)virtualMethods);
@@ -119,6 +121,7 @@ public class ASTClassDefinitionTest {
         return classdef; 
     }
     
+    @SuppressWarnings("unchecked")
     private DexBackedClassDef createClassDefWithDexBackend() {
         DexBackedClassDef classdef = mock(DexBackedClassDef.class);
         when(classdef.getVirtualMethods(any(Boolean.class))).thenReturn((Iterable)virtualMethods);

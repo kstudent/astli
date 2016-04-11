@@ -26,6 +26,7 @@ public class PackageInclusionCalculatorTest {
     double[][] table;
     
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() {
         classInclusionCalculator = mock(ClassInclusionCalculator.class);
 
@@ -112,6 +113,7 @@ public class PackageInclusionCalculatorTest {
     private Answer<Double> getAnswer() {
         return new Answer<Double>() {
             @Override
+            @SuppressWarnings("unchecked")
             public Double answer(InvocationOnMock invocation) throws Throwable {
                 List<Fingerprint> methodsA = (List<Fingerprint>) invocation.getArguments()[0];
                 List<Fingerprint> methodsB = (List<Fingerprint>) invocation.getArguments()[1];
