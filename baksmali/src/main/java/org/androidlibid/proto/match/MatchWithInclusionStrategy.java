@@ -23,16 +23,23 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
     private final FingerprintService service;
     private final PackageInclusionCalculator calculator;
     private final ResultEvaluator evaluator; 
-    private final double methodMatchThreshold  = 0.9999d;
-    private final double packageMatchThreshold = 0.8d;
-    private final double minimalMethodLengthForNeedleLookup = 12;
+    private final Settings settings;
     
     private static final Logger LOGGER = LogManager.getLogger(MatchWithInclusionStrategy.class.getName());
 
-    public MatchWithInclusionStrategy(FingerprintService service, PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
+    public MatchWithInclusionStrategy(
+            FingerprintService service, PackageInclusionCalculator calculator, 
+            ResultEvaluator evaluator) {
+        this(service, calculator, evaluator, new Settings());
+    }
+    
+    public MatchWithInclusionStrategy(FingerprintService service, 
+            PackageInclusionCalculator calculator, ResultEvaluator evaluator, 
+            Settings settings) {
         this.service = service;
         this.calculator = calculator;
         this.evaluator = evaluator;
+        this.settings = settings;
     }
 
     @Override
@@ -79,9 +86,9 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
         for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
             for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
                 double length = methodNeedle.getLength();
-                double size   = length * (1 - methodMatchThreshold);
+                double size   = length * (1 - settings.getMethodMatchThreshold());
                 
-                if(length < minimalMethodLengthForNeedleLookup) {
+                if(length < settings.getMinimalMethodLengthForNeedleLookup()) {
                     break;
                 }
                 
@@ -96,7 +103,7 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
                     double methodSimilarityScore = methodCandidate.getSimilarityScoreToFingerprint(methodNeedle);
                     double maxLength = Math.max(methodNeedle.getLength(), methodCandidate.getLength());
                     
-                    if((methodSimilarityScore / maxLength) > methodMatchThreshold) {
+                    if((methodSimilarityScore / maxLength) > settings.getMethodMatchThreshold()) {
                         
                         Fingerprint packageCandidate = service.getPackageHierarchyByMethod(methodCandidate);
                         
@@ -126,7 +133,7 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
                         
                         LOGGER.info("{} -> {} (sim: {} {})", packageNeedle.getName(), packageCandidate.getName(), packageScore, packageScore / perfectScore);
                         
-                        if((packageScore / perfectScore) > packageMatchThreshold) {
+                        if((packageScore / perfectScore) > settings.getPackageMatchThreshold()) {
                             breakOut = true; 
                             break; 
                         }
@@ -224,4 +231,34 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
             return 0;
         }
     }
+    
+    public static class Settings {
+        
+        private double methodMatchThreshold;
+        private double packageMatchThreshold; 
+        private double minimalMethodLengthForNeedleLookup;        
+
+        public Settings() {
+            this(0.9999d,  0.8d, 12);
+        } 
+        
+        public Settings(double methodMatchThreshold, double packageMatchThreshold, double minimalMethodLengthForNeedleLookup) {
+            this.methodMatchThreshold = methodMatchThreshold;
+            this.packageMatchThreshold = packageMatchThreshold;
+            this.minimalMethodLengthForNeedleLookup = minimalMethodLengthForNeedleLookup;
+        }
+
+        public double getMethodMatchThreshold() {
+            return methodMatchThreshold;
+        }
+
+        public double getPackageMatchThreshold() {
+            return packageMatchThreshold;
+        }
+
+        public double getMinimalMethodLengthForNeedleLookup() {
+            return minimalMethodLengthForNeedleLookup;
+        }
+    }
+    
 }

@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.androidlibid.proto.match.MatchWithInclusionStrategy;
 
 public class baksmaliOptions {
     // register info values
@@ -89,6 +90,8 @@ public class baksmaliOptions {
     
     //inclusion strategy settings
     public boolean allowRepeatedMatching = true;
+    public MatchWithInclusionStrategy.Settings inclusionSettings = 
+            new MatchWithInclusionStrategy.Settings();
     
     //vectorDiff strategy settings
     public double similarityThreshold = .5;

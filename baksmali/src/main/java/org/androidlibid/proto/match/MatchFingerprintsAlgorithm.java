@@ -121,7 +121,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
 
             MatchingStrategy strategy = new MatchWithInclusionStrategy(
                 fingerprintService, packageInclusionCalculator, 
-                    evaluator);
+                    evaluator, options.inclusionSettings);
 
             return strategy;
         }
