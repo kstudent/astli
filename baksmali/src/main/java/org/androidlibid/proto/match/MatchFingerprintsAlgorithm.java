@@ -92,11 +92,11 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         EntityService service = EntityServiceFactory.createService();
         FingerprintService fingerprintService = new FingerprintService(service);
-        FingerprintMatcher fingeprintMatcher  = new FingerprintMatcher(1000);
         ResultEvaluator evaluator = new WriteResultsToLog(fingerprintService);
         
         if(options.algorithmID <= 3) {
             Level level = Level.PACKAGE;
+            FingerprintMatcher matcher = new FingerprintMatcher(options.similarityThreshold);
             
             switch(options.algorithmID) {
                 case 2: 
@@ -106,15 +106,16 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
                     level = Level.METHOD;
                     break;
             }
-            return new MatchWithVectorDifferenceStrategy(fingerprintService, evaluator, fingeprintMatcher, level);
+            return new MatchWithVectorDifferenceStrategy(fingerprintService, evaluator, matcher, level);
         } else {
+            FingerprintMatcher matcher = new FingerprintMatcher();
             
             boolean disableRepeatedMatching = (options.algorithmID == 5);
 
             PackageInclusionCalculator packageInclusionCalculator = 
                     new PackageInclusionCalculator(
                             new ClassInclusionCalculator(
-                                    fingeprintMatcher, 
+                                    matcher, 
                                     disableRepeatedMatching
                             ),
                             disableRepeatedMatching

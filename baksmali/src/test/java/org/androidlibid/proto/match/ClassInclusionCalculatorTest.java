@@ -17,7 +17,7 @@ public class ClassInclusionCalculatorTest {
     
     @Before 
     public void setUp() {
-        matcher = new FingerprintMatcher(1000);
+        matcher = new FingerprintMatcher();
         methods = new ArrayList<Fingerprint>();
         methods.add(new Fingerprint(1,   1,  1));
         methods.add(new Fingerprint(10, 10, 10));

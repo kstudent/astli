@@ -118,6 +118,13 @@ public class Fingerprint {
         return vector.subtract(that.vector).euclideanNorm();
     }
     
+    public double getNonCommutativeSimilarityScoreToFingerprint(Fingerprint that) {
+        double diff = vector.subtract(that.vector).euclideanNorm();
+        double length = this.vector.euclideanNorm(); 
+        double similarityScore = length - diff; 
+        return (similarityScore > 0)? similarityScore : 0;
+    }
+    
     public double getSimilarityScoreToFingerprint(Fingerprint that) {
         double diff = vector.subtract(that.vector).euclideanNorm();
         double length = Math.max(this.vector.euclideanNorm(), that.vector.euclideanNorm()); 

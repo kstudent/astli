@@ -136,12 +136,22 @@ public class FingerprintTest {
     }
     
     @Test 
-    public void testSimilarityReflexivity() {
+    public void testSimilarityCommutativity() {
         Fingerprint f1 = new Fingerprint(  49,     35);
         Fingerprint f2 = new Fingerprint(  17,  8.014);
         double similarity1 = f1.getSimilarityScoreToFingerprint(f2);
         double similarity2 = f2.getSimilarityScoreToFingerprint(f1);
         assert(doubleEquals(similarity1, similarity2));
+    }
+    
+    @Test 
+    public void testNonCommutativeSimilarity() {
+        Fingerprint f1 = new Fingerprint(  49,      35);
+        Fingerprint f2 = new Fingerprint(  1.7, 0.8014);
+        double similarity1 = f1.getNonCommutativeSimilarityScoreToFingerprint(f2);
+        double similarity2 = f2.getNonCommutativeSimilarityScoreToFingerprint(f1);
+        assert(similarity1 > similarity2);
+        assert(doubleEquals(0, similarity2));
     }
     
     @Test 

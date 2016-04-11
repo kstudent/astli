@@ -91,6 +91,9 @@ public class baksmaliOptions {
     public int registerInfo = 0;
     public ClassPath classPath = null;
     public int jobs = -1;
+    
+    //used vectorDiff strategy
+    public double similarityThreshold = .5;
 
     public SyntheticAccessorResolver syntheticAccessorResolver = null;
 

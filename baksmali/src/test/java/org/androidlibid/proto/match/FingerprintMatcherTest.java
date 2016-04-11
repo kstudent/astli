@@ -4,12 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList; 
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
-import org.junit.Before;
 import org.junit.Test;
-import org.la4j.vector.dense.BasicVector;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import org.androidlibid.proto.ao.Clazz;
+import static org.androidlibid.proto.match.FingerprintMatcher.Result;
 
 /**
  *
@@ -17,68 +13,18 @@ import org.androidlibid.proto.ao.Clazz;
  */
 public class FingerprintMatcherTest {
     
-    private List<Fingerprint>  fingerprints;
-    private Clazz entity1;
-    private Clazz entity2;
-    private Clazz entity3;
-    private Clazz needleEntity;
-    private Fingerprint needle;
-    private FingerprintMatcher matcher;
-    private BasicVector v3;
-    private BasicVector v2;
-    private BasicVector v1;
-    private BasicVector needleVector;
-    
-    @Before
-    public void setUp() throws SQLException {
-        entity1 = mock(Clazz.class);
-        entity2 = mock(Clazz.class);
-        entity3 = mock(Clazz.class);
-        
-        v1 = new BasicVector(3);
-        v1.set(0, 1.0);
-        v1.set(1, 2.0);
-        v1.set(2, 3.0);
-        when(entity1.getVector()).thenReturn(v1.toBinary());
-        when(entity1.getName()).thenReturn("c1");
-
-        v2 = new BasicVector(3);
-        v2.set(0, 1.0);
-        v2.set(1, 2.0);         
-        v2.set(2, 4.0);
-        when(entity2.getVector()).thenReturn(v2.toBinary());
-        when(entity2.getName()).thenReturn("c2");
-
-        v3 = new BasicVector(3);
-        v3.set(0, 1.0);
-        v3.set(1, 2.0);
-        v3.set(2, 6.0);
-        when(entity3.getVector()).thenReturn(v3.toBinary());
-        when(entity3.getName()).thenReturn("c3");
-        
-        
-        needleVector = new BasicVector(3);
-        needleVector.set(0, 1.0);
-        needleVector.set(1, 2.0);
-        needleVector.set(2, 4.0);
-        
-        needleEntity = mock(Clazz.class);
-        when(needleEntity.getVector()).thenReturn(needleVector.toBinary());
-        when(needleEntity.getName()).thenReturn("n1");
-        
-        needle = new Fingerprint(needleEntity);
-        matcher = new FingerprintMatcher(100.0d);
-    }
-    
     @Test 
-    public void testMatchSortedFingerprint() throws SQLException {
+    public void testMatchSortedFingerprint() {
+        FingerprintMatcher matcher = new FingerprintMatcher();
         
-        fingerprints = new ArrayList<>();
-        fingerprints.add(new Fingerprint(entity1));
-        fingerprints.add(new Fingerprint(entity2));
-        fingerprints.add(new Fingerprint(entity3));
+        List<Fingerprint> hayStack = new ArrayList<>();
+        hayStack.add(createFingerprint("h1", 1, 2, 0));
+        hayStack.add(createFingerprint("h2", 1, 2, 4));
+        hayStack.add(createFingerprint("h3", 1, 2, 100));
         
-        List<Fingerprint> matchedPrints = (List<Fingerprint>) matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
+        Fingerprint needle = createFingerprint("n", 1,2,4);
+        
+        List<Fingerprint> matchedPrints = (List<Fingerprint>) matcher.matchFingerprints(hayStack, needle).getMatchesByDistance();
         
         double diffto0 = needle.getDistanceToFingerprint(matchedPrints.get(0));
         double diffto1 = needle.getDistanceToFingerprint(matchedPrints.get(1));
@@ -86,28 +32,25 @@ public class FingerprintMatcherTest {
         
         assert(diffto0 <= diffto1);
         assert(diffto1 <= diffto2);
-        assert(matchedPrints.get(0).getFeatureVector().equals(v2));
-        assert(matchedPrints.get(1).getFeatureVector().equals(v1));
-        assert(matchedPrints.get(2).getFeatureVector().equals(v3));
+        assert(matchedPrints.get(0).getFeatureVector().equals(hayStack.get(1).getFeatureVector()));
+        assert(matchedPrints.get(1).getFeatureVector().equals(hayStack.get(0).getFeatureVector()));
+        assert(matchedPrints.get(2).getFeatureVector().equals(hayStack.get(2).getFeatureVector()));
         
     }
     
     @Test 
-    public void testMatchEqualFingerprints() throws SQLException {
-        v1.set(0, 1.0);
-        v1.set(1, 2.0);
-        v1.set(2, 3.0);
+    public void testMatchEqualFingerprints() {
         
-        when(entity1.getVector()).thenReturn(v1.toBinary());
-        when(entity2.getVector()).thenReturn(v1.toBinary());
-        when(entity3.getVector()).thenReturn(v1.toBinary());
+        FingerprintMatcher matcher = new FingerprintMatcher();
         
-        fingerprints = new ArrayList<>();
-        fingerprints.add(new Fingerprint(entity1));
-        fingerprints.add(new Fingerprint(entity2));
-        fingerprints.add(new Fingerprint(entity3));
+        List<Fingerprint> hayStack = new ArrayList<>();
+        hayStack.add(createFingerprint("h1", 1, 2, 3));
+        hayStack.add(createFingerprint("h2", 1, 2, 3));
+        hayStack.add(createFingerprint("h3", 1, 2, 3));
         
-        List<Fingerprint> matchedPrints = (List<Fingerprint>) matcher.matchFingerprints(fingerprints, needle).getMatchesByDistance();
+        Fingerprint needle = createFingerprint("n", 1,2,4);
+        
+        List<Fingerprint> matchedPrints = (List<Fingerprint>) matcher.matchFingerprints(hayStack, needle).getMatchesByDistance();
         
         double diffto0 = needle.getDistanceToFingerprint(matchedPrints.get(0));
         double diffto1 = needle.getDistanceToFingerprint(matchedPrints.get(1));
@@ -116,4 +59,45 @@ public class FingerprintMatcherTest {
         assert(diffto0 == diffto1);
         assert(diffto1 == diffto2);
     }
+    
+    @Test 
+    public void testRemoveDistantNeedlees() throws SQLException {
+        FingerprintMatcher matcher = new FingerprintMatcher(.5);
+        
+        List<Fingerprint> hayStack = new ArrayList<>();
+        hayStack.add(createFingerprint("h1", 11));
+        hayStack.add(createFingerprint("h2", 10));
+        hayStack.add(createFingerprint("h3",  9));
+        
+        Fingerprint needle = createFingerprint("h1", 20);
+        
+        List<Fingerprint> matchedPrints = (List<Fingerprint>) matcher.matchFingerprints(hayStack, needle).getMatchesByDistance();
+        
+        assert(matchedPrints.size()  == 2);
+        assert(matchedPrints.get(0).getFeatureVector().equals(hayStack.get(0).getFeatureVector()));
+        assert(matchedPrints.get(1).getFeatureVector().equals(hayStack.get(1).getFeatureVector()));
+        
+    }
+    
+    @Test 
+    public void testMatchByNameFound() throws SQLException {
+        FingerprintMatcher matcher = new FingerprintMatcher();
+        
+        List<Fingerprint> hayStack = new ArrayList<>();
+        hayStack.add(createFingerprint("NameOfFingerprint", 11));
+        hayStack.add(createFingerprint("NameOfAnotherFingerprint", 11));
+        
+        Fingerprint needle = createFingerprint("NameOfFingerprint", 70);
+        
+        Result result = matcher.matchFingerprints(hayStack, needle);
+        
+        assert(result.getMatchByName().getName().equals("NameOfFingerprint"));
+    }
+    
+    private Fingerprint createFingerprint(String name, int... values) {
+        Fingerprint print = new Fingerprint(name);
+        print.setFeatureValues(values);
+        return print;
+    }
+    
 }

@@ -14,10 +14,28 @@ import org.androidlibid.proto.Fingerprint;
  */
 public class FingerprintMatcher {
 
-    private final double diffThreshold;
+    private final double simThreshold;
 
-    public FingerprintMatcher(double diffThreshold) {
-        this.diffThreshold = diffThreshold;
+    /**
+     * Create Matcher without threshold.
+     */
+    public FingerprintMatcher() {
+        this.simThreshold = -1.0d;
+    }
+    
+    /**
+     * Create Matcher with threshold.
+     * 
+     * @param simThreshold Specifies whether or not a candidate is "similar" 
+     * enough. Values: (0.0d - 1.0d)
+     */
+    public FingerprintMatcher(double simThreshold) {
+        
+        if(simThreshold < 0.0d || simThreshold > 1.0d) {
+            throw new RuntimeException("Threshold needs to be within [0, 1]");
+        }
+        
+        this.simThreshold = simThreshold;
     }
     
     public Result matchFingerprints(final List<Fingerprint> haystack, final Fingerprint needle) {
@@ -25,20 +43,27 @@ public class FingerprintMatcher {
         List<Fingerprint> matches = new ArrayList<>();
         Result result = new Result();
         
+        double maxSimScore = needle.getLength();
+                
         for(Fingerprint candidate : haystack) {
 
             if(candidate.getName() == null) {
-                throw new RuntimeException("Database contains vector with name == null... why?");
+                throw new RuntimeException("Vector name is null...");
             }
 
             if(candidate.getName().equals(needle.getName())) {
                 result.setMatchByName(candidate);
             }
 
-            if(needle.getDistanceToFingerprint(candidate) < diffThreshold) {
+            if(simThreshold > 0.0d) {
+                double simScore = needle.getNonCommutativeSimilarityScoreToFingerprint(candidate);
+                double simScoreNormalized = simScore / maxSimScore;
+                if(simScoreNormalized >= simThreshold) {
+                    matches.add(candidate);
+                }
+            } else {
                 matches.add(candidate);
-            }  
-
+            }
         }
                 
         Collections.sort(matches, new Comparator<Fingerprint>() {
