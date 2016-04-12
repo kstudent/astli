@@ -46,8 +46,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import org.androidlibid.proto.match.VectorDifferenceStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import static org.androidlibid.proto.match.VectorDifferenceStrategy.Level;
 
 public class main {
 
@@ -147,9 +149,20 @@ public class main {
                         usage();
                         return;
                     }
-                    options.algorithmID = algId;
-                    if(algId == 5) {
-                        options.allowRepeatedMatching = false;
+                    
+                    options.useVectorDiffStrategy = (algId <= 3);
+                    options.allowRepeatedMatching = (algId == 5);
+                    
+                    switch(algId) {
+                        default: 
+                            options.vectorDiffLevel = Level.PACKAGE;
+                            break;
+                        case 2: 
+                            options.vectorDiffLevel = Level.CLASS;
+                            break;
+                        case 3: 
+                            options.vectorDiffLevel = Level.METHOD;
+                            break;
                     }
                     
                     break;
@@ -175,6 +188,8 @@ public class main {
 
         String inputDexFileName = remainingArgs[0];
 
+        options.inputFileName = inputDexFileName;
+        
         File dexFileFile = new File(inputDexFileName);
         if (!dexFileFile.exists()) {
             LOGGER.error("Can't find the file " + inputDexFileName);

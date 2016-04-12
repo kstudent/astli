@@ -7,26 +7,26 @@ import java.util.List;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
-import org.androidlibid.proto.match.MatchWithVectorDifferenceStrategy.Level;
+import org.androidlibid.proto.match.VectorDifferenceStrategy.Level;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.androidlibid.proto.match.FingerprintMatcher.Result;
 import org.androidlibid.proto.match.MatchingStrategy.Status;
 import org.apache.commons.lang.StringUtils;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchWithVectorDifferenceStrategyTest {
+public class VectorDifferenceStrategyTest {
 
     private FingerprintService service;
     private FingerprintMatcher matcher;
@@ -95,7 +95,7 @@ public class MatchWithVectorDifferenceStrategyTest {
     public void testMatchOnPackageLevel() throws SQLException {
         Level level = Level.PACKAGE;
                  
-        MatchingStrategy strategy = new MatchWithVectorDifferenceStrategy(
+        MatchingStrategy strategy = new VectorDifferenceStrategy(
             service, evaluator, matcher, level);
                 
         Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(pckgNeedles);
@@ -110,7 +110,7 @@ public class MatchWithVectorDifferenceStrategyTest {
     public void testMatchOnClassLevel() throws SQLException {
         Level level = Level.CLASS;
                  
-        MatchingStrategy strategy = new MatchWithVectorDifferenceStrategy(
+        MatchingStrategy strategy = new VectorDifferenceStrategy(
             service, evaluator, matcher, level);
                 
         Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(pckgNeedles);
@@ -125,7 +125,7 @@ public class MatchWithVectorDifferenceStrategyTest {
     public void testMatchOnMethodLevel() throws SQLException {
         Level level = Level.METHOD;
                  
-        MatchingStrategy strategy = new MatchWithVectorDifferenceStrategy(
+        MatchingStrategy strategy = new VectorDifferenceStrategy(
             service, evaluator, matcher, level);
                 
         Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(pckgNeedles);

@@ -9,22 +9,19 @@ import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.androidlibid.proto.match.FingerprintMatcher.Result;
 import org.androidlibid.proto.match.MatchingStrategy.Status;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchWithInclusionStrategyTest {
+public class InclusionStrategyTest {
     
     private FingerprintService service;
     private PackageInclusionCalculator calculator;
@@ -79,7 +76,7 @@ public class MatchWithInclusionStrategyTest {
     public void testMatch() throws SQLException {
         
         MatchingStrategy strategy;
-        strategy = new MatchWithInclusionStrategy(service, calculator, evaluator);
+        strategy = new InclusionStrategy(service, calculator, evaluator);
         Map<MatchingStrategy.Status, Integer> matches = strategy.matchPrints(pckgNeedles);
         
         assert(matches.containsKey(Status.OK));

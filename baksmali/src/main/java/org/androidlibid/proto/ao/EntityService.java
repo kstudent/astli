@@ -2,7 +2,6 @@ package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,6 +88,14 @@ public class EntityService {
         return entity;
     }
 
+    public int countLibraries() throws SQLException {
+        return em.count(Library.class);
+    }    
+
+    public int countPackages() throws SQLException {
+        return em.count(Package.class); 
+    }
+    
     public int countClasses() throws SQLException {
         return em.count(Clazz.class);
     }    

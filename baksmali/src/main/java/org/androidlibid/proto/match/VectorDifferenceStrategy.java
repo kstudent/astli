@@ -17,16 +17,17 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchWithVectorDifferenceStrategy implements MatchingStrategy {
+public class VectorDifferenceStrategy implements MatchingStrategy {
 
     private final FingerprintService service;
     private final ResultEvaluator evaluator;
     private final FingerprintMatcher matcher;
+    
     private final Level level;
     
-    private static final Logger LOGGER = LogManager.getLogger(MatchWithVectorDifferenceStrategy.class);
+    private static final Logger LOGGER = LogManager.getLogger(VectorDifferenceStrategy.class);
 
-    public MatchWithVectorDifferenceStrategy(FingerprintService service, 
+    public VectorDifferenceStrategy(FingerprintService service, 
             ResultEvaluator evaluator, FingerprintMatcher matcher, Level level) {
         this.service = service;
         this.evaluator = evaluator;

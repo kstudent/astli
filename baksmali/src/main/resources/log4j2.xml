@@ -26,25 +26,27 @@
             <AppenderRef ref="FILE"/>
             <!--<AppenderRef ref="ROLLINGFILE"/>-->
         </Root>
-        <Logger name="org.androidlibid.proto.Log4JTest"                                     level="trace"/>
+        <Logger name="org.androidlibid.proto.match.SetupLogger"                         level="debug"/>
+
         <Logger name="org.androidlibid.proto.match.WriteResultsToLog"                         level="debug"/>
         
         <!--<Logger name="org.androidlibid.proto.match.MatchFingerprintsAlgorithm"              level="info"/>-->
         <!--<Logger name="org.androidlibid.proto.match.MatchFingerprintsAlgorithm"              level="debug"/>-->
 
-        <!--<Logger name="org.androidlibid.proto.match.MatchOnMethodLevelWithInclusionStrategy" level="info"/>-->
-        <!--<Logger name="org.androidlibid.proto.match.MatchOnMethodLevelWithInclusionStrategy" level="debug"/>-->
+        <!--<Logger name="org.androidlibid.proto.match.InclusionStrategy" level="info"/>-->
+        <!--<Logger name="org.androidlibid.proto.match.InclusionStrategy" level="debug"/>-->
         
+        <!--<Logger name="org.androidlibid.proto.match.PackageInclusionCalculator"              level="error"/>-->
         <!--<Logger name="org.androidlibid.proto.match.PackageInclusionCalculator"              level="info"/>-->
         <!--<Logger name="org.androidlibid.proto.match.PackageInclusionCalculator"              level="debug"/>-->
         
+        <!--<Logger name="org.androidlibid.proto.match.ClassInclusionCalculator"                level="error"/>-->
         <!--<Logger name="org.androidlibid.proto.match.ClassInclusionCalculator"                level="info"/>-->
         <!--<Logger name="org.androidlibid.proto.match.ClassInclusionCalculator"                level="debug"/>-->
         
         <Logger name="org.androidlibid.proto.integration.mainTest"                          level="info"/>
         
         <!--<Logger name="org.androidlibid.proto.StoreMethodFingerprint"                        level="debug"/>-->
-        <!--<Logger name="" level="debug"/>-->
         
         <!--<Logger name="org.androidlibid.proto.ast.ASTMethodDefinitionTest"                   level="info"/>-->
         

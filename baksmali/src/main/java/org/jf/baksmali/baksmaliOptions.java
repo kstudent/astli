@@ -42,7 +42,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.androidlibid.proto.match.MatchWithInclusionStrategy;
+import org.androidlibid.proto.match.InclusionStrategy;
+import org.androidlibid.proto.match.VectorDifferenceStrategy.Level;
 
 public class baksmaliOptions {
     // register info values
@@ -79,22 +80,31 @@ public class baksmaliOptions {
     public boolean useImplicitReferences = false;
     public boolean normalizeVirtualMethods = false;
     
-    public boolean aliFingerprintAPK = false;
+    //androidlibid settings
+    public String inputFileName = "";
+//    public int jobs = -1;
+    public int jobs = 1;
+    
+    //storing settings
     public boolean aliFingerprintJAR = false;
-    public int jobs = -1;
+    public boolean storeOnMethodLevel = true;
     public String mvnIdentifier = "";
+    
+    // matching settings
+    public boolean aliFingerprintAPK = false;
     public boolean isObfuscated = false;
     public String mappingFile = "";
-    public boolean storeOnMethodLevel = true;
-    public int algorithmID = 1;
+    
+    //vectorDiff strategy settings
+    public boolean useVectorDiffStrategy = true;
+    public Level vectorDiffLevel = Level.PACKAGE;
+    public double similarityThreshold = .5;
     
     //inclusion strategy settings
     public boolean allowRepeatedMatching = true;
-    public MatchWithInclusionStrategy.Settings inclusionSettings = 
-            new MatchWithInclusionStrategy.Settings();
+    public InclusionStrategy.Settings inclusionSettings = 
+            new InclusionStrategy.Settings();
     
-    //vectorDiff strategy settings
-    public double similarityThreshold = .5;
     
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;

@@ -60,7 +60,7 @@ public class WriteResultsToLog implements ResultEvaluator  {
             }
             
             if(position > matchesByDistance.size()) {
-                LOGGER.info("* NEXT {} not found", needle.getName());
+                LOGGER.info("* NEXT {} (max : {}) not found", needle.getName(), needle.getInclusionScore());
                 return MatchingStrategy.Status.NO_MATCH_BY_DISTANCE;
             }
             

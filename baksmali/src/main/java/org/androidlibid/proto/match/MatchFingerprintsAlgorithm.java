@@ -21,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
-import static org.androidlibid.proto.match.MatchWithVectorDifferenceStrategy.Level;
 
 /**
  *
@@ -51,9 +50,9 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
             Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(packagePrints);
             
-            LOGGER.info("Stats: ");
+            LOGGER.info("* Stats: ");
             for(MatchingStrategy.Status key : MatchingStrategy.Status.values()) {
-                LOGGER.info("{}: {}", new Object[]{key.toString(), stats.get(key)});
+                LOGGER.info(" | {} | {} |", new Object[]{key.toString(), stats.get(key)});
             }
             
        } catch (SQLException | IOException ex) {
@@ -94,19 +93,12 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         FingerprintService fingerprintService = new FingerprintService(service);
         ResultEvaluator evaluator = new WriteResultsToLog(fingerprintService);
         
-        if(options.algorithmID <= 3) {
-            Level level = Level.PACKAGE;
+        new SetupLogger(options, service).logSetup();
+        
+        if(options.useVectorDiffStrategy) {
             FingerprintMatcher matcher = new FingerprintMatcher(options.similarityThreshold);
-            
-            switch(options.algorithmID) {
-                case 2: 
-                    level = Level.CLASS;
-                    break;
-                case 3:
-                    level = Level.METHOD;
-                    break;
-            }
-            return new MatchWithVectorDifferenceStrategy(fingerprintService, evaluator, matcher, level);
+            return new VectorDifferenceStrategy(fingerprintService, evaluator, matcher, options.vectorDiffLevel);
+        
         } else {
             FingerprintMatcher matcher = new FingerprintMatcher();
             
@@ -119,7 +111,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
                             options.allowRepeatedMatching
                     );
 
-            MatchingStrategy strategy = new MatchWithInclusionStrategy(
+            MatchingStrategy strategy = new InclusionStrategy(
                 fingerprintService, packageInclusionCalculator, 
                     evaluator, options.inclusionSettings);
 

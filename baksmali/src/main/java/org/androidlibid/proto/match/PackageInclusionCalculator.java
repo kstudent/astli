@@ -1,5 +1,7 @@
 package org.androidlibid.proto.match;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
@@ -14,6 +16,8 @@ public class PackageInclusionCalculator {
     
     private final ClassInclusionCalculator calculator; 
     private final boolean allowRepeatedMatching;
+    
+    private final NumberFormat frmt = new DecimalFormat("#0.00");
     
     private static final Logger LOGGER = LogManager.getLogger(PackageInclusionCalculator.class.getName());
 
@@ -104,8 +108,12 @@ public class PackageInclusionCalculator {
                 clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
             }
             
-            double perfectScore = calculator.computeClassInclusion(clazz.getChildFingerprints(), clazz.getChildFingerprints()); 
-            LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", clazzName, clazz.getChildFingerprints().size(), perfectScore); 
+            double perfectScore = calculator.computeClassInclusion(
+                    clazz.getChildFingerprints(), 
+                    clazz.getChildFingerprints(), true); 
+            
+            LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", 
+                    clazzName, clazz.getChildFingerprints().size(), frmt.format(perfectScore)); 
         }
     }
 
@@ -126,6 +134,6 @@ public class PackageInclusionCalculator {
             LOGGER.warn("Class Mismatch warning: {} matched with {}", clazzName, bestMatchName);
         }
         
-        LOGGER.info("| {} | {} | {} |", clazzName, bestMatchName, maxScore); 
+        LOGGER.info("| {} | {} | {} |", clazzName, bestMatchName, frmt.format(maxScore)); 
     }
 }

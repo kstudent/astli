@@ -2,6 +2,8 @@ package org.androidlibid.proto.match;
 
 import org.androidlibid.proto.ao.FingerprintService;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,21 +22,23 @@ import static org.androidlibid.proto.match.FingerprintMatcher.Result;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchWithInclusionStrategy implements MatchingStrategy {
+public class InclusionStrategy implements MatchingStrategy {
 
     private final FingerprintService service;
     private final PackageInclusionCalculator calculator;
     private final ResultEvaluator evaluator; 
     private final Settings settings;
     
-    private static final Logger LOGGER = LogManager.getLogger(MatchWithInclusionStrategy.class.getName());
+    private final NumberFormat frmt = new DecimalFormat("#0.00");
+    
+    private static final Logger LOGGER = LogManager.getLogger(InclusionStrategy.class.getName());
 
-    public MatchWithInclusionStrategy(FingerprintService service, 
+    public InclusionStrategy(FingerprintService service, 
             PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
         this(service, calculator, evaluator, new Settings());
     }
     
-    public MatchWithInclusionStrategy(FingerprintService service, 
+    public InclusionStrategy(FingerprintService service, 
             PackageInclusionCalculator calculator, ResultEvaluator evaluator, 
             Settings settings) {
         this.service = service;
@@ -80,7 +84,7 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
         double perfectScore = computeInclusionScore(packageNeedle, packageNeedle, true);
         packageNeedle.setInclusionScore(perfectScore);
         
-        LOGGER.info("* {} ({})", packageNeedle.getName(), perfectScore); 
+        LOGGER.info("* {} ({})", packageNeedle.getName(), frmt.format(perfectScore)); 
         
         checkPackageAgainstSimilarMethods(result);
         
@@ -111,13 +115,13 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
                     break;
                 }
 
-                LOGGER.info("** {} ({})", methodNeedle.getName(), length); 
+                LOGGER.info("** {} ({})", methodNeedle.getName(), frmt.format(length)); 
 
                 List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
 
                 LOGGER.info("{} needles to check", methodHaystack.size()); 
 
-                if(tryNeedle(result, methodNeedle, methodHaystack)) {
+                if(tryFindingNeedleInHaystack(result, methodNeedle, methodHaystack)) {
                     return;
                 }
             }
@@ -132,7 +136,7 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
      * @param methodHaystack
      * @return true if this needle lead to a package match
      */
-    private boolean tryNeedle(Result result, Fingerprint methodNeedle, List<Fingerprint> methodHaystack) {
+    private boolean tryFindingNeedleInHaystack(Result result, Fingerprint methodNeedle, List<Fingerprint> methodHaystack) {
         
         Fingerprint packageNeedle = result.getNeedle();
         Collection<Fingerprint> matchedPackages = result.getMatchesByDistance();
@@ -140,7 +144,7 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
         double perfectScore = packageNeedle.getInclusionScore();
         
         for(Fingerprint methodCandidate : methodHaystack) {
-                    
+            
             if (!isItWorthToCheckCandidate(methodNeedle, methodCandidate)) {
                 continue;
             } 
@@ -152,8 +156,11 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
                 continue;
             }
             
+            LOGGER.info("*** {}", packageCandidateName);
+            
             double packageScore = computeInclusionScore(packageNeedle, packageCandidate, false);
 
+            packageCandidate.setInclusionScore(packageScore);
             matchedPackages.add(packageCandidate);
 
             if(packageCandidateName.equals(packageNeedle.getName())) {
@@ -172,7 +179,7 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
     }
 
     private void logResult(String needle, String match, double packageScore, double packageScoreNormalized) {
-        LOGGER.info("{} -> {} (sim: {} {})", needle, match, packageScore, packageScoreNormalized );
+        LOGGER.info("{} -> {} (sim: {} {})", needle, match, frmt.format(packageScore), frmt.format(packageScoreNormalized));
     }
     
     /**
@@ -274,6 +281,14 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
         public double getMinimalMethodLengthForNeedleLookup() {
             return minimalMethodLengthForNeedleLookup;
         }
+
+        @Override
+        public String toString() {
+            return "[" + "methodMatchThreshold=" + methodMatchThreshold 
+                    + ", packageMatchThreshold=" + packageMatchThreshold 
+                    + ", minimalMethodLength=" + minimalMethodLengthForNeedleLookup + ']';
+        }
+        
     }
     
 }
