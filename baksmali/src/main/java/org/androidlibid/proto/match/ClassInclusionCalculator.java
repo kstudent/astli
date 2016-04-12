@@ -47,12 +47,12 @@ public class ClassInclusionCalculator {
      * 
      * @param subSet list of methods of the superset class
      * @param superSet list of methods of the subset class
-     * @param warnNameMismatch will print warnings if the fingerprint names of 
+     * @param warnMethodNameMismatch will print warnings if the fingerprint names of 
      * names do not match
      * @return score
      */
     public double computeClassInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet, 
-            boolean warnNameMismatch) {
+            boolean warnMethodNameMismatch) {
         
         List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         
@@ -84,7 +84,7 @@ public class ClassInclusionCalculator {
                 
                 String bestMatchName = closestElmentInBiggerSet.getName();
                 
-                logScore(elementName, bestMatchName, score, maxScore, warnNameMismatch);
+                logScore(elementName, bestMatchName, score, maxScore, warnMethodNameMismatch);
                     
                 if(!allowRepeatedMatching) {
                     if(!superSetCopy.remove(closestElmentInBiggerSet)) {
@@ -120,8 +120,8 @@ public class ClassInclusionCalculator {
             return;
         } 
         
-        String superSetName = extractClassName(superClass.getName());
-        String subSetName   = extractClassName(subClass.getName());
+        String superSetName = extractMethodName(superClass.getName());
+        String subSetName   = extractMethodName(subClass.getName());
         LOGGER.info("**** {} (#Methods: {}, Length: {}) -> {} (#Methods: {}, Length: {}) ?", 
             subSetName, 
             subSet.size(),
@@ -133,31 +133,33 @@ public class ClassInclusionCalculator {
         
     }
 
-    private void logScore(String elementName, String bestMatchName, 
+    private void logScore(String methodIdentifier, String bestMatchIdentifier, 
             double score, double maxScore, boolean warnNameMismatch) {
         
-        if(warnNameMismatch && !elementName.equals(bestMatchName)) {
-            LOGGER.warn("Method Mismatch warning: {} matched with {}", elementName, bestMatchName);
-        }
-        
-        if(!LOGGER.isInfoEnabled() || elementName.isEmpty() || bestMatchName.isEmpty() ) {
+        if(methodIdentifier.isEmpty() || bestMatchIdentifier.isEmpty()) {
             return;
         }
         
+        String methodName = extractMethodName(methodIdentifier);
+        String bestMatchMethodName = extractMethodName(bestMatchIdentifier);
+        
+        if(warnNameMismatch && !methodIdentifier.equals(bestMatchIdentifier)) {
+            LOGGER.warn("Method Mismatch warning: {} matched with {}", methodName, bestMatchMethodName);
+        }
+        
         LOGGER.info("| {} | {} | {} | {} |", 
-                extractClassName(elementName), 
-                extractClassName(bestMatchName), 
+                methodName,
+                bestMatchMethodName, 
                 score,
                 maxScore
         );
-        
     }
 
     private void logClassScore(double classScore) {
         LOGGER.info("|  |  | {} |", classScore);
     }
     
-    private String extractClassName(String methodIdentifier) {
+    private String extractMethodName(String methodIdentifier) {
         
         if(methodIdentifier.contains(":")) {
             methodIdentifier = methodIdentifier.substring(methodIdentifier.indexOf(":") + 1);
@@ -170,6 +172,5 @@ public class ClassInclusionCalculator {
         }
         
         return methodIdentifier; 
-        
     }
 }

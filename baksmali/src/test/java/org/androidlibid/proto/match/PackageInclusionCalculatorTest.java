@@ -52,7 +52,7 @@ public class PackageInclusionCalculatorTest {
          };
         
         when(classInclusionCalculator.computeClassInclusion(
-                any(List.class ), any(List.class )
+                any(List.class ), any(List.class ), any(Boolean.class)
             )).thenAnswer(getAnswer());
         
         package1classes = new ArrayList<>(); 

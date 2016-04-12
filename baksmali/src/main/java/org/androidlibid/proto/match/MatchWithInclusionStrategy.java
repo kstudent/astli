@@ -3,6 +3,7 @@ package org.androidlibid.proto.match;
 import org.androidlibid.proto.ao.FingerprintService;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import javax.annotation.Nullable;
 import org.androidlibid.proto.Fingerprint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import static org.androidlibid.proto.match.FingerprintMatcher.Result;
 
 /**
  *
@@ -27,9 +29,8 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
     
     private static final Logger LOGGER = LogManager.getLogger(MatchWithInclusionStrategy.class.getName());
 
-    public MatchWithInclusionStrategy(
-            FingerprintService service, PackageInclusionCalculator calculator, 
-            ResultEvaluator evaluator) {
+    public MatchWithInclusionStrategy(FingerprintService service, 
+            PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
         this(service, calculator, evaluator, new Settings());
     }
     
@@ -58,8 +59,7 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
             
-            FingerprintMatcher.Result matches = findPackageInMethodHaystack(packageNeedle);
-//            FingerprintMatcher.Result matches = findPackage(packageNeedle);
+            Result matches = findMatchForPackage(packageNeedle);
 
             MatchingStrategy.Status result = evaluator.evaluateResult(packageNeedle, matches);
             stats.put(result, stats.get(result) + 1);
@@ -69,156 +69,170 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
         
     }
     
-    private @Nullable FingerprintMatcher.Result findPackageInMethodHaystack(Fingerprint packageNeedle) throws SQLException {
+    private @Nullable Result findMatchForPackage(Fingerprint packageNeedle) throws SQLException {
       
-        FingerprintMatcher.Result result = new FingerprintMatcher.Result();
+        Result result = new Result();
         result.setNeedle(packageNeedle);
         
-        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildFingerprints(), packageNeedle.getChildFingerprints());
+        List<Fingerprint> packageMatches = new ArrayList<Fingerprint>();
+        result.setMatchesByDistance(packageMatches);
+        
+        double perfectScore = computeInclusionScore(packageNeedle, packageNeedle, true);
         packageNeedle.setInclusionScore(perfectScore);
-        
-        List<Fingerprint> matchesByScore = new ArrayList<>();
-        
-        boolean breakOut = false; 
         
         LOGGER.info("* {} ({})", packageNeedle.getName(), perfectScore); 
         
-        for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
-            for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
-                double length = methodNeedle.getLength();
-                double size   = length * (1 - settings.getMethodMatchThreshold());
-                
-                if(length < settings.getMinimalMethodLengthForNeedleLookup()) {
-                    break;
-                }
-                
-                LOGGER.info("** {} ({})", methodNeedle.getName(), length); 
-                
-                List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
-                
-                LOGGER.info("{} needles to check", methodHaystack.size()); 
-                
-                for(Fingerprint methodCandidate : methodHaystack) {
-                    
-                    double methodSimilarityScore = methodCandidate.getSimilarityScoreToFingerprint(methodNeedle);
-                    double maxLength = Math.max(methodNeedle.getLength(), methodCandidate.getLength());
-                    
-                    if((methodSimilarityScore / maxLength) > settings.getMethodMatchThreshold()) {
-                        
-                        Fingerprint packageCandidate = service.getPackageHierarchyByMethod(methodCandidate);
-                        
-                        boolean continueFlag = false;
-                        
-                        for(Fingerprint alreadyScored : matchesByScore) {
-                            if(alreadyScored.getName().equals(packageCandidate.getName())) {
-                                continueFlag = true;
-                                break;
-                            }
-                        }
-                        if (continueFlag) continue;
-
-                        List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildFingerprints());
-                        List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
-
-                        double packageScore = calculator.computePackageInclusion(classSuperSet, classSubSet);
-                        
-                        packageCandidate.setInclusionScore(packageScore);
-                        
-                        //TODO: find meaningful threshold (evaluation?) 
-                        matchesByScore.add(packageCandidate);
-                        
-                        if(packageCandidate.getName().equals(packageNeedle.getName())) {
-                            result.setMatchByName(packageCandidate);
-                        }
-                        
-                        LOGGER.info("{} -> {} (sim: {} {})", packageNeedle.getName(), packageCandidate.getName(), packageScore, packageScore / perfectScore);
-                        
-                        if((packageScore / perfectScore) > settings.getPackageMatchThreshold()) {
-                            breakOut = true; 
-                            break; 
-                        }
-                    }
-                }
-                
-                if(breakOut) {
-                    LOGGER.info("found breakout");
-                    break;
-                } else {
-                    LOGGER.info("continue new method :(");
-                }
-            }
-            
-            if(breakOut) {
-                break;
-            } 
-        }    
+        checkPackageAgainstSimilarMethods(result);
         
-        Collections.sort(matchesByScore, new SortDescByInclusionScoreComparator());
+        Collections.sort(packageMatches, new SortDescByInclusionScoreComparator());
 
-        result.setMatchesByDistance(matchesByScore);
-        
-        if(result.getMatchByName() == null) {
-            
-            LOGGER.info("Did not find match by name for {}", packageNeedle.getName());
-            
-            List<Fingerprint> packagesWithSameName = service.findPackagesByName(packageNeedle.getName());
-            
-            if(!packagesWithSameName.isEmpty()) {
-                Fingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));
-                
-                List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
-                List<Fingerprint> classSuperSet = new LinkedList<>(matchByName.getChildFingerprints());
-                
-                double score = calculator.computePackageInclusion(classSuperSet, classSubSet);
-                matchByName.setInclusionScore(score);
-                result.setMatchByName(matchByName);
-            }
-        }
+        updateMatchByName(result);
         
         return result;
     }
     
-    private @Nullable FingerprintMatcher.Result findPackage(Fingerprint packageNeedle) throws SQLException {
+    /**
+     * Fetches similar methods from service and looks for a match
+     * 
+     * @param result (will be updated by this method)
+     * @throws SQLException 
+     */
+    private void checkPackageAgainstSimilarMethods(Result result) throws SQLException {
         
-        FingerprintMatcher.Result result = new FingerprintMatcher.Result();
-        result.setNeedle(packageNeedle);
+        Fingerprint packageNeedle = result.getNeedle();
         
-        List<Fingerprint> matchesByScore = new ArrayList<>();
-        LOGGER.info("* {}", packageNeedle.getName());
-        
-        LOGGER.info("** match with myself");
-        
-        double perfectScore = calculator.computePackageInclusion(packageNeedle.getChildFingerprints(), packageNeedle.getChildFingerprints());
-        packageNeedle.setInclusionScore(perfectScore);
+        for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
+            for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
 
-        LOGGER.info("** perfect score was {}", perfectScore);
+                double length = methodNeedle.getLength();
+                double size   = length * (1 - settings.getMethodMatchThreshold());
+
+                if(length < settings.getMinimalMethodLengthForNeedleLookup()) {
+                    break;
+                }
+
+                LOGGER.info("** {} ({})", methodNeedle.getName(), length); 
+
+                List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
+
+                LOGGER.info("{} needles to check", methodHaystack.size()); 
+
+                if(tryNeedle(result, methodNeedle, methodHaystack)) {
+                    return;
+                }
+            }
+        }  
+    }
+
+    /**
+     * Checks if the method needle leads to a package match
+     * 
+     * @param result (will be updated by this method)
+     * @param methodNeedle
+     * @param methodHaystack
+     * @return true if this needle lead to a package match
+     */
+    private boolean tryNeedle(Result result, Fingerprint methodNeedle, List<Fingerprint> methodHaystack) {
         
-        for(Fingerprint packageCandidate : service.findPackages()) {
-            
-            LOGGER.debug("** {}", packageCandidate.getName());
-            
-            Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
-            
-            double packageScore = calculator.computePackageInclusion(packageHierarchy.getChildFingerprints(), packageNeedle.getChildFingerprints());
-                        
-            packageHierarchy.setInclusionScore(packageScore);
-            
-            if(packageHierarchy.getName().equals(packageNeedle.getName())) {
-                result.setMatchByName(packageHierarchy);
+        Fingerprint packageNeedle = result.getNeedle();
+        Collection<Fingerprint> matchedPackages = result.getMatchesByDistance();
+        
+        double perfectScore = packageNeedle.getInclusionScore();
+        
+        for(Fingerprint methodCandidate : methodHaystack) {
+                    
+            if (!isItWorthToCheckCandidate(methodNeedle, methodCandidate)) {
+                continue;
+            } 
+
+            Fingerprint packageCandidate = service.getPackageHierarchyByMethod(methodCandidate);
+            String packageCandidateName = packageCandidate.getName();
+
+            if (isNameInCollection(packageCandidateName, matchedPackages)) {
+                continue;
             }
             
-            matchesByScore.add(packageHierarchy);
-            
-            LOGGER.debug("** match: {} score: {}", packageHierarchy.getName() , packageScore);
-            
+            double packageScore = computeInclusionScore(packageNeedle, packageCandidate, false);
+
+            matchedPackages.add(packageCandidate);
+
+            if(packageCandidateName.equals(packageNeedle.getName())) {
+                result.setMatchByName(packageCandidate);
+            }
+
+            logResult(packageNeedle.getName(), packageCandidateName, packageScore, packageScore / perfectScore);
+
+            if((packageScore / perfectScore) > settings.getPackageMatchThreshold()) {
+                return true; 
+            }
         }
-                
-        Collections.sort(matchesByScore, new SortDescByInclusionScoreComparator());
         
-        result.setMatchesByDistance(matchesByScore);
+        return false;
         
-        return result;
+    }
+
+    private void logResult(String needle, String match, double packageScore, double packageScoreNormalized) {
+        LOGGER.info("{} -> {} (sim: {} {})", needle, match, packageScore, packageScoreNormalized );
+    }
     
+    /**
+     * Tells whether or not a package check for given method is worth it
+     * 
+     * @param methodNeedle
+     * @param methodCandidate
+     * @return true if its worth to check
+     */
+    private boolean isItWorthToCheckCandidate(Fingerprint methodNeedle, 
+            Fingerprint methodCandidate) {
+        
+        double methodSimilarityScore = methodCandidate.getSimilarityScoreToFingerprint(methodNeedle);
+        
+        double maxLength = Math.max(methodNeedle.getLength(), methodCandidate.getLength());
+
+        return (methodSimilarityScore / maxLength > settings.getMethodMatchThreshold());
+    }
+    
+    private boolean isNameInCollection(String name, Collection<Fingerprint> collection) {
+
+        for(Fingerprint print : collection) {
+            if(print.getName().equals(name)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    private double computeInclusionScore(Fingerprint packageNeedle, 
+            Fingerprint packageCandidate, boolean warnClassMismatches) 
+    {
+        List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
+        List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildFingerprints());
+
+        return calculator.computePackageInclusion(classSuperSet, classSubSet, warnClassMismatches);
+    }
+
+    private void updateMatchByName(Result result) throws SQLException {
+        
+        if(result.getMatchByName() == null) {
+            
+            Fingerprint packageNeedle = result.getNeedle();
+            String packageName = packageNeedle.getName(); 
+            
+            List<Fingerprint> packagesWithSameName = service.findPackagesByName(packageName);
+            
+            if(!packagesWithSameName.isEmpty()) {
+                Fingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));
+                
+                double score = computeInclusionScore(packageNeedle, matchByName, true);
+                matchByName.setInclusionScore(score);
+                
+                result.setMatchByName(matchByName);
+            } else {
+                LOGGER.info("{} is not in database.", packageName);
+            }
+        }
+        
     }
     
     private class SortDescByInclusionScoreComparator implements Comparator<Fingerprint> {
@@ -242,7 +256,8 @@ public class MatchWithInclusionStrategy implements MatchingStrategy {
             this(0.9999d,  0.8d, 12);
         } 
         
-        public Settings(double methodMatchThreshold, double packageMatchThreshold, double minimalMethodLengthForNeedleLookup) {
+        public Settings(double methodMatchThreshold, double packageMatchThreshold, 
+                double minimalMethodLengthForNeedleLookup) {
             this.methodMatchThreshold = methodMatchThreshold;
             this.packageMatchThreshold = packageMatchThreshold;
             this.minimalMethodLengthForNeedleLookup = minimalMethodLengthForNeedleLookup;

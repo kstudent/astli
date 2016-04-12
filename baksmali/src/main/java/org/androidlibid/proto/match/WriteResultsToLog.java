@@ -49,7 +49,7 @@ public class WriteResultsToLog implements ResultEvaluator  {
             }
         } else {
             
-            int position = 0;
+            int position = 1;
             
             for (Fingerprint matchByDistance : matchesByDistance) {
                 if(matchByDistance.getName().equals(needleName)) {
@@ -59,8 +59,13 @@ public class WriteResultsToLog implements ResultEvaluator  {
                 }
             }
             
+            if(position > matchesByDistance.size()) {
+                LOGGER.info("* NEXT {} not found", needle.getName());
+                return MatchingStrategy.Status.NO_MATCH_BY_DISTANCE;
+            }
+            
             LOGGER.info("* {}{} (max : {}) found at position {}", 
-                    position > 0 ? "NEXT " : "",
+                    position > 1 ? "NEXT " : "",
                     needle.getName(), 
                     frmt.format(needle.getInclusionScore()), 
                     position);
@@ -101,7 +106,7 @@ public class WriteResultsToLog implements ResultEvaluator  {
                 i++;
             }
             
-            if(position == 0) {
+            if(position == 1) {
                 return MatchingStrategy.Status.OK;
             } else {
                 return MatchingStrategy.Status.NOT_PERFECT;

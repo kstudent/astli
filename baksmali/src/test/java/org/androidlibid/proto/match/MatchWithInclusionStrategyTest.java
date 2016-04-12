@@ -9,7 +9,10 @@ import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.androidlibid.proto.match.FingerprintMatcher.Result;
 import org.androidlibid.proto.match.MatchingStrategy.Status;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -31,7 +34,7 @@ public class MatchWithInclusionStrategyTest {
     private Map<String, Fingerprint> pckgNeedles;
     
     private List<Fingerprint> methodCandidates;
-    
+   
     @Before
     public void setUp() throws SQLException {
         service    = mock(FingerprintService.class);
@@ -71,7 +74,7 @@ public class MatchWithInclusionStrategyTest {
         when(evaluator.evaluateResult(any(Fingerprint.class), any(Result.class))).thenReturn(Status.OK);
         
     }
-    
+
     @Test
     public void testMatch() throws SQLException {
         
@@ -118,6 +121,5 @@ public class MatchWithInclusionStrategyTest {
         
         pckgNeedles.put(pckgPrint.getName(), pckgPrint);
     }
-    
-    
+
 }
