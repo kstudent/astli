@@ -3,10 +3,15 @@ package org.androidlibid.proto.match;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.Library;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.jf.baksmali.baksmaliOptions;
 
 /**
@@ -24,16 +29,19 @@ public class SetupLogger {
     public SetupLogger(baksmaliOptions options, EntityService service) {
         this.options = options;
         this.service = service;
+        
     }
     
     public void logSetup() throws SQLException {
         
         LOGGER.info("* Setup");
+        LOGGER.info("- Time: {}", (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date()));
         LOGGER.info("- Jobs: {}",          options.jobs);
         LOGGER.info("- Input File: {}",    options.inputFileName);
         
         logAlgorithmSetup();
         logDBStatus();
+        logLoggerLevels();
         
     }
 
@@ -69,5 +77,16 @@ public class SetupLogger {
             LOGGER.info("  - {}", lib.getName());
         }
     }
-    
+
+    private void logLoggerLevels() {
+        LOGGER.info("- LOG4j levels:");
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        
+        for(String loggerName : config.getLoggers().keySet()) {
+            LoggerConfig lc = config.getLoggers().get(loggerName);
+            if(loggerName.isEmpty()) loggerName = "root";
+            LOGGER.info("  | {} | {} |", loggerName, lc.getLevel());
+        }
+    }
 }
