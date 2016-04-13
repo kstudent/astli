@@ -1,5 +1,7 @@
 package org.androidlibid.proto.match;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
@@ -16,7 +18,8 @@ public class ClassInclusionCalculator {
     private final boolean allowRepeatedMatching;
     
     private static final Logger LOGGER = LogManager.getLogger(ClassInclusionCalculator.class);
-
+    private final NumberFormat frmt = new DecimalFormat("#0.00");
+    
     public ClassInclusionCalculator(FingerprintMatcher matcher, boolean allowRepeatedMatching) {
         this.matcher = matcher;
         this.allowRepeatedMatching = allowRepeatedMatching;
@@ -34,25 +37,6 @@ public class ClassInclusionCalculator {
      * @return score
      */
     public double computeClassInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
-        return computeClassInclusion(superSet, subSet, false);
-    }
-    
-    
-    /**
-     * Returns Inclusion Score, which indicates the amount of similar methods
-     * both classes share.
-     * 
-     * example: score = 4.2 : there are 4 methods which match perfectly and 
-     * one method which matches 20% OR there are 3 methods with .8 and so on...
-     * 
-     * @param subSet list of methods of the superset class
-     * @param superSet list of methods of the subset class
-     * @param warnMethodNameMismatch will print warnings if the fingerprint names of 
-     * names do not match
-     * @return score
-     */
-    public double computeClassInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet, 
-            boolean warnMethodNameMismatch) {
         
         List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         
@@ -84,7 +68,7 @@ public class ClassInclusionCalculator {
                 
                 String bestMatchName = closestElmentInBiggerSet.getName();
                 
-                logScore(elementName, bestMatchName, score, maxScore, warnMethodNameMismatch);
+                logScore(elementName, bestMatchName, score, maxScore);
                     
                 if(!allowRepeatedMatching) {
                     if(!superSetCopy.remove(closestElmentInBiggerSet)) {
@@ -125,16 +109,16 @@ public class ClassInclusionCalculator {
         LOGGER.info("**** {} (#Methods: {}, Length: {}) -> {} (#Methods: {}, Length: {}) ?", 
             subSetName, 
             subSet.size(),
-            subClass.getLength(),
+            frmt.format(subClass.getLength()),
             superSetName, 
             superSet.size(),
-            superClass.getLength()
+            frmt.format(superClass.getLength())
         ); 
         
     }
 
     private void logScore(String methodIdentifier, String bestMatchIdentifier, 
-            double score, double maxScore, boolean warnNameMismatch) {
+            double score, double maxScore) {
         
         if(methodIdentifier.isEmpty() || bestMatchIdentifier.isEmpty()) {
             return;
@@ -143,20 +127,19 @@ public class ClassInclusionCalculator {
         String methodName = extractMethodName(methodIdentifier);
         String bestMatchMethodName = extractMethodName(bestMatchIdentifier);
         
-        if(warnNameMismatch && !methodIdentifier.equals(bestMatchIdentifier)) {
-            LOGGER.warn("Method Mismatch warning: {} matched with {}", methodName, bestMatchMethodName);
-        }
+        boolean warn = !methodIdentifier.equals(bestMatchIdentifier);
         
-        LOGGER.info("| {} | {} | {} | {} |", 
+        LOGGER.info("| {} | {} | {} | {} | {} |", 
+                warn ? " X " : "",
                 methodName,
                 bestMatchMethodName, 
-                score,
-                maxScore
+                frmt.format(score),
+                frmt.format(maxScore)
         );
     }
 
     private void logClassScore(double classScore) {
-        LOGGER.info("|  |  | {} |", classScore);
+        LOGGER.info("|  |  | {} |", frmt.format(classScore));
     }
     
     private String extractMethodName(String methodIdentifier) {

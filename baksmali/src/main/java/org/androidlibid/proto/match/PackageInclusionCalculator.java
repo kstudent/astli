@@ -27,11 +27,6 @@ public class PackageInclusionCalculator {
     }
     
     public double computePackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
-        return computePackageInclusion(superSet, subSet, false);
-    }
-    
-    public double computePackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet, 
-            boolean warnClassNameMismatch) {
         
         logHeader();
         
@@ -58,12 +53,8 @@ public class PackageInclusionCalculator {
             
             for (Fingerprint clazzCandidate : superSetCopy) {
                 
-                String clazzCandidateName = clazzCandidate.getName();
-                
-                boolean warnMethodMismatch = (warnClassNameMismatch && clazzCandidateName.equals(clazzName));
-                
                 double score = calculator.computeClassInclusion(
-                        clazzCandidate.getChildFingerprints(), clazz.getChildFingerprints(), warnMethodMismatch);
+                        clazzCandidate.getChildFingerprints(), clazz.getChildFingerprints());
                 
                 if(Double.isNaN(score) || score < 0) {
                     throw new RuntimeException("Like, srsly?");
@@ -79,7 +70,7 @@ public class PackageInclusionCalculator {
                 throw new RuntimeException("fix your code, maniac");
             }
             
-            logResult(clazz, maxScoreClazz, maxScore, warnClassNameMismatch);
+            logResult(clazz, maxScoreClazz, maxScore);
             
             packageScore += maxScore;
             
@@ -96,7 +87,7 @@ public class PackageInclusionCalculator {
     }
 
     private void logHeader() {
-        LOGGER.info("| class | matched | score |"); 
+        LOGGER.info("| miss | class | matched | score |"); 
     }
 
     private void logClassHeader(Fingerprint clazz) {
@@ -110,7 +101,7 @@ public class PackageInclusionCalculator {
             
             double perfectScore = calculator.computeClassInclusion(
                     clazz.getChildFingerprints(), 
-                    clazz.getChildFingerprints(), true); 
+                    clazz.getChildFingerprints()); 
             
             LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", 
                     clazzName, clazz.getChildFingerprints().size(), frmt.format(perfectScore)); 
@@ -118,7 +109,7 @@ public class PackageInclusionCalculator {
     }
 
     private void logResult(Fingerprint clazz, Fingerprint maxScoreClazz, 
-            double maxScore, boolean warnClassNameMismatch) {
+            double maxScore) {
         
         String bestMatchName = maxScoreClazz.getName();
         if(bestMatchName.contains(":")) {
@@ -130,10 +121,10 @@ public class PackageInclusionCalculator {
             clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
         }
         
-        if(warnClassNameMismatch && !clazzName.equals(bestMatchName)) {
-            LOGGER.warn("Class Mismatch warning: {} matched with {}", clazzName, bestMatchName);
-        }
+        boolean warn = !clazzName.equals(bestMatchName); 
         
-        LOGGER.info("| {} | {} | {} |", clazzName, bestMatchName, frmt.format(maxScore)); 
+        LOGGER.info("| {} | {} | {} | {} |", 
+                warn ? "X" : "",
+                clazzName, bestMatchName, frmt.format(maxScore)); 
     }
 }

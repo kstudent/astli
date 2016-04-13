@@ -81,10 +81,13 @@ public class InclusionStrategy implements MatchingStrategy {
         List<Fingerprint> packageMatches = new ArrayList<Fingerprint>();
         result.setMatchesByDistance(packageMatches);
         
-        double perfectScore = computeInclusionScore(packageNeedle, packageNeedle, true);
-        packageNeedle.setInclusionScore(perfectScore);
+        LOGGER.info("* {} ", packageNeedle.getName()); 
         
-        LOGGER.info("* {} ({})", packageNeedle.getName(), frmt.format(perfectScore)); 
+        LOGGER.info("** package self check "); 
+        double perfectScore = computeInclusionScore(packageNeedle, packageNeedle);
+        packageNeedle.setInclusionScore(perfectScore);
+
+        LOGGER.info("** package self check score: {}", frmt.format(perfectScore)); 
         
         checkPackageAgainstSimilarMethods(result);
         
@@ -115,11 +118,11 @@ public class InclusionStrategy implements MatchingStrategy {
                     break;
                 }
 
-                LOGGER.info("** {} ({})", methodNeedle.getName(), frmt.format(length)); 
+                LOGGER.info("** needle: {} ({})", methodNeedle.getName(), frmt.format(length)); 
 
                 List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
 
-                LOGGER.info("{} needles to check", methodHaystack.size()); 
+                LOGGER.info("{} similar needles to check", methodHaystack.size()); 
 
                 if(tryFindingNeedleInHaystack(result, methodNeedle, methodHaystack)) {
                     return;
@@ -156,9 +159,11 @@ public class InclusionStrategy implements MatchingStrategy {
                 continue;
             }
             
-            LOGGER.info("*** {}", packageCandidateName);
+            LOGGER.info("*** check against db version of {}", packageCandidateName);
             
-            double packageScore = computeInclusionScore(packageNeedle, packageCandidate, false);
+            double packageScore = computeInclusionScore(packageNeedle, packageCandidate);
+            
+            LOGGER.info("*** check against db version of {} done", packageCandidateName);
 
             packageCandidate.setInclusionScore(packageScore);
             matchedPackages.add(packageCandidate);
@@ -211,12 +216,12 @@ public class InclusionStrategy implements MatchingStrategy {
     }
 
     private double computeInclusionScore(Fingerprint packageNeedle, 
-            Fingerprint packageCandidate, boolean warnClassMismatches) 
+            Fingerprint packageCandidate) 
     {
         List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
         List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildFingerprints());
 
-        return calculator.computePackageInclusion(classSuperSet, classSubSet, warnClassMismatches);
+        return calculator.computePackageInclusion(classSuperSet, classSubSet);
     }
 
     private void updateMatchByName(Result result) throws SQLException {
@@ -231,7 +236,7 @@ public class InclusionStrategy implements MatchingStrategy {
             if(!packagesWithSameName.isEmpty()) {
                 Fingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));
                 
-                double score = computeInclusionScore(packageNeedle, matchByName, true);
+                double score = computeInclusionScore(packageNeedle, matchByName);
                 matchByName.setInclusionScore(score);
                 
                 result.setMatchByName(matchByName);

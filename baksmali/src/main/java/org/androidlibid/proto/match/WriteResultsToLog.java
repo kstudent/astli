@@ -61,14 +61,13 @@ public class WriteResultsToLog implements ResultEvaluator  {
             
             if(position > matchesByDistance.size()) {
                 LOGGER.info("* NEXT {} (max : {}) not found", needle.getName(), needle.getInclusionScore());
-                return MatchingStrategy.Status.NO_MATCH_BY_DISTANCE;
+            } else {
+                LOGGER.info("* {}{} (max : {}) found at position {}", 
+                        position > 1 ? "NEXT " : "",
+                        needle.getName(), 
+                        frmt.format(needle.getInclusionScore()), 
+                        position);
             }
-            
-            LOGGER.info("* {}{} (max : {}) found at position {}", 
-                    position > 1 ? "NEXT " : "",
-                    needle.getName(), 
-                    frmt.format(needle.getInclusionScore()), 
-                    position);
             
             LOGGER.debug("| {} | {} | {} | {} | {} | {} |", 
                 "pos",
@@ -108,6 +107,8 @@ public class WriteResultsToLog implements ResultEvaluator  {
             
             if(position == 1) {
                 return MatchingStrategy.Status.OK;
+            } else if (position > matchesByDistance.size()){
+                return MatchingStrategy.Status.NO_MATCH_BY_DISTANCE;
             } else {
                 return MatchingStrategy.Status.NOT_PERFECT;
             }
