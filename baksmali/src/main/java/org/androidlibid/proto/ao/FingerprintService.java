@@ -81,7 +81,7 @@ public class FingerprintService {
         return methods;
     }
     
-    public Fingerprint getPackageHierarchyByMethod(Fingerprint keyMethod) {
+    public Fingerprint getPackageByMethod(Fingerprint keyMethod) {
         
         Method keyMethodEntity = (Method) keyMethod.getEntity();
         if(keyMethodEntity == null) {
@@ -90,7 +90,7 @@ public class FingerprintService {
 
         Package packageEntity = keyMethodEntity.getClazz().getPackage();
         
-        return getPackageHierarchy(new Fingerprint(packageEntity));
+        return new Fingerprint(packageEntity);
     }
     
     public Fingerprint getPackageHierarchy(Fingerprint pckg) {
@@ -104,6 +104,8 @@ public class FingerprintService {
             throw new RuntimeException("Package already had children!"); 
         }
         
+        Fingerprint packageHierarchy = new Fingerprint(packageEntity);
+        
         for(Clazz clazzEntity : packageEntity.getClazzes()) {
             Fingerprint clazz = new Fingerprint(clazzEntity);
             
@@ -111,10 +113,10 @@ public class FingerprintService {
                 Fingerprint method = new Fingerprint(methodEntity);
                 clazz.addChildFingerprint(method);
             }
-            pckg.addChildFingerprint(clazz);
+            packageHierarchy.addChildFingerprint(clazz);
         }
         
-        return pckg;
+        return packageHierarchy;
     }
     
     public List<Fingerprint> findPackagesByName(String name) throws SQLException{

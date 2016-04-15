@@ -60,8 +60,11 @@ public class InclusionStrategyTest {
         Fingerprint pckgCand1 = mthdCand1.getParent().getParent();
         Fingerprint pckgCand2 = mthdCand2.getParent().getParent();
         
-        when(service.getPackageHierarchyByMethod(mthdCand1)).thenReturn(pckgCand1);
-        when(service.getPackageHierarchyByMethod(mthdCand2)).thenReturn(pckgCand2);
+        when(service.getPackageByMethod(mthdCand1)).thenReturn(pckgCand1);
+        when(service.getPackageByMethod(mthdCand2)).thenReturn(pckgCand2);
+        
+        when(service.getPackageHierarchy(pckgCand1)).thenReturn(pckgCand1);
+        when(service.getPackageHierarchy(pckgCand2)).thenReturn(pckgCand2);
         
         when(calculator.computePackageInclusion(pckgCand1.getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(20.0d);
         when(calculator.computePackageInclusion(pckgCand2.getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(0.0d);
@@ -82,7 +85,7 @@ public class InclusionStrategyTest {
         assert(matches.containsKey(Status.OK));
         assert(matches.get(Status.OK) == 1);
         
-        verify(service, times(1)).getPackageHierarchyByMethod(any(Fingerprint.class));
+        verify(service, times(1)).getPackageByMethod(any(Fingerprint.class));
         
     }
     

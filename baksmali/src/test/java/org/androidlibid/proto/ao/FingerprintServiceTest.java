@@ -156,10 +156,20 @@ public class FingerprintServiceTest {
     }
     
     @Test
-    public void testGetPackageHierarchyByMethod() {
+    public void testGetPackageByMethod() {
         Fingerprint methodFingerprint = new Fingerprint(methodsOfClazz1[0]);
         
-        Fingerprint packageHierarchy = service.getPackageHierarchyByMethod(methodFingerprint);
+        Fingerprint packageHierarchy = service.getPackageByMethod(methodFingerprint);
+        
+        assert(packageHierarchy.getEntity() == packages[0]);
+    }
+    
+    @Test
+    public void testGetPackageHierarchyByMethod() {
+        
+        Fingerprint pckgPrint = new Fingerprint(packages[0]);
+        
+        Fingerprint packageHierarchy = service.getPackageHierarchy(pckgPrint);
         
         List<Fingerprint> classesOfPackage = packageHierarchy.getChildFingerprints();
         
