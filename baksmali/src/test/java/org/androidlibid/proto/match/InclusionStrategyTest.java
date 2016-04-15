@@ -68,7 +68,7 @@ public class InclusionStrategyTest {
         
         when(calculator.computePackageInclusion(pckgNeedles.get(pckgName).getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(30.0d);
         
-        when(evaluator.evaluateResult(any(Fingerprint.class), any(Result.class))).thenReturn(Status.OK);
+        when(evaluator.evaluateResult(any(Result.class))).thenReturn(Status.OK);
         
     }
 

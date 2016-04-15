@@ -40,8 +40,8 @@ public class SetupLogger {
         LOGGER.info("- Input File: {}",    options.inputFileName);
         
         logAlgorithmSetup();
-        logDBStatus();
         logLoggerLevels();
+        logDBStatus();
         
     }
 

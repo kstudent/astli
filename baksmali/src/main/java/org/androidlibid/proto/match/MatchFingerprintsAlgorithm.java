@@ -50,10 +50,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
             Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(packagePrints);
             
-            LOGGER.info("* Stats: ");
-            for(MatchingStrategy.Status key : MatchingStrategy.Status.values()) {
-                LOGGER.info(" | {} | {} |", new Object[]{key.toString(), stats.get(key)});
-            }
+            new StatsLogger().logStats(stats);
             
        } catch (SQLException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -91,7 +88,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         EntityService service = EntityServiceFactory.createService();
         FingerprintService fingerprintService = new FingerprintService(service);
-        ResultEvaluator evaluator = new WriteResultsToLog(fingerprintService);
+        ResultEvaluator evaluator = new WriteResultsToLog();
         
         new SetupLogger(options, service).logSetup();
         

@@ -86,7 +86,7 @@ public class VectorDifferenceStrategyTest {
             }
         });
         
-        when(evaluator.evaluateResult(any(Fingerprint.class), any(Result.class))).thenReturn(Status.OK);
+        when(evaluator.evaluateResult(any(Result.class))).thenReturn(Status.OK);
 
     }
     

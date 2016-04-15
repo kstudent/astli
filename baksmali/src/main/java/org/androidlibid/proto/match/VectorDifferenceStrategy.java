@@ -81,7 +81,7 @@ public class VectorDifferenceStrategy implements MatchingStrategy {
                         
                         FingerprintMatcher.Result result = postProcessMethodResult(methodResult);
                         
-                        stats.add(evaluator.evaluateResult(methodNeedle, result));
+                        stats.add(evaluator.evaluateResult(result));
                     }
                 }
                     
@@ -95,7 +95,7 @@ public class VectorDifferenceStrategy implements MatchingStrategy {
                     
                     FingerprintMatcher.Result result = postProcessClassResult(classResult);
                     
-                    stats.add(evaluator.evaluateResult(classNeedle, result));
+                    stats.add(evaluator.evaluateResult(result));
                 }
                     
                 break;
@@ -103,7 +103,7 @@ public class VectorDifferenceStrategy implements MatchingStrategy {
             case PACKAGE:
                 haystack = service.findPackagesByDepth(packageDepth);
                 FingerprintMatcher.Result result = matcher.matchFingerprints(haystack, packageNeedle);
-                stats.add(evaluator.evaluateResult(packageNeedle, result));
+                stats.add(evaluator.evaluateResult(result));
                 break;
         }
         

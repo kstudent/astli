@@ -1,6 +1,7 @@
 package org.androidlibid.proto.match;
 
-import org.androidlibid.proto.Fingerprint;
+import static org.androidlibid.proto.match.MatchingStrategy.Status;
+import static org.androidlibid.proto.match.FingerprintMatcher.Result;
 
 /**
  *
@@ -8,6 +9,5 @@ import org.androidlibid.proto.Fingerprint;
  */
 interface ResultEvaluator {
     
-    public MatchingStrategy.Status evaluateResult(
-            Fingerprint needle, FingerprintMatcher.Result result);
+    public Status evaluateResult(Result result);
 }

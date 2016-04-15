@@ -1,118 +1,153 @@
 package org.androidlibid.proto.match;
 
-import org.androidlibid.proto.ao.FingerprintService;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
-import java.util.List;
 import org.androidlibid.proto.Fingerprint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import static org.androidlibid.proto.match.MatchingStrategy.Status;
+import static org.androidlibid.proto.match.FingerprintMatcher.Result;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class WriteResultsToLog implements ResultEvaluator  {
+public class WriteResultsToLog implements ResultEvaluator {
     
-    private final NumberFormat frmt = new DecimalFormat("#0.00");
-    private final FingerprintService service;
-    private static final Logger LOGGER = LogManager.getLogger(WriteResultsToLog.class.getName() );
-    
-    public WriteResultsToLog(FingerprintService service) {
-        this.service = service;
-    }
+    private final NumberFormat  frmt = new DecimalFormat("#0.00");
+    private static final Logger DETAILLOGGER = LogManager.getLogger(WriteResultsToLog.class.getName());
+    private static final Logger RESULTLOGGER = LogManager.getLogger(WriteResultsToLog.class.getName() + ".Results");
     
     @Override
-    public MatchingStrategy.Status evaluateResult(Fingerprint needle, 
-            FingerprintMatcher.Result result) {
+    public Status evaluateResult(Result result) {
         
-        String needleName = needle.getName();
+        Fingerprint needle = result.getNeedle();
         Fingerprint nameMatch = result.getMatchByName();
-        
         Collection<Fingerprint> matchesByDistance = result.getMatchesByDistance();
-                
+        String needleName = needle.getName();
+        
+        Status status = Status.NO_MATCH_BY_NAME;
+        
+        int position = -1;
+        
         if(nameMatch == null) {
-            try { 
-                List<Fingerprint> packagesWithTheSameName = service.findPackagesByName(needleName);
-                if(packagesWithTheSameName.isEmpty()) {
-                    LOGGER.info("{}: not matched by name", needleName);
-                    return MatchingStrategy.Status.NO_MATCH_BY_NAME;
-                } else {
-                    LOGGER.info("{}: not matched by name, but its in the db {} time(s)", needleName, packagesWithTheSameName.size());
-                    return MatchingStrategy.Status.NO_MATCH_BY_NAME_ALTHOUGH_IN_DB;
-                }
-            } catch (SQLException ex) {
-                LOGGER.error(ex.toString(), ex);
-                return MatchingStrategy.Status.NO_MATCH_BY_NAME;
-            }
+            DETAILLOGGER.info("{}: not matched by name", needleName);
         } else {
-            
-            int position = 1;
-            
-            for (Fingerprint matchByDistance : matchesByDistance) {
-                if(matchByDistance.getName().equals(needleName)) {
-                    break;
-                } else {
-                    position++;
-                }
-            }
+            position = findPosition(needleName, matchesByDistance);
             
             if(position > matchesByDistance.size()) {
-                LOGGER.info("* NEXT {} (max : {}) not found", needle.getName(), needle.getInclusionScore());
-            } else {
-                LOGGER.info("* {}{} (max : {}) found at position {}", 
-                        position > 1 ? "NEXT " : "",
+                DETAILLOGGER.info("* NEXT {} (max : {}) not found", needle.getName(), needle.getInclusionScore());
+                status = Status.NOT_IN_CANDIDATES;
+                position = -1;
+            } else if( position > 1 ) {
+                DETAILLOGGER.info("* NEXT {} (max : {}) found at position {}", 
                         needle.getName(), 
                         frmt.format(needle.getInclusionScore()), 
                         position);
-            }
-            
-            LOGGER.debug("| {} | {} | {} | {} | {} | {} |", 
-                "pos",
-                "name",
-                "incScore",
-                "incScoreN", 
-                "eucDiff",
-                "eucDiffN"
-            );
-            
-            int i = 1; 
-            
-            for(Fingerprint matchByDistance : result.getMatchesByDistance()) {
-                
-                double maxLength = Math.max(matchByDistance.getLength(), needle.getLength());
-                double eucDiffR  = maxLength - matchByDistance.getDistanceToFingerprint(needle);
-               
-                if(eucDiffR < 0) eucDiffR = 0;
-                eucDiffR = eucDiffR  / maxLength;
-                
-                double incScoreN = 0.0d;
-                if(needle.getInclusionScore() > 0.0d) {
-                    incScoreN = matchByDistance.getInclusionScore() / needle.getInclusionScore();
-                }
-                
-                LOGGER.debug("| {} | {} | {} | {} | {} | {} |", 
-                        i, 
-                        matchByDistance.getName(),
-                        frmt.format(matchByDistance.getInclusionScore()), 
-                        frmt.format(incScoreN), 
-                        frmt.format(matchByDistance.getDistanceToFingerprint(needle)), 
-                        frmt.format(eucDiffR)
-                );
-                
-                i++;
-            }
-            
-            if(position == 1) {
-                return MatchingStrategy.Status.OK;
-            } else if (position > matchesByDistance.size()){
-                return MatchingStrategy.Status.NO_MATCH_BY_DISTANCE;
+                status = Status.NOT_FIRST;
             } else {
-                return MatchingStrategy.Status.NOT_PERFECT;
+                DETAILLOGGER.info("* {} (max : {}) found position 1", 
+                        needle.getName(), 
+                        frmt.format(needle.getInclusionScore()), 
+                        position);
+                status = Status.OK;
             }
         }
+        
+        printResultRow(status, result, position);
+        
+        printMatchesByDistanceTable(result);
+        
+        return status;
+        
+    }
+
+    private int findPosition(String needleName, Collection<Fingerprint> matchesByDistance) {
+        
+        int position = 1;
+            
+        for (Fingerprint matchByDistance : matchesByDistance) {
+            if(matchByDistance.getName().equals(needleName)) {
+                break;
+            } else {
+                position++;
+            }
+        }
+        
+        return position;
+    }
+
+    private void printMatchesByDistanceTable(Result result) {
+        
+        Collection<Fingerprint> matchesByDistance = result.getMatchesByDistance();
+        Fingerprint needle = result.getNeedle();
+        
+        DETAILLOGGER.info("| {} | {} | {} | {} | {} | {} |", 
+            "pos",
+            "name",
+            "incScore",
+            "incScoreN", 
+            "eucDiff",
+            "eucDiffN"
+        );
+            
+        int i = 1; 
+
+        for(Fingerprint matchByDistance : matchesByDistance) {
+
+            double maxLength = Math.max(matchByDistance.getLength(), needle.getLength());
+            double eucDiffR  = maxLength - matchByDistance.getDistanceToFingerprint(needle);
+
+            if(eucDiffR < 0) eucDiffR = 0;
+            eucDiffR = eucDiffR  / maxLength;
+
+            double incScoreN = 0.0d;
+            if(needle.getInclusionScore() > 0.0d) {
+                incScoreN = matchByDistance.getInclusionScore() / needle.getInclusionScore();
+            }
+
+            DETAILLOGGER.info("| {} | {} | {} | {} | {} | {} |", 
+                    i, 
+                    matchByDistance.getName(),
+                    frmt.format(matchByDistance.getInclusionScore()), 
+                    frmt.format(incScoreN), 
+                    frmt.format(matchByDistance.getDistanceToFingerprint(needle)), 
+                    frmt.format(eucDiffR)
+            );
+            i++;
+        }
+    }
+
+    private void printResultRow(Status status, Result result, int position) {
+        Fingerprint needle = result.getNeedle();
+        Collection<Fingerprint> matchesByDistance = result.getMatchesByDistance();
+        String needleName  = needle.getName();
+        double needleScore = needle.getInclusionScore();
+        
+        String firstMatchName = "<none>"; 
+        double firstmatchScore = 0.0d;
+        
+        if(!matchesByDistance.isEmpty()) {
+            Fingerprint firstMatch = matchesByDistance.iterator().next();
+            firstMatchName  = firstMatch.getName();
+            firstmatchScore = firstMatch.getInclusionScore();
+        }
+        
+        double scoreN = 0.0d;
+        if(needleScore > 0) {
+            scoreN = firstmatchScore / needleScore;
+        }
+        
+        RESULTLOGGER.info("| {} | {} | {} | {} | {} | {} | {} |", 
+            needleName,
+            frmt.format(needleScore),
+            firstMatchName,
+            frmt.format(firstmatchScore),
+            frmt.format(scoreN), 
+            (position > 0) ? position : "?",
+            status
+        );
     }
     
 }

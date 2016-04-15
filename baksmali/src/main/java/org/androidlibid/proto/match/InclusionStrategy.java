@@ -63,10 +63,10 @@ public class InclusionStrategy implements MatchingStrategy {
             if(packageNeedle.getName().startsWith("android")) continue;
             if(packageNeedle.getName().equals("")) continue;
             
-            Result matches = findMatchForPackage(packageNeedle);
+            Result result = findMatchForPackage(packageNeedle);
 
-            MatchingStrategy.Status result = evaluator.evaluateResult(packageNeedle, matches);
-            stats.put(result, stats.get(result) + 1);
+            MatchingStrategy.Status status = evaluator.evaluateResult(result);
+            stats.put(status, stats.get(status) + 1);
         }
         
         return stats;
