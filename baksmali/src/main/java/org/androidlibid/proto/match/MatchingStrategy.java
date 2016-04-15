@@ -1,6 +1,7 @@
 package org.androidlibid.proto.match;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 
@@ -8,29 +9,37 @@ import org.androidlibid.proto.Fingerprint;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public interface MatchingStrategy {
+public abstract class MatchingStrategy {
 
-    /**
+    private final Map<Evaluation.Classification, Integer> classifications;
+    private final Map<Evaluation.Position, Integer> positions;
     
-    |-------------------+------------------------------------------------------|
-    | OK                | if match by name was found and position = 1          |
-    |-------------------+------------------------------------------------------|
-    | NOT FIRST         | if match by name was found and position > 1          |
-    |-------------------+------------------------------------------------------|
-    | NOT IN CANDIDATES | if match by name was found, but not in candidate set |
-    |-------------------+------------------------------------------------------|
-    | NO MATCH BY NAME  | if match by name was not found. reasons:             |
-    |                   | - lib of this package was not fingerprinted          |
-    |                   | - package contains application code                  |
-    |-------------------+------------------------------------------------------|
-     
-     */    
-    public enum Status {
-        OK,
-        NOT_FIRST,
-        NOT_IN_CANDIDATES,
-        NO_MATCH_BY_NAME;
+    public Map<Evaluation.Classification, Integer> getClassifications() {
+        return classifications;
+    }
+
+    public Map<Evaluation.Position, Integer> getPositions() {
+        return positions;
+    }
+
+    public MatchingStrategy() {
+        classifications = new HashMap<>();
+        for(Evaluation.Classification key : Evaluation.Classification.values()) {
+            classifications.put(key, 0);
+        }
+        
+        positions = new HashMap<>();
+        for(Evaluation.Position key : Evaluation.Position.values()) {
+            positions.put(key, 0);
+        }
     }
     
-    public Map<Status, Integer> matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException ;
+    protected void incrementStats(Evaluation evaluation) {
+        positions.put(evaluation.getPosition(), positions.get(evaluation.getPosition()) + 1);
+        classifications.put(evaluation.getClassification(), classifications.get(evaluation.getClassification()) + 1);
+    } 
+    
+    abstract public void matchPrints(Map<String, Fingerprint> packagePrints) 
+            throws SQLException;
+
 }

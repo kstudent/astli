@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.match.Evaluation.Position;
 import org.androidlibid.proto.match.FingerprintMatcher.Result;
-import org.androidlibid.proto.match.MatchingStrategy.Status;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.times;
@@ -71,19 +71,22 @@ public class InclusionStrategyTest {
         
         when(calculator.computePackageInclusion(pckgNeedles.get(pckgName).getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(30.0d);
         
-        when(evaluator.evaluateResult(any(Result.class))).thenReturn(Status.OK);
+        Evaluation eval = new Evaluation();
+        
+        when(evaluator.evaluateResult(any(Result.class))).thenReturn(eval);
         
     }
 
     @Test
     public void testMatch() throws SQLException {
         
-        MatchingStrategy strategy;
-        strategy = new InclusionStrategy(service, calculator, evaluator);
-        Map<MatchingStrategy.Status, Integer> matches = strategy.matchPrints(pckgNeedles);
+        MatchingStrategy strategy = new InclusionStrategy(service, calculator, evaluator);
+        strategy.matchPrints(pckgNeedles);
         
-        assert(matches.containsKey(Status.OK));
-        assert(matches.get(Status.OK) == 1);
+        Map<Position, Integer> positions = strategy.getPositions();
+        
+        assert(positions.containsKey(Position.OK));
+        assert(positions.get(Position.OK) == 1);
         
         verify(service, times(1)).getPackageByMethod(any(Fingerprint.class));
         

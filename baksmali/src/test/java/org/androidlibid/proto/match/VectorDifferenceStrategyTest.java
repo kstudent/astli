@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.match.Evaluation.Position;
 import org.androidlibid.proto.match.VectorDifferenceStrategy.Level;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.androidlibid.proto.match.FingerprintMatcher.Result;
-import org.androidlibid.proto.match.MatchingStrategy.Status;
 import org.apache.commons.lang.StringUtils;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -86,7 +86,7 @@ public class VectorDifferenceStrategyTest {
             }
         });
         
-        when(evaluator.evaluateResult(any(Result.class))).thenReturn(Status.OK);
+        when(evaluator.evaluateResult(any(Result.class))).thenReturn(new Evaluation());
 
     }
     
@@ -98,11 +98,13 @@ public class VectorDifferenceStrategyTest {
         MatchingStrategy strategy = new VectorDifferenceStrategy(
             service, evaluator, matcher, level);
                 
-        Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(pckgNeedles);
+        strategy.matchPrints(pckgNeedles);
+        
+        Map<Position, Integer> stats = strategy.getPositions();
         
         verify(matcher, times(3)).matchFingerprints(any(List.class), any(Fingerprint.class));
         
-        assert(stats.get(MatchingStrategy.Status.OK).equals(3));
+        assert(stats.get(Position.OK).equals(3));
     }
     
     @Test
@@ -113,11 +115,12 @@ public class VectorDifferenceStrategyTest {
         MatchingStrategy strategy = new VectorDifferenceStrategy(
             service, evaluator, matcher, level);
                 
-        Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(pckgNeedles);
+        strategy.matchPrints(pckgNeedles);
+        Map<Position, Integer> stats = strategy.getPositions();
         
         verify(matcher, times(3)).matchFingerprints(any(List.class), any(Fingerprint.class));
         
-        assert(stats.get(MatchingStrategy.Status.OK).equals(3));
+        assert(stats.get(Position.OK).equals(3));
     }
     
     @Test
@@ -128,11 +131,12 @@ public class VectorDifferenceStrategyTest {
         MatchingStrategy strategy = new VectorDifferenceStrategy(
             service, evaluator, matcher, level);
                 
-        Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(pckgNeedles);
+        strategy.matchPrints(pckgNeedles);
+        Map<Position, Integer> stats = strategy.getPositions();
         
         verify(matcher, times(3)).matchFingerprints(any(List.class), any(Fingerprint.class));
         
-        assert(stats.get(MatchingStrategy.Status.OK).equals(3));
+        assert(stats.get(Position.OK).equals(3));
     }
     
     private void createAndAddFingerprintsToDepthLists(String name) {

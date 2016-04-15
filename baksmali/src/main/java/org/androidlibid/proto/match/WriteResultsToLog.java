@@ -6,8 +6,9 @@ import java.util.Collection;
 import org.androidlibid.proto.Fingerprint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.androidlibid.proto.match.MatchingStrategy.Status;
 import static org.androidlibid.proto.match.FingerprintMatcher.Result;
+import static org.androidlibid.proto.match.Evaluation.Classification;
+import static org.androidlibid.proto.match.Evaluation.Position;
 
 /**
  *
@@ -20,46 +21,65 @@ public class WriteResultsToLog implements ResultEvaluator {
     private static final Logger RESULTLOGGER = LogManager.getLogger(WriteResultsToLog.class.getName() + ".Results");
     
     @Override
-    public Status evaluateResult(Result result) {
+    public Evaluation evaluateResult(Result result) {
         
         Fingerprint needle = result.getNeedle();
         Fingerprint nameMatch = result.getMatchByName();
         Collection<Fingerprint> matchesByDistance = result.getMatchesByDistance();
         String needleName = needle.getName();
         
-        Status status = Status.NO_MATCH_BY_NAME;
+        Position positionStatus = Position.NO_MATCH_BY_NAME;
         
-        int position = -1;
+        int positionNumber = -1;
         
         if(nameMatch == null) {
             DETAILLOGGER.info("{}: not matched by name", needleName);
         } else {
-            position = findPosition(needleName, matchesByDistance);
+            positionNumber = findPosition(needleName, matchesByDistance);
             
-            if(position > matchesByDistance.size()) {
+            if(positionNumber > matchesByDistance.size()) {
                 DETAILLOGGER.info("* NEXT {} (max : {}) not found", needle.getName(), needle.getInclusionScore());
-                status = Status.NOT_IN_CANDIDATES;
-                position = -1;
-            } else if( position > 1 ) {
+                positionStatus = Position.NOT_IN_CANDIDATES;
+                positionNumber = -1;
+            } else if( positionNumber > 1 ) {
                 DETAILLOGGER.info("* NEXT {} (max : {}) found at position {}", 
                         needle.getName(), 
                         frmt.format(needle.getInclusionScore()), 
-                        position);
-                status = Status.NOT_FIRST;
+                        positionNumber);
+                positionStatus = Position.NOT_FIRST;
             } else {
                 DETAILLOGGER.info("* {} (max : {}) found position 1", 
                         needle.getName(), 
                         frmt.format(needle.getInclusionScore()), 
-                        position);
-                status = Status.OK;
+                        positionNumber);
+                positionStatus = Position.OK;
             }
         }
         
-        printResultRow(status, result, position);
-        
         printMatchesByDistanceTable(result);
         
-        return status;
+        Evaluation evaluation = new Evaluation();
+        
+        evaluation.setPosition(positionStatus);
+        
+        boolean matchWasInDB = (nameMatch != null);
+        boolean thereAreCandidates = !matchesByDistance.isEmpty();
+        
+        if(positionStatus == Position.OK) {
+            evaluation.setClassification(Classification.TRUE_POSITIVE);
+        } else if( matchWasInDB &&  thereAreCandidates) {
+            evaluation.setClassification(Classification.FALSE_POSITIVE);
+        } else if(!matchWasInDB && !thereAreCandidates) {
+            evaluation.setClassification(Classification.TRUE_NEGATIVE);
+        } else if( matchWasInDB && !thereAreCandidates) {
+            evaluation.setClassification(Classification.FALSE_NEGATIVE);
+        } else {
+            throw new RuntimeException("Dude, check your code.");
+        }
+        
+        printResultRow(evaluation, result, positionNumber);
+        
+        return evaluation;
         
     }
 
@@ -119,7 +139,10 @@ public class WriteResultsToLog implements ResultEvaluator {
         }
     }
 
-    private void printResultRow(Status status, Result result, int position) {
+    private void printResultRow(Evaluation eval, Result result, int positionNumber) {
+        Position position = eval.getPosition();
+        Classification classification = eval.getClassification();
+        
         Fingerprint needle = result.getNeedle();
         Collection<Fingerprint> matchesByDistance = result.getMatchesByDistance();
         String needleName  = needle.getName();
@@ -139,15 +162,15 @@ public class WriteResultsToLog implements ResultEvaluator {
             scoreN = firstmatchScore / needleScore;
         }
         
-        RESULTLOGGER.info("| {} | {} | {} | {} | {} | {} | {} |", 
+        RESULTLOGGER.info("| {} | {} | {} | {} | {} | {} | {} | {} |", 
             needleName,
             frmt.format(needleScore),
             firstMatchName,
             frmt.format(firstmatchScore),
             frmt.format(scoreN), 
-            (position > 0) ? position : "?",
-            status
+            (positionNumber > 0) ? positionNumber : "?",
+            position,
+            classification
         );
     }
-    
 }

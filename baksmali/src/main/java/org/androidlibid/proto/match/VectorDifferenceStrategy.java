@@ -1,14 +1,13 @@
 package org.androidlibid.proto.match;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.match.FingerprintMatcher.Result;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,31 +16,26 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class VectorDifferenceStrategy implements MatchingStrategy {
+public class VectorDifferenceStrategy extends MatchingStrategy {
 
     private final FingerprintService service;
     private final ResultEvaluator evaluator;
     private final FingerprintMatcher matcher;
-    
     private final Level level;
     
     private static final Logger LOGGER = LogManager.getLogger(VectorDifferenceStrategy.class);
 
     public VectorDifferenceStrategy(FingerprintService service, 
             ResultEvaluator evaluator, FingerprintMatcher matcher, Level level) {
+        super();
         this.service = service;
         this.evaluator = evaluator;
         this.matcher = matcher;
         this.level = level;
     }
-    
+
     @Override
-    public Map<Status, Integer> matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
-        
-        Map<Status, Integer> stats = new HashMap<>();
-        for(Status key : Status.values()) {
-            stats.put(key, 0);
-        }
+    public void matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
         
         int count = 0;
         
@@ -56,18 +50,12 @@ public class VectorDifferenceStrategy implements MatchingStrategy {
          
             int packageDepth = StringUtils.countMatches(packageName, ".");
             
-            for (Status result : matchNeedle(packageNeedle, packageDepth)) {
-                stats.put(result, stats.get(result) + 1);
-            }
+            matchNeedle(packageNeedle, packageDepth);
         }
-        
-        return stats;
-        
     }
 
-    private List<Status> matchNeedle(Fingerprint packageNeedle, int packageDepth) throws SQLException {
+    private void matchNeedle(Fingerprint packageNeedle, int packageDepth) throws SQLException {
         
-        List<Status> stats = new ArrayList<>();
         List<Fingerprint> haystack; 
          
         switch(level) {
@@ -77,11 +65,11 @@ public class VectorDifferenceStrategy implements MatchingStrategy {
                 
                 for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
                     for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
-                        FingerprintMatcher.Result methodResult = matcher.matchFingerprints(haystack, methodNeedle);
+                        Result methodResult = matcher.matchFingerprints(haystack, methodNeedle);
                         
-                        FingerprintMatcher.Result result = postProcessMethodResult(methodResult);
+                        Result result = postProcessMethodResult(methodResult);
                         
-                        stats.add(evaluator.evaluateResult(result));
+                        incrementStats(evaluator.evaluateResult(result));
                     }
                 }
                     
@@ -91,28 +79,26 @@ public class VectorDifferenceStrategy implements MatchingStrategy {
                 haystack = service.findClassesByPackageDepth(packageDepth);
                 
                 for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
-                    FingerprintMatcher.Result classResult = matcher.matchFingerprints(haystack, classNeedle);
+                    Result classResult = matcher.matchFingerprints(haystack, classNeedle);
                     
-                    FingerprintMatcher.Result result = postProcessClassResult(classResult);
+                    Result result = postProcessClassResult(classResult);
                     
-                    stats.add(evaluator.evaluateResult(result));
+                    incrementStats(evaluator.evaluateResult(result));
                 }
                     
                 break;
                 
             case PACKAGE:
                 haystack = service.findPackagesByDepth(packageDepth);
-                FingerprintMatcher.Result result = matcher.matchFingerprints(haystack, packageNeedle);
-                stats.add(evaluator.evaluateResult(result));
+                Result result = matcher.matchFingerprints(haystack, packageNeedle);
+                incrementStats(evaluator.evaluateResult(result));
                 break;
         }
-        
-        return stats;
     }
 
-    private FingerprintMatcher.Result postProcessClassResult(FingerprintMatcher.Result classResult) {
+    private Result postProcessClassResult(Result classResult) {
         
-        FingerprintMatcher.Result result = new FingerprintMatcher.Result();
+        Result result = new Result();
         
         if(classResult.getMatchByName() != null) {
             result.setMatchByName(classResult.getMatchByName().getParent());
@@ -133,9 +119,9 @@ public class VectorDifferenceStrategy implements MatchingStrategy {
         return result;
     }
     
-    private FingerprintMatcher.Result postProcessMethodResult(FingerprintMatcher.Result methodResult) {
+    private Result postProcessMethodResult(Result methodResult) {
     
-        FingerprintMatcher.Result result = new FingerprintMatcher.Result();
+        Result result = new Result();
         
         if(methodResult.getMatchByName() != null && methodResult.getMatchByName().getParent() != null) {
             result.setMatchByName(methodResult.getMatchByName().getParent().getParent());

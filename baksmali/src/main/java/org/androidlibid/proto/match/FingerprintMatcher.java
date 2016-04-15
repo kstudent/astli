@@ -44,7 +44,8 @@ public class FingerprintMatcher {
         Result result = new Result();
         
         double maxSimScore = needle.getLength();
-                
+        needle.setInclusionScore(maxSimScore);
+        
         for(Fingerprint candidate : haystack) {
 
             if(candidate.getName() == null) {
@@ -55,14 +56,17 @@ public class FingerprintMatcher {
                 result.setMatchByName(candidate);
             }
 
+            double simScore = needle.getNonCommutativeSimilarityScoreToFingerprint(candidate);
+            
             if(simThreshold > 0.0d) {
-                double simScore = needle.getNonCommutativeSimilarityScoreToFingerprint(candidate);
                 double simScoreNormalized = simScore / maxSimScore;
                 if(simScoreNormalized >= simThreshold) {
                     matches.add(candidate);
+                    candidate.setInclusionScore(simScore);
                 }
             } else {
                 matches.add(candidate);
+                candidate.setInclusionScore(simScore);
             }
         }
                 

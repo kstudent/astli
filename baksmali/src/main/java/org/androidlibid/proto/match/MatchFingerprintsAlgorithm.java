@@ -18,6 +18,8 @@ import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ast.ASTBuilderFactory;
 import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
+import org.androidlibid.proto.match.Evaluation.Classification;
+import org.androidlibid.proto.match.Evaluation.Position;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
@@ -51,12 +53,14 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
             Map<String, Fingerprint> packagePrints = generatePackagePrints();
             
-            Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(packagePrints);
+            strategy.matchPrints(packagePrints);
+            Map<Position, Integer> positions = strategy.getPositions();
+            Map<Classification, Integer> classifications = strategy.getClassifications();
             
             Date after = new Date();
             long diff = after.getTime() - before.getTime();
             
-            new StatsLogger().logStats(stats, diff);
+            new StatsLogger().logStats(positions, classifications, diff);
             
        } catch (SQLException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);

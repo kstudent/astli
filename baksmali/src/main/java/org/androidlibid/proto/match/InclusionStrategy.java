@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,7 @@ import static org.androidlibid.proto.match.FingerprintMatcher.Result;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class InclusionStrategy implements MatchingStrategy {
+public class InclusionStrategy extends MatchingStrategy {
 
     private final FingerprintService service;
     private final PackageInclusionCalculator calculator;
@@ -41,21 +40,19 @@ public class InclusionStrategy implements MatchingStrategy {
     public InclusionStrategy(FingerprintService service, 
             PackageInclusionCalculator calculator, ResultEvaluator evaluator, 
             Settings settings) {
+        super();
         this.service = service;
-        this.calculator = calculator;
         this.evaluator = evaluator;
+        this.calculator = calculator;
         this.settings = settings;
     }
 
+    
+
     @Override
-    public Map<Status, Integer> matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
+    public void matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
         
         LOGGER.info("* Match Prints");
-        
-        Map<Status, Integer> stats = new HashMap<>();
-        for(Status key : Status.values()) {
-            stats.put(key, 0);
-        }
         
         int count = 0;
         
@@ -68,12 +65,11 @@ public class InclusionStrategy implements MatchingStrategy {
             
             Result result = findMatchForPackage(packageNeedle);
 
-            MatchingStrategy.Status status = evaluator.evaluateResult(result);
-            stats.put(status, stats.get(status) + 1);
+            Evaluation evaluation = evaluator.evaluateResult(result);
+            
+            incrementStats(evaluation);
+            
         }
-        
-        return stats;
-        
     }
     
     private @Nullable Result findMatchForPackage(Fingerprint packageNeedle) throws SQLException {
@@ -155,7 +151,7 @@ public class InclusionStrategy implements MatchingStrategy {
                 continue;
             } 
 
-            Fingerprint packageCandidate = service.getPackageHierarchyByMethod(methodCandidate);
+            Fingerprint packageCandidate = service.getPackageByMethod(methodCandidate);
             String packageCandidateName = packageCandidate.getName();
 
             if (isNameInCollection(packageCandidateName, matchedPackages)) {
@@ -164,7 +160,9 @@ public class InclusionStrategy implements MatchingStrategy {
             
             LOGGER.info("*** check against db version of {}", packageCandidateName);
             
-            double packageScore = computeInclusionScore(packageNeedle, packageCandidate);
+            Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
+            
+            double packageScore = computeInclusionScore(packageNeedle, packageHierarchy);
             
             LOGGER.info("*** check against db version of {} done", packageCandidateName);
 
