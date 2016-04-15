@@ -49,6 +49,9 @@ public class InclusionStrategy implements MatchingStrategy {
 
     @Override
     public Map<Status, Integer> matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
+        
+        LOGGER.info("* Match Prints");
+        
         Map<Status, Integer> stats = new HashMap<>();
         for(Status key : Status.values()) {
             stats.put(key, 0);

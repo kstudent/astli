@@ -12,12 +12,14 @@ class StatsLogger {
 
     private final static Logger LOGGER = LogManager.getLogger(StatsLogger.class);
     
-    public void logStats(Map<MatchingStrategy.Status, Integer> stats) {
+    public void logStats(Map<MatchingStrategy.Status, Integer> stats, long diff) {
         
         LOGGER.info("* Stats: ");
         
         for(MatchingStrategy.Status key : MatchingStrategy.Status.values()) {
             LOGGER.info(" | {} | {} |", new Object[]{key.toString(), stats.get(key)});
         }
+        
+        LOGGER.info("* Runtime: {} seconds", diff / 1000);
     }
 }

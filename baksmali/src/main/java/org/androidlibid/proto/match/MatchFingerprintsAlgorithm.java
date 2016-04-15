@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,13 +45,18 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     public boolean run() {
         try {
             
-            Map<String, Fingerprint> packagePrints = generatePackagePrints();
+            Date before = new Date();
             
             MatchingStrategy strategy = setupStrategy(); 
             
+            Map<String, Fingerprint> packagePrints = generatePackagePrints();
+            
             Map<MatchingStrategy.Status, Integer> stats = strategy.matchPrints(packagePrints);
             
-            new StatsLogger().logStats(stats);
+            Date after = new Date();
+            long diff = after.getTime() - before.getTime();
+            
+            new StatsLogger().logStats(stats, diff);
             
        } catch (SQLException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -59,6 +65,8 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     }
 
     private Map<String, Fingerprint> generatePackagePrints() throws IOException {
+        
+        LOGGER.info("* Create Package Prints");
         
         Map<String, String> mappings = new HashMap<>();
 
