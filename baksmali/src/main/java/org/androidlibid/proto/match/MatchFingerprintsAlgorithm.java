@@ -9,8 +9,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
@@ -37,10 +39,15 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private static final Logger LOGGER = LogManager.getLogger( MatchFingerprintsAlgorithm.class.getName() );
     private final ASTBuilderFactory astBuilderFactory;
        
+    private Set<String> interestedPackageNames = new HashSet<>();
+    
     public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options   = options;
         this.classDefs = classDefs;
         astBuilderFactory = new ASTBuilderFactory(options);
+        
+//        interestedPackageNames.add("org.spongycastle.util.encoders");
+        
     }
     
     @Override
@@ -86,6 +93,8 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         PackageHierarchyGenerator phGen = new PackageHierarchyGenerator(
                 options, new ASTToFingerprintTransformer(), mappings);
         
+        phGen.setInterestedPackageNames(interestedPackageNames); 
+        
         List<ASTClassBuilder> astClassBuilders = new ArrayList<>(); 
         for(ClassDef classDef: classDefs) {
             ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
@@ -111,16 +120,20 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         } else {
             FingerprintMatcher matcher = new FingerprintMatcher();
             
-            PackageInclusionCalculator packageInclusionCalculator = 
-                    new PackageInclusionCalculator(
-                            new ClassInclusionCalculator(
+            ClassInclusionCalculator classInclusionCalculator = new ClassInclusionCalculator(
                                     matcher, 
                                     options.allowRepeatedMatching
-                            ),
+                            );
+            
+            classInclusionCalculator.setInterestedPackageNames(interestedPackageNames);
+            
+            PackageInclusionCalculator packageInclusionCalculator = 
+                    new PackageInclusionCalculator(
+                            classInclusionCalculator,
                             options.allowRepeatedMatching
                     );
 
-            MatchingStrategy strategy = new InclusionStrategy(
+            InclusionStrategy strategy = new InclusionStrategy(
                 fingerprintService, packageInclusionCalculator, 
                     evaluator, options.inclusionSettings);
 
