@@ -3,10 +3,11 @@ package org.androidlibid.proto;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.ast.Node;
@@ -25,18 +26,8 @@ public class PackageHierarchyGenerator {
     private final Map<String, String> mappings;
     
     private static final Logger LOGGER = LogManager.getLogger(PackageHierarchyGenerator.class);
+    private Set<String> interestedPackageNames = new HashSet<>();
 
-    private final Comparator<Fingerprint> sortByEuclidDESCComparator = new Comparator<Fingerprint>() {
-        @Override
-        public int compare(Fingerprint that, Fingerprint other) {
-            double thatNeedleLength  = that.getLength();
-            double otherNeedleLength = other.getLength();
-            if (thatNeedleLength > otherNeedleLength) return -1;
-            if (thatNeedleLength < otherNeedleLength) return  1;
-            return 0;
-        }
-    };
-    
     public PackageHierarchyGenerator(baksmaliOptions options, ASTToFingerprintTransformer ast2fpt, Map<String, String> mappings) {
         this.options = options;
         this.ast2fpt = ast2fpt;
@@ -53,6 +44,10 @@ public class PackageHierarchyGenerator {
             String obfClassName = SmaliNameConverter.convertTypeFromSmali(smaliClassName);
             String className =    translateName(obfClassName);
             String packageName =  SmaliNameConverter.extractPackageNameFromClassName(className);
+            
+            if(!interestedPackageNames.isEmpty() && !interestedPackageNames.contains(packageName)) {
+                continue;
+            }
             
             Fingerprint classFingerprint = transformClassDefToFingerprint(astClassBuilder, obfClassName);
             
@@ -75,7 +70,7 @@ public class PackageHierarchyGenerator {
         }
         
         for(Fingerprint pckg : packagePrints.values()) {
-            Collections.sort(pckg.getChildFingerprints(), sortByEuclidDESCComparator);
+            Collections.sort(pckg.getChildFingerprints(), Fingerprint.sortByLengthDESC);
         }
 
         return packagePrints;
@@ -96,11 +91,11 @@ public class PackageHierarchyGenerator {
             String obfsIdentifier = obfsClassName + ":" + obfsMethodSignature; 
             
             String clearMethodSignature = translateName(obfsIdentifier);
-            LOGGER.debug("* {}, (obs: {} )", clearMethodSignature, obfsIdentifier);
-            LOGGER.debug("** ast" );
-            LOGGER.debug(ast.get(obfsMethodSignature));
-            LOGGER.debug("** fingerprint" );
-            LOGGER.debug(methodFingerprint);
+            LOGGER.info("* {}, (obs: {} )", clearMethodSignature, obfsIdentifier);
+            LOGGER.info("** ast" );
+            LOGGER.info(ast.get(obfsMethodSignature));
+            LOGGER.info("** fingerprint" );
+            LOGGER.info(methodFingerprint);
             
             if(methodFingerprint.getLength() > 1.0f) {
                 methodFingerprint.setName(clearMethodSignature);
@@ -109,7 +104,7 @@ public class PackageHierarchyGenerator {
             }
         }
         
-        Collections.sort(methods, sortByEuclidDESCComparator);
+        Collections.sort(methods, Fingerprint.sortByLengthDESC);
         
         for(Fingerprint method : methods) {
             classFingerprint.addChildFingerprint(method);
@@ -123,5 +118,9 @@ public class PackageHierarchyGenerator {
             return mappings.get(obfuscatedName);
         }
         return obfuscatedName;
+    }
+
+    public void setInterestedPackageNames(Set<String> interestedPackageNames) {
+        this.interestedPackageNames = interestedPackageNames;
     }
 }
