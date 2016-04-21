@@ -28,8 +28,9 @@ public class InclusionStrategy extends MatchingStrategy {
     private final ResultEvaluator evaluator; 
     private final Settings settings;
     
-    private final NumberFormat frmt = new DecimalFormat("#0.00");
+    private final List<Fingerprint> prettySureMatches = new ArrayList<>();
     
+    private final NumberFormat frmt = new DecimalFormat("#0.00");
     private static final Logger LOGGER = LogManager.getLogger(InclusionStrategy.class.getName());
 
     public InclusionStrategy(FingerprintService service, 
@@ -107,27 +108,23 @@ public class InclusionStrategy extends MatchingStrategy {
         
         Fingerprint packageNeedle = result.getNeedle();
         
-        for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
-            for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
+        List<Fingerprint> methodNeedles = distillMethodNeedles(packageNeedle);
+        
+        for(Fingerprint methodNeedle : methodNeedles) {
 
-                double length = methodNeedle.getLength();
-                double size   = length * (1 - settings.getMethodMatchThreshold());
+            double length = methodNeedle.getLength();
+            double size   = length * (1 - settings.getMethodMatchThreshold());
+                
+            LOGGER.info("** needle: {} ({})", methodNeedle.getName(), frmt.format(length)); 
 
-                if(length < settings.getMinimalMethodLengthForNeedleLookup()) {
-                    break;
-                }
+            List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
 
-                LOGGER.info("** needle: {} ({})", methodNeedle.getName(), frmt.format(length)); 
+            LOGGER.info("{} similar needles to check", methodHaystack.size()); 
 
-                List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
-
-                LOGGER.info("{} similar needles to check", methodHaystack.size()); 
-
-                if(tryFindingNeedleInHaystack(result, methodNeedle, methodHaystack)) {
-                    return;
-                }
+            if(tryFindingNeedleInHaystack(result, methodNeedle, methodHaystack)) {
+                return;
             }
-        }  
+        }
     }
 
     /**
@@ -141,7 +138,7 @@ public class InclusionStrategy extends MatchingStrategy {
     private boolean tryFindingNeedleInHaystack(Result result, Fingerprint methodNeedle, List<Fingerprint> methodHaystack) {
         
         Fingerprint packageNeedle = result.getNeedle();
-        Collection<Fingerprint> matchedPackages = result.getMatchesByDistance();
+        Collection<Fingerprint> comparedMatches = result.getMatchesByDistance();
         
         double perfectScore = packageNeedle.getInclusionScore();
         
@@ -154,7 +151,8 @@ public class InclusionStrategy extends MatchingStrategy {
             Fingerprint packageCandidate = service.getPackageByMethod(methodCandidate);
             String packageCandidateName = packageCandidate.getName();
 
-            if (isNameInCollection(packageCandidateName, matchedPackages)) {
+            if (isNameInCollection(packageCandidateName, comparedMatches) 
+                    || isNameInCollection(packageCandidateName, prettySureMatches)) {
                 continue;
             }
             
@@ -167,7 +165,7 @@ public class InclusionStrategy extends MatchingStrategy {
             LOGGER.info("*** check against db version of {} done", packageCandidateName);
 
             packageCandidate.setInclusionScore(packageScore);
-            matchedPackages.add(packageCandidate);
+            comparedMatches.add(packageCandidate);
 
             if(packageCandidateName.equals(packageNeedle.getName())) {
                 result.setMatchByName(packageCandidate);
@@ -176,6 +174,7 @@ public class InclusionStrategy extends MatchingStrategy {
             logResult(packageNeedle.getName(), packageCandidateName, packageScore, packageScore / perfectScore);
 
             if((packageScore / perfectScore) > settings.getPackageMatchThreshold()) {
+                prettySureMatches.add(packageCandidate);
                 return true; 
             }
         }
@@ -247,7 +246,25 @@ public class InclusionStrategy extends MatchingStrategy {
         }
         
     }
-    
+
+    private List<Fingerprint> distillMethodNeedles(Fingerprint packageNeedle) {
+        
+        List<Fingerprint> methodNeedles = new ArrayList<>();
+        
+        for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
+            for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
+                if(methodNeedle.getLength() > settings.getMinimalMethodLengthForNeedleLookup()) {
+                   methodNeedles.add(methodNeedle);
+                }
+            }
+        }
+        
+        Collections.sort(methodNeedles, Fingerprint.sortByLengthDESC);
+       
+        return methodNeedles;
+        
+    }
+
     private class SortDescByInclusionScoreComparator implements Comparator<Fingerprint> {
         @Override
         public int compare(Fingerprint that, Fingerprint other) {
@@ -266,6 +283,9 @@ public class InclusionStrategy extends MatchingStrategy {
         private double minimalMethodLengthForNeedleLookup;        
 
         public Settings() {
+//            this(0.9999d,  0.95d, 12);
+//            this(0.9999d,  0.90d, 12);
+//            this(0.9999d,  0.85d, 15);
             this(0.9999d,  0.8d, 12);
         } 
         
