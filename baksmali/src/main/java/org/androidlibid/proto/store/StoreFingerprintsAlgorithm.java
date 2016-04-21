@@ -3,8 +3,10 @@ package org.androidlibid.proto.store;
 import org.androidlibid.proto.ao.LibraryFingerprintDBUpdater;
 import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -13,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.SmaliNameConverter;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.jf.baksmali.baksmaliOptions;
@@ -61,8 +64,13 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
         
         final ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(options);
-        
         final FingerprintService fpService = new FingerprintService(service);
+        final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
+        final ClassFingerprintCreator classFPCreator = new ClassFingerprintCreator(ast2fpt);
+        
+        final Set<String> interestingPackages = new HashSet<String>();
+        
+//        interestingPackages.add("org.spongycastle.util.encoders");
         
         for (final ClassDef classDef: classDefs) {
             
@@ -70,13 +78,16 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
                 
                 @Override
                 public Void call() throws Exception {
+                    String className = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
+                    String packageName = SmaliNameConverter.extractPackageNameFromClassName(className);
+
+                    if(!interestingPackages.isEmpty() && !interestingPackages.contains(packageName)) {
+                        return null;
+                    }
                     
                     ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
                     
                     Map<String, Node> methodASTs = astClassBuilder.buildASTs();
-                    
-                    ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
-                    ClassFingerprintCreator classFPCreator = new ClassFingerprintCreator(ast2fpt);
                     
                     Fingerprint classFingerprint = classFPCreator.createClassFingerprint(methodASTs, classDef.getType(), options.storeOnMethodLevel);
                     
