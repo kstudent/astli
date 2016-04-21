@@ -74,7 +74,7 @@ public class WriteResultsToLog implements ResultEvaluator {
         } else if( matchWasInDB && !thereAreCandidates) {
             evaluation.setClassification(Classification.FALSE_NEGATIVE);
         } else {
-            throw new RuntimeException("Dude, check your code.");
+            DETAILLOGGER.warn("could not classify result...?");
         }
         
         printResultRow(evaluation, result, positionNumber);
@@ -106,8 +106,8 @@ public class WriteResultsToLog implements ResultEvaluator {
         DETAILLOGGER.info("| {} | {} | {} | {} | {} | {} |", 
             "pos",
             "name",
-            "incScore",
-            "incScoreN", 
+            "simScore",
+            "simScoreN", 
             "eucDiff",
             "eucDiffN"
         );
@@ -122,16 +122,16 @@ public class WriteResultsToLog implements ResultEvaluator {
             if(eucDiffR < 0) eucDiffR = 0;
             eucDiffR = eucDiffR  / maxLength;
 
-            double incScoreN = 0.0d;
+            double simScoreN = 0.0d;
             if(needle.getInclusionScore() > 0.0d) {
-                incScoreN = matchByDistance.getInclusionScore() / needle.getInclusionScore();
+                simScoreN = matchByDistance.getInclusionScore() / needle.getInclusionScore();
             }
 
             DETAILLOGGER.info("| {} | {} | {} | {} | {} | {} |", 
                     i, 
                     matchByDistance.getName(),
                     frmt.format(matchByDistance.getInclusionScore()), 
-                    frmt.format(incScoreN), 
+                    frmt.format(simScoreN), 
                     frmt.format(matchByDistance.getDistanceToFingerprint(needle)), 
                     frmt.format(eucDiffR)
             );
