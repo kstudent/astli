@@ -2,6 +2,8 @@ package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
 import org.androidlibid.proto.Fingerprint;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -10,6 +12,7 @@ import org.androidlibid.proto.Fingerprint;
 public class LibraryFingerprintDBUpdater {
     
     private final EntityService service;
+    private static final Logger LOGGER = LogManager.getLogger(LibraryFingerprintDBUpdater.class);
 
     public LibraryFingerprintDBUpdater(EntityService service) {
         this.service = service;
@@ -20,13 +23,15 @@ public class LibraryFingerprintDBUpdater {
         Library lib = service.findLibraryByMvnIdentifier(libname);
         
         if(lib == null) {
-            throw new RuntimeException("The Library " + libname + " could not be found.");
+            LOGGER.warn("The Library " + libname + " could not be found.");
+            return;
         }
             
         Fingerprint libFingerprint = new Fingerprint(lib);  
         
         if(libFingerprint.getLength() > 0.0d) {
-            throw new RuntimeException("The Library " + libname + " already has a fingerprint.");
+            LOGGER.warn("The Library " + libname + " could not be found.");
+            return;
         }
 
         for(Package pckg : lib.getPackages()) {
