@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import org.androidlibid.proto.ast.NodeType;
 import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -23,7 +24,7 @@ public class Fingerprint {
     @Nullable
     private VectorEntity entity;
     
-    private double inclusionScore; 
+    private double computedSimilarityScore; 
 
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE;
@@ -180,11 +181,11 @@ public class Fingerprint {
     }
     
     public double getInclusionScore() {
-        return inclusionScore;
+        return computedSimilarityScore;
     }
 
     public void setInclusionScore(double score) {
-        this.inclusionScore = score;
+        this.computedSimilarityScore = score;
     }
     
     @Override
@@ -227,4 +228,15 @@ public class Fingerprint {
         }
         return true;
     }
+    
+    public static Comparator<Fingerprint> sortByLengthDESC = new Comparator<Fingerprint>() {
+        @Override
+        public int compare(Fingerprint that, Fingerprint other) {
+            double thatNeedleLength  = that.getLength();
+            double otherNeedleLength = other.getLength();
+            if (thatNeedleLength > otherNeedleLength) return -1;
+            if (thatNeedleLength < otherNeedleLength) return  1;
+            return 0;
+        }
+    };
 }
