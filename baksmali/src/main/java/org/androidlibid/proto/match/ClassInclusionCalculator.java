@@ -2,8 +2,10 @@ package org.androidlibid.proto.match;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import org.androidlibid.proto.Fingerprint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +18,9 @@ public class ClassInclusionCalculator {
 
     private final FingerprintMatcher matcher;
     private final boolean allowRepeatedMatching;
+    
+    private boolean isLoggingActivated = false;
+    private Set<String> interestedPackageNames = new HashSet<>();
     
     private static final Logger LOGGER = LogManager.getLogger(ClassInclusionCalculator.class);
     private final NumberFormat frmt = new DecimalFormat("#0.00");
@@ -43,6 +48,8 @@ public class ClassInclusionCalculator {
         if(subSet.isEmpty()) {
             return 0; 
         }
+        
+        setLoggingState(subSet);
         
         logClassAndMethodsHeader(superSet, subSet);
         
@@ -92,7 +99,7 @@ public class ClassInclusionCalculator {
 
     private void logClassAndMethodsHeader(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         if(!LOGGER.isInfoEnabled() || superSet.isEmpty() || superSet.get(0) == null 
-            || subSet.isEmpty() || subSet.get(0) == null
+            || subSet.isEmpty() || subSet.get(0) == null || !isLoggingActivated
         ) {
             return;
         }
@@ -120,7 +127,7 @@ public class ClassInclusionCalculator {
     private void logScore(String methodIdentifier, String bestMatchIdentifier, 
             double score, double maxScore) {
         
-        if(methodIdentifier.isEmpty() || bestMatchIdentifier.isEmpty()) {
+        if(methodIdentifier.isEmpty() || bestMatchIdentifier.isEmpty() || !isLoggingActivated) {
             return;
         }
         
@@ -139,6 +146,11 @@ public class ClassInclusionCalculator {
     }
 
     private void logClassScore(double classScore) {
+        
+        if(!isLoggingActivated) {
+            return;
+        }
+        
         LOGGER.info("|  |  | {} |", frmt.format(classScore));
     }
     
@@ -150,10 +162,29 @@ public class ClassInclusionCalculator {
         if(methodIdentifier.contains(":")) {
             methodIdentifier = methodIdentifier.substring(methodIdentifier.indexOf(":") + 1);
         }
-        if(methodIdentifier.contains("(")) {
-            methodIdentifier = methodIdentifier.substring(0, methodIdentifier.indexOf("("));
-        }
         
         return methodIdentifier; 
+    }
+
+    private void setLoggingState(List<Fingerprint> subSet) {
+        if(!LOGGER.isInfoEnabled() || subSet.isEmpty() || subSet.get(0) == null) {
+            return;
+        }
+        
+        String pckgName = extractPackage(subSet.get(0).getName());
+        
+        isLoggingActivated = interestedPackageNames.contains(pckgName);
+    }
+
+    private String extractPackage(String identifier) {
+        if(identifier.contains(":")) {
+            identifier = identifier.substring(0, identifier.indexOf(":"));
+        }
+        
+        return identifier;
+    }
+
+    public void setInterestedPackageNames(Set<String> interestedPackageNames) {
+        this.interestedPackageNames = interestedPackageNames;
     }
 }
