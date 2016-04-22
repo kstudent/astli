@@ -92,22 +92,6 @@ public class LibraryFingerprintDBUpdaterTest {
         assert(pckgVector.equals(expectedVector));
     }
     
-    @Test(expected = Exception.class)
-    public void testNotExistingLibrary() throws SQLException {
-        String notExistingLibName = "libZ";
-        updater.update(notExistingLibName);
-    }
-    
-    @Test(expected = Exception.class)
-    public void testUpdateExistingLibrary() throws SQLException {
-        
-        BasicVector v0 = new BasicVector(new double[] {1, 2, 3});
-        lib.setVector(v0.toBinary());
-        lib.save();
-        
-        updater.update(libName);
-    }
-    
     public static final class DBInit implements DatabaseUpdater {
         @Override
         @SuppressWarnings("unchecked")
