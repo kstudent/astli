@@ -180,11 +180,11 @@ public class Fingerprint {
         this.parent = parent;
     }
     
-    public double getInclusionScore() {
+    public double getComputedSimilarityScore() {
         return computedSimilarityScore;
     }
 
-    public void setInclusionScore(double score) {
+    public void setComputedSimilarityScore(double score) {
         this.computedSimilarityScore = score;
     }
     

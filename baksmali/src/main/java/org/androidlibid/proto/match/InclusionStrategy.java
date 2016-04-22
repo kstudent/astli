@@ -85,13 +85,13 @@ public class InclusionStrategy extends MatchingStrategy {
         
         LOGGER.info("** package self check "); 
         double perfectScore = computeInclusionScore(packageNeedle, packageNeedle);
-        packageNeedle.setInclusionScore(perfectScore);
+        packageNeedle.setComputedSimilarityScore(perfectScore);
 
         LOGGER.info("** package self check score: {}", frmt.format(perfectScore)); 
         
         checkPackageAgainstSimilarMethods(result);
         
-        Collections.sort(packageMatches, new SortDescByInclusionScoreComparator());
+        Collections.sort(packageMatches, new SortBySimilarityScoreDesc());
 
         updateMatchByName(result);
         
@@ -140,7 +140,7 @@ public class InclusionStrategy extends MatchingStrategy {
         Fingerprint packageNeedle = result.getNeedle();
         Collection<Fingerprint> comparedMatches = result.getMatchesByDistance();
         
-        double perfectScore = packageNeedle.getInclusionScore();
+        double perfectScore = packageNeedle.getComputedSimilarityScore();
         
         for(Fingerprint methodCandidate : methodHaystack) {
             
@@ -164,7 +164,7 @@ public class InclusionStrategy extends MatchingStrategy {
             
             LOGGER.info("*** check against db version of {} done", packageCandidateName);
 
-            packageCandidate.setInclusionScore(packageScore);
+            packageCandidate.setComputedSimilarityScore(packageScore);
             comparedMatches.add(packageCandidate);
 
             if(packageCandidateName.equals(packageNeedle.getName())) {
@@ -237,7 +237,7 @@ public class InclusionStrategy extends MatchingStrategy {
                 Fingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));
                 
                 double score = computeInclusionScore(packageNeedle, matchByName);
-                matchByName.setInclusionScore(score);
+                matchByName.setComputedSimilarityScore(score);
                 
                 result.setMatchByName(matchByName);
             } else {
@@ -265,11 +265,11 @@ public class InclusionStrategy extends MatchingStrategy {
         
     }
 
-    private class SortDescByInclusionScoreComparator implements Comparator<Fingerprint> {
+    private class SortBySimilarityScoreDesc implements Comparator<Fingerprint> {
         @Override
         public int compare(Fingerprint that, Fingerprint other) {
-            double scoreNeedleThat  = that.getInclusionScore();
-            double scoreNeedleOther = other.getInclusionScore();
+            double scoreNeedleThat  = that.getComputedSimilarityScore();
+            double scoreNeedleOther = other.getComputedSimilarityScore();
             if (scoreNeedleThat > scoreNeedleOther) return -1;
             if (scoreNeedleThat < scoreNeedleOther) return  1;
             return 0;

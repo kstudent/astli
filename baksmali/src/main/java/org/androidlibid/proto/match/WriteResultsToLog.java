@@ -38,19 +38,19 @@ public class WriteResultsToLog implements ResultEvaluator {
             positionNumber = findPosition(needleName, matchesByDistance);
             
             if(positionNumber > matchesByDistance.size()) {
-                DETAILLOGGER.info("* NEXT {} (max : {}) not found", needle.getName(), needle.getInclusionScore());
+                DETAILLOGGER.info("* NEXT {} (max : {}) not found", needle.getName(), needle.getComputedSimilarityScore());
                 positionStatus = Position.NOT_IN_CANDIDATES;
                 positionNumber = -1;
             } else if( positionNumber > 1 ) {
                 DETAILLOGGER.info("* NEXT {} (max : {}) found at position {}", 
                         needle.getName(), 
-                        frmt.format(needle.getInclusionScore()), 
+                        frmt.format(needle.getComputedSimilarityScore()), 
                         positionNumber);
                 positionStatus = Position.NOT_FIRST;
             } else {
                 DETAILLOGGER.info("* {} (max : {}) found position 1", 
                         needle.getName(), 
-                        frmt.format(needle.getInclusionScore()), 
+                        frmt.format(needle.getComputedSimilarityScore()), 
                         positionNumber);
                 positionStatus = Position.OK;
             }
@@ -123,14 +123,14 @@ public class WriteResultsToLog implements ResultEvaluator {
             eucDiffR = eucDiffR  / maxLength;
 
             double simScoreN = 0.0d;
-            if(needle.getInclusionScore() > 0.0d) {
-                simScoreN = matchByDistance.getInclusionScore() / needle.getInclusionScore();
+            if(needle.getComputedSimilarityScore() > 0.0d) {
+                simScoreN = matchByDistance.getComputedSimilarityScore() / needle.getComputedSimilarityScore();
             }
 
             DETAILLOGGER.info("| {} | {} | {} | {} | {} | {} |", 
                     i, 
                     matchByDistance.getName(),
-                    frmt.format(matchByDistance.getInclusionScore()), 
+                    frmt.format(matchByDistance.getComputedSimilarityScore()), 
                     frmt.format(simScoreN), 
                     frmt.format(matchByDistance.getDistanceToFingerprint(needle)), 
                     frmt.format(eucDiffR)
@@ -146,7 +146,7 @@ public class WriteResultsToLog implements ResultEvaluator {
         Fingerprint needle = result.getNeedle();
         Collection<Fingerprint> matchesByDistance = result.getMatchesByDistance();
         String needleName  = needle.getName();
-        double needleScore = needle.getInclusionScore();
+        double needleScore = needle.getComputedSimilarityScore();
         
         String firstMatchName = "<none>"; 
         double firstmatchScore = 0.0d;
@@ -154,7 +154,7 @@ public class WriteResultsToLog implements ResultEvaluator {
         if(!matchesByDistance.isEmpty()) {
             Fingerprint firstMatch = matchesByDistance.iterator().next();
             firstMatchName  = firstMatch.getName();
-            firstmatchScore = firstMatch.getInclusionScore();
+            firstmatchScore = firstMatch.getComputedSimilarityScore();
         }
         
         double scoreN = 0.0d;
