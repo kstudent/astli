@@ -156,6 +156,10 @@ task integrationTest(type: Test) {
 }
 
 test {
+    //do you need to debug an integration test in netbeans ide? 
+    //-> uncomment line "exclude ..."
+    //side effect: when you run unit tests, integration tests will be included 
+    //(takes long!)
     exclude 'org/androidlibid/proto/integration/**'
     testLogging{ showStandardStreams = true }
 }

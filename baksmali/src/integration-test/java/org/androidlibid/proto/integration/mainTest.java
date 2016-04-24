@@ -11,9 +11,12 @@ import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
 import org.androidlibid.proto.ao.Package;
 import org.androidlibid.proto.ao.Clazz;
+import org.androidlibid.proto.ao.FingerprintService;
 import org.androidlibid.proto.ao.Method;
+import org.androidlibid.proto.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jf.baksmali.baksmaliOptions;
 
 /**
  *
@@ -211,7 +214,7 @@ public class mainTest {
         
         LOGGER.info("amount of classes: " + counter);
     }
-
+    
     private void testListPackageFingerprintsFromDB() throws SQLException {
         EntityService service = EntityServiceFactory.createService();
         
@@ -231,6 +234,11 @@ public class mainTest {
         LOGGER.info("amount of packages: " + counter);
     }
 
+    @Test
+    public void printSetup() throws SQLException {
+        new SetupLogger(new baksmaliOptions(), EntityServiceFactory.createService()).logSetup();
+    }
+    
     private void printSomeMethods() throws SQLException {
       
         EntityService service = EntityServiceFactory.createService();

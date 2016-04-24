@@ -47,6 +47,12 @@
             <AppenderRef ref="INFO"/>
         </Logger>
         
+        <Logger name="org.androidlibid.proto.integration.mainTest" level="info" additivity="false">
+            <AppenderRef ref="RESULT"/>
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="INFO"/>
+        </Logger>
+        
         <Logger name="org.androidlibid.proto.match.MatchFingerprintsAlgorithm" level="info"/>
 
         <Logger name="org.androidlibid.proto.match.InclusionStrategy" level="info"/>
@@ -56,10 +62,17 @@
         <Logger name="org.androidlibid.proto.match.PackageInclusionCalculator" level="info"/>
         <!--<Logger name="org.androidlibid.proto.match.PackageInclusionCalculator" level="debug"/>-->
         
+<!--        <Logger name="org.androidlibid.proto.match.ClassInclusionCalculator" level="info" additivity="false">
+            <AppenderRef ref="DEBUG"/>
+        </Logger>-->
+        
         <!--<Logger name="org.androidlibid.proto.match.ClassInclusionCalculator" level="info"/>-->
         <!--<Logger name="org.androidlibid.proto.match.ClassInclusionCalculator" level="debug"/>-->
         
-        <Logger name="org.androidlibid.proto.integration.mainTest" level="info"/>
+        <Logger name="org.androidlibid.proto.PackageHierarchyGenerator"     level="info"/>
+        
+        <Logger name="org.androidlibid.proto.store.ClassFingerprintCreator" level="debug" />
+        
         
         <!--<Logger name="org.androidlibid.proto.StoreMethodFingerprint" level="debug"/>-->
         
