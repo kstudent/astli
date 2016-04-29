@@ -109,7 +109,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         EntityService service = EntityServiceFactory.createService();
         FingerprintService fingerprintService = new FingerprintService(service);
-        ResultEvaluator evaluator = new WriteResultsToLog();
+        ResultEvaluator evaluator = new ResultEvaluator();
         
         new SetupLogger(options, service).logSetup();
         

@@ -30,13 +30,13 @@
             <AppenderRef ref="INFO"/>
         </Logger>
         
-        <Logger name="org.androidlibid.proto.match.WriteResultsToLog" level="info" additivity="false">
+        <Logger name="org.androidlibid.proto.match.ResultEvaluator" level="info" additivity="false">
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="DEBUG"/>
             <AppenderRef ref="INFO"/>
         </Logger>
         
-        <Logger name="org.androidlibid.proto.match.WriteResultsToLog.Results" level="info" additivity="false">
+        <Logger name="org.androidlibid.proto.match.ResultEvaluator.Results" level="info" additivity="false">
             <AppenderRef ref="RESULT"/>
         </Logger>
         
