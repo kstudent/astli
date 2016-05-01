@@ -26,6 +26,8 @@ public class mainTest {
    
     private static final Logger LOGGER = LogManager.getLogger(mainTest.class);
     
+    private static final String resourcesSrcDir = "./src/integrationTest/resources/";
+    
     @Test
     public void storeLibs() throws Exception {
         clearDB();
@@ -146,7 +148,7 @@ public class mainTest {
     
     
     public void testFindLibrariesOfAPK() throws IOException {
-        String appApkPath = "./src/integration-test/resources/FingerprintAPKTest/app.apk";
+        String appApkPath = resourcesSrcDir + "FingerprintAPKTest/app.apk";
         File appApk = new File(appApkPath);
             assert(appApk.exists() && appApk.canRead());
         
@@ -156,8 +158,8 @@ public class mainTest {
 
     public void testFindLibrariesOfAPKLvl(int lvl, int algId) throws IOException {
         LOGGER.info("analyzing lvl " + lvl);
-        String appApkPath     =  "./src/integration-test/resources/FingerprintAPKTest/app.obflvl" + lvl + ".apk";
-        String mappingFilePath = "./src/integration-test/resources/MappingFiles/mapping.obflvl"   + lvl + ".txt";
+        String appApkPath     =  resourcesSrcDir + "FingerprintAPKTest/app.obflvl" + lvl + ".apk";
+        String mappingFilePath = resourcesSrcDir + "MappingFiles/mapping.obflvl"   + lvl + ".txt";
         
         File appApk = new File(appApkPath);
         assert(appApk.exists() && appApk.canRead());
@@ -169,7 +171,7 @@ public class mainTest {
     }
     
     public void testStoreFingerprintLibSpongyCore() throws IOException {
-        String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_core.jar";
+        String jarPath = resourcesSrcDir + "FingerprintJARTest/lib_spongy_core.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
         String arg[] = {"-z", "com.madgag.spongycastle:core:1.54.0.0", jarPath};
@@ -177,7 +179,7 @@ public class mainTest {
     }
 
     public void testStoreFingerprintLibSpongyProv() throws IOException {
-        String jarPath = "./src/integration-test/resources/FingerprintJARTest/lib_spongy_prov.jar";
+        String jarPath = resourcesSrcDir + "FingerprintJARTest/lib_spongy_prov.jar";
         File jarFile = new File(jarPath);
         assert(jarFile.exists() && jarFile.canRead());
         String arg[] = {"-z", "com.madgag.spongycastle:prov:1.54.0.0", jarPath};

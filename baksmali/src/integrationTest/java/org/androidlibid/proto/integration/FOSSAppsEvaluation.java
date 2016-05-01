@@ -11,6 +11,8 @@ import org.junit.Test;
  */
 public class FOSSAppsEvaluation {
     
+    private static final String resourcesSrcDir = "./src/integrationTest/resources/"; 
+    
     private static final FilenameFilter JARFILTER = new FilenameFilter() {
         @Override
         public boolean accept(File file, String string) {
@@ -24,7 +26,7 @@ public class FOSSAppsEvaluation {
         
         mt.clearDB();
         
-        String libsPath = "./src/integration-test/resources/fossEvaluation/libs/";
+        String libsPath = resourcesSrcDir + "fossEvaluation/libs/";
         File libsFolder = new File(libsPath);
                
         for (File lib : libsFolder.listFiles(JARFILTER)) {
