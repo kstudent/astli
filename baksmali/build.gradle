@@ -29,6 +29,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
+import java.text.SimpleDateFormat
+
 buildscript {
     repositories {
         mavenCentral()
@@ -179,3 +182,58 @@ jacocoTestReport {
         })
     }
 }
+
+def apkFilter = new FilenameFilter() {
+    boolean accept(File path, String filename) {
+        return filename.matches(".*apk\$")
+    }
+}
+
+def resources = sourceSets.integrationTest.getResources().getSrcDirs()?.find{true}; 
+def apksFolderPath = "$resources/fossEvaluation/apks"
+
+def algIDs = [1,2];
+
+task fossEvaluate {}
+
+new File(apksFolderPath).listFiles().each{
+
+    def apkFolder = it
+    def apkFolderName = it.getName()
+    
+    task "fossEvaluate-$apkFolderName" {}
+    
+    fossEvaluate.dependsOn("fossEvaluate-$apkFolderName")
+    
+    apkFolder.listFiles(apkFilter).each{
+
+        def apkFile     = it
+        def apkFileName = it.getName()
+        def mappingFile = new File(it.getPath() + ".txt")
+        def taskID = "$apkFolderName-$apkFileName";
+        
+        algIDs.each {
+            
+            def algID = it;
+            
+            task "match-$taskID-$algID" (type: JavaExec, dependsOn: build) {
+                classpath sourceSets.main.runtimeClasspath
+                args = (mappingFile.exists()) ? 
+                    ["-y", apkFile, "-a", algID, "-Z", mappingFile ] 
+                  : ["-y", apkFile, "-a", algID]
+                main = "org.jf.baksmali.main"
+            }
+
+            task "saveResultOf-$taskID-$algID" (type: Copy, dependsOn: "match-$taskID-$algID") {
+                def time = new SimpleDateFormat("MMddHHmm").format(new Date())
+                into("fossEvaluation/$apkFolderName/$apkFileName/$algID/$time") 
+                from ("log/") {
+                    include "*.org"
+                }
+            }
+            
+            project.getTasksByName("fossEvaluate-$apkFolderName", false)?.find{true}.dependsOn("saveResultOf-$taskID-$algID")
+        }
+    } 
+}
+
