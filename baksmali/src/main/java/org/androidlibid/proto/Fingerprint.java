@@ -239,4 +239,16 @@ public class Fingerprint {
             return 0;
         }
     };
+    
+    public static Comparator<Fingerprint> sortBySimScoreDESC = new Comparator<Fingerprint>() {
+        @Override
+        public int compare(Fingerprint that, Fingerprint other) {
+            double scoreNeedleThat  = that.getComputedSimilarityScore();
+            double scoreNeedleOther = other.getComputedSimilarityScore();
+            if (scoreNeedleThat > scoreNeedleOther) return -1;
+            if (scoreNeedleThat < scoreNeedleOther) return  1;
+            return 0;
+        }
+    };
+    
 }

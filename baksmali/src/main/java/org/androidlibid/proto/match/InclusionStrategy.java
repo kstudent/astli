@@ -7,7 +7,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,10 @@ public class InclusionStrategy extends MatchingStrategy {
         
         int count = 0;
         
-        for(Fingerprint packageNeedle : packagePrints.values()) {
+        List<Fingerprint> packageNeedles = new ArrayList<>(packagePrints.values());
+        Collections.sort(packageNeedles, Fingerprint.sortByLengthDESC);
+        
+        for(Fingerprint packageNeedle : packageNeedles) {
             
             LOGGER.info("{}%", ((float)(count++) / packagePrints.size()) * 100); 
             
@@ -93,7 +96,9 @@ public class InclusionStrategy extends MatchingStrategy {
         
         checkPackageAgainstSimilarMethods(result);
         
-        Collections.sort(packageMatches, new SortBySimilarityScoreDesc());
+        removeRejectedMatches(packageMatches);
+        
+        Collections.sort(packageMatches, Fingerprint.sortBySimScoreDESC);
 
         updateMatchByName(result);
         
@@ -115,7 +120,7 @@ public class InclusionStrategy extends MatchingStrategy {
         for(Fingerprint methodNeedle : methodNeedles) {
 
             double length = methodNeedle.getLength();
-            double size   = length * (1 - settings.getMethodMatchThreshold());
+            double size   = length * (1 - settings.getMethodAcceptThreshold());
                 
             LOGGER.info("** needle: {} ({})", methodNeedle.getName(), frmt.format(length)); 
 
@@ -173,12 +178,14 @@ public class InclusionStrategy extends MatchingStrategy {
                 result.setMatchByName(packageCandidate);
             }
 
-            logResult(packageNeedle.getName(), packageCandidateName, packageScore, packageScore / perfectScore);
+            double normalizedScore = packageScore / perfectScore;
+            
+            logResult(packageNeedle.getName(), packageCandidateName, packageScore, normalizedScore);
 
-            if((packageScore / perfectScore) > settings.getPackageMatchThreshold()) {
+            if(normalizedScore > settings.getPackageAcceptThreshold()) {
                 prettySureMatches.add(packageCandidate);
                 return true; 
-            }
+            } 
         }
         
         return false;
@@ -203,7 +210,7 @@ public class InclusionStrategy extends MatchingStrategy {
         
         double maxLength = Math.max(methodNeedle.getLength(), methodCandidate.getLength());
 
-        return (methodSimilarityScore / maxLength > settings.getMethodMatchThreshold());
+        return (methodSimilarityScore / maxLength > settings.getMethodAcceptThreshold());
     }
     
     private boolean isNameInCollection(String name, Collection<Fingerprint> collection) {
@@ -267,55 +274,59 @@ public class InclusionStrategy extends MatchingStrategy {
         
     }
 
-    private class SortBySimilarityScoreDesc implements Comparator<Fingerprint> {
-        @Override
-        public int compare(Fingerprint that, Fingerprint other) {
-            double scoreNeedleThat  = that.getComputedSimilarityScore();
-            double scoreNeedleOther = other.getComputedSimilarityScore();
-            if (scoreNeedleThat > scoreNeedleOther) return -1;
-            if (scoreNeedleThat < scoreNeedleOther) return  1;
-            return 0;
+    private void removeRejectedMatches(List<Fingerprint> matches) {
+        for (Iterator<Fingerprint> iterator = matches.iterator(); iterator.hasNext();) {
+            Fingerprint match = iterator.next();
+            
+            if(match.getComputedSimilarityScore() < settings.getPackageRejectThreshold()) {
+                iterator.remove();
+            }
         }
     }
     
     public static class Settings {
         
-        private double methodMatchThreshold;
-        private double packageMatchThreshold; 
+        private double methodAcceptThreshold;
         private double minimalMethodLengthForNeedleLookup;        
+        private double packageAcceptThreshold; 
+        private double packageRejectThreshold; 
 
         public Settings() {
 //            this(0.9999d,  0.95d, 12);
 //            this(0.9999d,  0.90d, 12);
 //            this(0.9999d,  0.85d, 15);
-            this(0.9999d,  0.8d, 12);
+            this(0.9999d, 12, 0.93d, 0.75d);
         } 
-        
-        public Settings(double methodMatchThreshold, double packageMatchThreshold, 
-                double minimalMethodLengthForNeedleLookup) {
-            this.methodMatchThreshold = methodMatchThreshold;
-            this.packageMatchThreshold = packageMatchThreshold;
+
+        public Settings(double methodAcceptThreshold, double minimalMethodLengthForNeedleLookup, double packageAcceptThreshold, double packageRejectThreshold) {
+            this.methodAcceptThreshold = methodAcceptThreshold;
             this.minimalMethodLengthForNeedleLookup = minimalMethodLengthForNeedleLookup;
+            this.packageAcceptThreshold = packageAcceptThreshold;
+            this.packageRejectThreshold = packageRejectThreshold;
         }
 
-        public double getMethodMatchThreshold() {
-            return methodMatchThreshold;
-        }
-
-        public double getPackageMatchThreshold() {
-            return packageMatchThreshold;
+        public double getMethodAcceptThreshold() {
+            return methodAcceptThreshold;
         }
 
         public double getMinimalMethodLengthForNeedleLookup() {
             return minimalMethodLengthForNeedleLookup;
         }
 
+        public double getPackageAcceptThreshold() {
+            return packageAcceptThreshold;
+        }
+
+        public double getPackageRejectThreshold() {
+            return packageRejectThreshold;
+        }
+
         @Override
         public String toString() {
-            return "[" + "methodMatchThreshold=" + methodMatchThreshold 
-                    + ", packageMatchThreshold=" + packageMatchThreshold 
-                    + ", minimalMethodLength=" + minimalMethodLengthForNeedleLookup + ']';
+            return "Settings[" + "methodAcceptThreshold=" + methodAcceptThreshold + ", minimalMethodLengthForNeedleLookup=" + minimalMethodLengthForNeedleLookup + ", packageAcceptThreshold=" + packageAcceptThreshold + ", packageRejectThreshold=" + packageRejectThreshold + ']';
         }
+
+        
         
     }
     

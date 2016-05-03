@@ -216,7 +216,7 @@ new File(apksFolderPath).listFiles().each{
         algIDs.each {
             
             def algID = it;
-            def taskID = "$apkFolderName-$apkFileName-$algid";
+            def taskID = "$apkFolderName-$apkFileName-$algID";
             
             task "match-$taskID" (type: JavaExec, dependsOn: build) {
                 classpath sourceSets.main.runtimeClasspath
