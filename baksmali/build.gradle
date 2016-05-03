@@ -183,6 +183,8 @@ jacocoTestReport {
     }
 }
 
+//foss evaluate
+
 def apkFilter = new FilenameFilter() {
     boolean accept(File path, String filename) {
         return filename.matches(".*apk\$")
@@ -210,13 +212,13 @@ new File(apksFolderPath).listFiles().each{
         def apkFile     = it
         def apkFileName = it.getName()
         def mappingFile = new File(it.getPath() + ".txt")
-        def taskID = "$apkFolderName-$apkFileName";
         
         algIDs.each {
             
             def algID = it;
+            def taskID = "$apkFolderName-$apkFileName-$algid";
             
-            task "match-$taskID-$algID" (type: JavaExec, dependsOn: build) {
+            task "match-$taskID" (type: JavaExec, dependsOn: build) {
                 classpath sourceSets.main.runtimeClasspath
                 args = (mappingFile.exists()) ? 
                     ["-y", apkFile, "-a", algID, "-Z", mappingFile ] 
@@ -224,16 +226,15 @@ new File(apksFolderPath).listFiles().each{
                 main = "org.jf.baksmali.main"
             }
 
-            task "saveResultOf-$taskID-$algID" (type: Copy, dependsOn: "match-$taskID-$algID") {
+            task "saveResultOf-$taskID" (type: Copy, dependsOn: "match-$taskID") {
                 def time = new SimpleDateFormat("MMddHHmm").format(new Date())
-                into("fossEvaluation/$apkFolderName/$apkFileName/$algID/$time") 
+                into("fossEvaluation/$time/$apkFolderName/$apkFileName/$algID") 
                 from ("log/") {
                     include "*.org"
                 }
             }
             
-            project.getTasksByName("fossEvaluate-$apkFolderName", false)?.find{true}.dependsOn("saveResultOf-$taskID-$algID")
+            project.getTasksByName("fossEvaluate-$apkFolderName", false)?.find{true}.dependsOn("saveResultOf-$taskID")
         }
     } 
 }
-

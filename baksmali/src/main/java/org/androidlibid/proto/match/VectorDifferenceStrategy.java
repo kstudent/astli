@@ -37,6 +37,8 @@ public class VectorDifferenceStrategy extends MatchingStrategy {
     @Override
     public void matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
         
+        evaluator.printResultRowHeader();
+        
         int count = 0;
         
         for(String packageName : packagePrints.keySet()) {

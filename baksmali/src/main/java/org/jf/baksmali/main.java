@@ -145,27 +145,16 @@ public class main {
                     break;
                 case 'a':
                     int algId = Integer.parseInt(commandLine.getOptionValue('a'));
-                    if(algId < 1 || algId > 5) {
+                    if(algId < 1 || algId > 2) {
                         usage();
                         return;
                     }
                     
-                    options.useVectorDiffStrategy = (algId <= 3);
-                    options.allowRepeatedMatching = (algId == 5);
-                    
-                    switch(algId) {
-                        default: 
-                            options.vectorDiffLevel = Level.PACKAGE;
-                            break;
-                        case 2: 
-                            options.vectorDiffLevel = Level.CLASS;
-                            break;
-                        case 3: 
-                            options.vectorDiffLevel = Level.METHOD;
-                            break;
-                    }
-                    
+                    options.useVectorDiffStrategy = (algId == 1);
+                    options.allowRepeatedMatching = false;
+                    options.vectorDiffLevel = Level.PACKAGE;
                     break;
+                    
                 case 'j':
                     options.jobs = Integer.parseInt(commandLine.getOptionValue("j"));
                     break;
@@ -316,10 +305,7 @@ public class main {
                 .withDescription("choose matching algorithm (can only be "
                         + "used together with --ali-apk option):\n"
                         + "1: vector-difference on package level\n"
-                        + "2: vector-difference on class level\n"
-                        + "3: vector-difference on method level\n"
-                        + "4: inclusion-strategy with method needle, repeated matching (of classes and methods) allowed\n"
-                        + "5: inclusion-strategy with method needle, repeated matching (of classes and methods) disabled\n")
+                        + "2: inclusion-strategy with method needle, repeated matching (of classes and methods) disabled\n")
                 .create("a");
         
         Option jobsOption = OptionBuilder.withLongOpt("jobs")

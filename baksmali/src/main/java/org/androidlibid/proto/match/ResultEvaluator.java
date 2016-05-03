@@ -32,7 +32,7 @@ public class ResultEvaluator {
         int positionNumber = -1;
         
         if(nameMatch == null) {
-            DETAILLOGGER.info("{}: not matched by name", needleName);
+            DETAILLOGGER.info("* {}: not matched by name", needleName);
         } else {
             positionNumber = findPosition(needleName, matchesByDistance);
             
@@ -66,16 +66,13 @@ public class ResultEvaluator {
         
         if(positionStatus == Position.OK) {
             evaluation.setClassification(Classification.TRUE_POSITIVE);
-        } else if( matchWasInDB &&  thereAreCandidates) {
+        } else if (thereAreCandidates) {
             evaluation.setClassification(Classification.FALSE_POSITIVE);
-        } else if(!matchWasInDB && !thereAreCandidates) {
-            evaluation.setClassification(Classification.TRUE_NEGATIVE);
-        } else if( matchWasInDB && !thereAreCandidates) {
+        } else if (matchWasInDB) {
             evaluation.setClassification(Classification.FALSE_NEGATIVE);
         } else {
-            DETAILLOGGER.warn("could not classify result...?");
+            evaluation.setClassification(Classification.TRUE_NEGATIVE);
         }
-        
         printResultRow(evaluation, result, positionNumber);
         
         return evaluation;
@@ -139,19 +136,21 @@ public class ResultEvaluator {
     }
 
     public void printResultRowHeader() {
-        RESULTLOGGER.info("| {} | {} | {} | {} | {} | {} | {} |", 
+        RESULTLOGGER.info("** Matches"); 
+        RESULTLOGGER.info("| {} | {} | {} | {} | {} | {} | {} | {} |", 
             "apk name", 
             "apk score", 
             "lib name", 
             "lib score", 
             "sim score", 
-            "position", 
+            "#",
+            "position",
             "class"
         );
     }
     
     private void printResultRow(Evaluation eval, Result result, int positionNumber) {
-//        Position position = eval.getPosition();
+        Position position = eval.getPosition();
         Classification classification = eval.getClassification();
         
         Fingerprint needle = result.getNeedle();
@@ -173,14 +172,14 @@ public class ResultEvaluator {
             scoreN = firstmatchScore / needleScore;
         }
         
-        RESULTLOGGER.info("| {} | {} | {} | {} | {} | {} | {} |", 
+        RESULTLOGGER.info("| {} | {} | {} | {} | {} | {} | {} | {} |", 
             needleName,
             frmt.format(needleScore),
             firstMatchName,
             frmt.format(firstmatchScore),
             frmt.format(scoreN), 
             (positionNumber > 0) ? positionNumber : "?",
-//            position,
+            position,
             classification
         );
     }

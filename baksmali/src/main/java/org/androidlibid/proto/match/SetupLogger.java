@@ -34,10 +34,15 @@ public class SetupLogger {
     
     public void logSetup() throws SQLException {
         
-        LOGGER.info("* Setup");
+        String[] pieces = options.inputFileName.split("/");
+        
+        String obfLvl    = pieces[pieces.length - 1];
+        String apkName   = (pieces.length > 1) ? pieces[pieces.length - 2] : "<unknown>";
+        String algorithm = (options.useVectorDiffStrategy) ? "vectorDiff" : "inclusion" ; 
+        
+        LOGGER.info("* Setup for {} / {} / {}", apkName, obfLvl, algorithm);
         LOGGER.info("- Time: {}", (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date()));
         LOGGER.info("- Jobs: {}",          options.jobs);
-        LOGGER.info("- Input File: {}",    options.inputFileName);
         
         logAlgorithmSetup();
         logLoggerLevels();

@@ -69,7 +69,7 @@
         <!--<Logger name="org.androidlibid.proto.match.ClassInclusionCalculator" level="info"/>-->
         <!--<Logger name="org.androidlibid.proto.match.ClassInclusionCalculator" level="debug"/>-->
         
-        <Logger name="org.androidlibid.proto.PackageHierarchyGenerator"     level="info"/>
+        <!--<Logger name="org.androidlibid.proto.PackageHierarchyGenerator"     level="info"/>-->
         
         <Logger name="org.androidlibid.proto.store.ClassFingerprintCreator" level="debug" />
         

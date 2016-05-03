@@ -54,6 +54,8 @@ public class InclusionStrategy extends MatchingStrategy {
     public void matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
         
         LOGGER.info("* Match Prints");
+
+        evaluator.printResultRowHeader();
         
         int count = 0;
         

@@ -20,8 +20,6 @@ class StatsLogger {
         
     public void logStats(Map<Position, Integer> positions, Map<Classification, Integer> classifications, long diff) {
         
-        LOGGER.info("* Stats: ");
-        
         int total = 0;
         LOGGER.info("** Positions: ");
         for(Position key : Position.values()) {
@@ -61,8 +59,6 @@ class StatsLogger {
                 frmt.format(((float) falseNegatives) * 100 / totalNegatives)
         );  
         
-        
-        
-        LOGGER.info("* Runtime: {} seconds", diff / 1000);
+        LOGGER.info("**   Runtime: {} seconds", diff / 1000);
     }
 }

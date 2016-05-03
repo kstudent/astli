@@ -11,7 +11,6 @@ import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
 import org.androidlibid.proto.ao.Package;
 import org.androidlibid.proto.ao.Clazz;
-import org.androidlibid.proto.ao.FingerprintService;
 import org.androidlibid.proto.ao.Method;
 import org.androidlibid.proto.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
@@ -34,21 +33,6 @@ public class mainTest {
         testStoreFingerprintLibSpongyCore();
         testStoreFingerprintLibSpongyProv();
         countMethods();
-    }
-    
-    @Test
-    public void matchAPKLvl1() throws Exception {
-        testFindLibrariesOfAPKLvl(1, 1);
-    }
-    
-    @Test
-    public void matchAPKLvl2() throws Exception {
-        testFindLibrariesOfAPKLvl(2, 1);
-    }
-    
-    @Test
-    public void matchAPKLvl3() throws Exception {
-        testFindLibrariesOfAPKLvl(3, 1);
     }
     
     @Test
@@ -79,51 +63,6 @@ public class mainTest {
     @Test
     public void matchAPKLvl3Alg2() throws Exception {
         testFindLibrariesOfAPKLvl(3, 2);
-    }
-    
-    @Test
-    public void matchAPKLvl1Alg3() throws Exception {
-        testFindLibrariesOfAPKLvl(1, 3);
-    }
-    
-    @Test
-    public void matchAPKLvl2Alg3() throws Exception {
-        testFindLibrariesOfAPKLvl(2, 3);
-    }
-    
-    @Test
-    public void matchAPKLvl3Alg3() throws Exception {
-        testFindLibrariesOfAPKLvl(3, 3);
-    }
-    
-    @Test
-    public void matchAPKLvl1Alg4() throws Exception {
-        testFindLibrariesOfAPKLvl(1, 4);
-    }
-    
-    @Test
-    public void matchAPKLvl2Alg4() throws Exception {
-        testFindLibrariesOfAPKLvl(2, 4);
-    }
-    
-    @Test
-    public void matchAPKLvl3Alg4() throws Exception {
-        testFindLibrariesOfAPKLvl(3, 4);
-    }
-    
-    @Test
-    public void matchAPKLvl1Alg5() throws Exception {
-        testFindLibrariesOfAPKLvl(1, 5);
-    }
-    
-    @Test
-    public void matchAPKLvl2Alg5() throws Exception {
-        testFindLibrariesOfAPKLvl(2, 5);
-    }
-    
-    @Test
-    public void matchAPKLvl3Alg5() throws Exception {
-        testFindLibrariesOfAPKLvl(3, 5);
     }
     
     @Test
