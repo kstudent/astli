@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.androidlibid.proto.match.InclusionStrategySettings;
 import org.androidlibid.proto.match.InclusionStrategy;
 import org.androidlibid.proto.match.VectorDifferenceStrategy.Level;
 
@@ -102,8 +103,8 @@ public class baksmaliOptions {
     
     //inclusion strategy settings
     public boolean allowRepeatedMatching = true;
-    public InclusionStrategy.Settings inclusionSettings = 
-            new InclusionStrategy.Settings();
+    public InclusionStrategySettings inclusionSettings = 
+            new InclusionStrategySettings();
     
     
     public File customInlineDefinitions = null;

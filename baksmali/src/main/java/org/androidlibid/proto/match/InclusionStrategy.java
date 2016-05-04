@@ -26,7 +26,7 @@ public class InclusionStrategy extends MatchingStrategy {
     private final FingerprintService service;
     private final PackageInclusionCalculator calculator;
     private final ResultEvaluator evaluator; 
-    private final Settings settings;
+    private final InclusionStrategySettings settings;
     
     private final List<Fingerprint> prettySureMatches = new ArrayList<>();
     
@@ -35,12 +35,12 @@ public class InclusionStrategy extends MatchingStrategy {
 
     public InclusionStrategy(FingerprintService service, 
             PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
-        this(service, calculator, evaluator, new Settings());
+        this(service, calculator, evaluator, new InclusionStrategySettings());
     }
     
     public InclusionStrategy(FingerprintService service, 
             PackageInclusionCalculator calculator, ResultEvaluator evaluator, 
-            Settings settings) {
+            InclusionStrategySettings settings) {
         super();
         this.service = service;
         this.evaluator = evaluator;
@@ -182,7 +182,7 @@ public class InclusionStrategy extends MatchingStrategy {
             
             logResult(packageNeedle.getName(), packageCandidateName, packageScore, normalizedScore);
 
-            if(normalizedScore > settings.getPackageAcceptThreshold()) {
+            if(normalizedScore > settings.getPackageAcceptThreshold(packageScore)) {
                 prettySureMatches.add(packageCandidate);
                 return true; 
             } 
@@ -284,50 +284,5 @@ public class InclusionStrategy extends MatchingStrategy {
         }
     }
     
-    public static class Settings {
-        
-        private double methodAcceptThreshold;
-        private double minimalMethodLengthForNeedleLookup;        
-        private double packageAcceptThreshold; 
-        private double packageRejectThreshold; 
-
-        public Settings() {
-//            this(0.9999d,  0.95d, 12);
-//            this(0.9999d,  0.90d, 12);
-//            this(0.9999d,  0.85d, 15);
-            this(0.9999d, 12, 0.93d, 0.75d);
-        } 
-
-        public Settings(double methodAcceptThreshold, double minimalMethodLengthForNeedleLookup, double packageAcceptThreshold, double packageRejectThreshold) {
-            this.methodAcceptThreshold = methodAcceptThreshold;
-            this.minimalMethodLengthForNeedleLookup = minimalMethodLengthForNeedleLookup;
-            this.packageAcceptThreshold = packageAcceptThreshold;
-            this.packageRejectThreshold = packageRejectThreshold;
-        }
-
-        public double getMethodAcceptThreshold() {
-            return methodAcceptThreshold;
-        }
-
-        public double getMinimalMethodLengthForNeedleLookup() {
-            return minimalMethodLengthForNeedleLookup;
-        }
-
-        public double getPackageAcceptThreshold() {
-            return packageAcceptThreshold;
-        }
-
-        public double getPackageRejectThreshold() {
-            return packageRejectThreshold;
-        }
-
-        @Override
-        public String toString() {
-            return "Settings[" + "methodAcceptThreshold=" + methodAcceptThreshold + ", minimalMethodLengthForNeedleLookup=" + minimalMethodLengthForNeedleLookup + ", packageAcceptThreshold=" + packageAcceptThreshold + ", packageRejectThreshold=" + packageRejectThreshold + ']';
-        }
-
-        
-        
-    }
     
 }
