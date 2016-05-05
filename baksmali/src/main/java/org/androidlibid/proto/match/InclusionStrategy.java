@@ -279,7 +279,7 @@ public class InclusionStrategy extends MatchingStrategy {
             Fingerprint match = iterator.next();
             
             if(match.getComputedSimilarityScore() < settings.getPackageRejectThreshold()) {
-                iterator.remove();
+                matches.remove(match);
             }
         }
     }
