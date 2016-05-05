@@ -40,7 +40,8 @@ public class SetupLogger {
         String apkName   = (pieces.length > 1) ? pieces[pieces.length - 2] : "<unknown>";
         String algorithm = (options.useVectorDiffStrategy) ? "vectorDiff" : "inclusion" ; 
         
-        LOGGER.info("* Setup for {} / {} / {}", apkName, obfLvl, algorithm);
+        LOGGER.info("* {} / {} / {}", apkName, obfLvl, algorithm);
+        LOGGER.info("** Setup");
         LOGGER.info("- Time: {}", (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date()));
         LOGGER.info("- Jobs: {}",          options.jobs);
         
