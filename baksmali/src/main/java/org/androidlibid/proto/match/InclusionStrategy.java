@@ -96,7 +96,7 @@ public class InclusionStrategy extends MatchingStrategy {
         
         checkPackageAgainstSimilarMethods(result);
         
-        removeRejectedMatches(packageMatches);
+        removeRejectedMatches(packageMatches, perfectScore);
         
         Collections.sort(packageMatches, Fingerprint.sortBySimScoreDESC);
 
@@ -274,11 +274,13 @@ public class InclusionStrategy extends MatchingStrategy {
         
     }
 
-    private void removeRejectedMatches(List<Fingerprint> matches) {
+    private void removeRejectedMatches(List<Fingerprint> matches, double perfectScore) {
         for (Iterator<Fingerprint> iterator = matches.iterator(); iterator.hasNext();) {
             Fingerprint match = iterator.next();
             
-            if(match.getComputedSimilarityScore() < settings.getPackageRejectThreshold()) {
+            double normalizedScore = match.getComputedSimilarityScore() / perfectScore;
+            
+            if(normalizedScore < settings.getPackageRejectThreshold()) {
                 matches.remove(match);
             }
         }
