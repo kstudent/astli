@@ -281,7 +281,7 @@ public class InclusionStrategy extends MatchingStrategy {
             double normalizedScore = match.getComputedSimilarityScore() / perfectScore;
             
             if(normalizedScore < settings.getPackageRejectThreshold()) {
-                matches.remove(match);
+                iterator.remove();
             }
         }
     }
