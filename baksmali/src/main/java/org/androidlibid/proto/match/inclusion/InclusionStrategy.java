@@ -1,4 +1,4 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.inclusion;
 
 import org.androidlibid.proto.ao.FingerprintService;
 import java.sql.SQLException;
@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.match.Evaluation;
+import org.androidlibid.proto.match.MatchingStrategy;
+import org.androidlibid.proto.match.ResultEvaluator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import static org.androidlibid.proto.match.FingerprintMatcher.Result;
@@ -230,7 +233,7 @@ public class InclusionStrategy extends MatchingStrategy {
         List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
         List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildFingerprints());
 
-        return calculator.computePackageInclusion(classSuperSet, classSubSet);
+        return calculator.computeInclusion(classSuperSet, classSubSet);
     }
 
     private void updateMatchByName(Result result) throws SQLException {

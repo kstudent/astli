@@ -1,4 +1,4 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.vector;
 
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -7,7 +7,10 @@ import java.util.Map;
 import java.util.Set;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.match.FingerprintMatcher;
 import org.androidlibid.proto.match.FingerprintMatcher.Result;
+import org.androidlibid.proto.match.MatchingStrategy;
+import org.androidlibid.proto.match.ResultEvaluator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,4 +1,4 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.inclusion;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.match.FingerprintMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,7 +15,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ClassInclusionCalculator {
+public class ClassInclusionCalculator implements InclusionCalculator {
 
     private final FingerprintMatcher matcher;
     private final boolean allowRepeatedMatching;
@@ -41,7 +42,8 @@ public class ClassInclusionCalculator {
      * @param superSet list of methods of the subset class
      * @return score
      */
-    public double computeClassInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
+    @Override
+    public double computeInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
         List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
         

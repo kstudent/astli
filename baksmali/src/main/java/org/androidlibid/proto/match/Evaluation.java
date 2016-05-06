@@ -4,7 +4,7 @@ package org.androidlibid.proto.match;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-class Evaluation {
+public class Evaluation {
     
     private Position position = Position.OK;
     private Classification classification = Classification.TRUE_POSITIVE;

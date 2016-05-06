@@ -1,5 +1,9 @@
 package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.match.vector.VectorDifferenceStrategy;
+import org.androidlibid.proto.match.inclusion.ClassInclusionCalculator;
+import org.androidlibid.proto.match.inclusion.PackageInclusionCalculator;
+import org.androidlibid.proto.match.inclusion.InclusionStrategy;
 import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import org.androidlibid.proto.ao.FingerprintService;
 import java.io.BufferedReader;

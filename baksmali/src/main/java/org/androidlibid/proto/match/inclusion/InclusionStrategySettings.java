@@ -1,4 +1,4 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.inclusion;
 
 /**
  *

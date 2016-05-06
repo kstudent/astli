@@ -1,8 +1,10 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.inclusion;
 
+import org.androidlibid.proto.match.inclusion.ClassInclusionCalculator;
 import java.util.ArrayList;
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.match.FingerprintMatcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +36,7 @@ public class ClassInclusionCalculatorTest {
         List<Fingerprint> classA = new ArrayList<>();
         classA.addAll(methods);
         
-        double score = calculator.computeClassInclusion(classA, classA);
+        double score = calculator.computeInclusion(classA, classA);
         double expectedScore = methods.get(0).getLength() 
                 + methods.get(1).getLength()  
                 + methods.get(2).getLength()  
@@ -54,7 +56,7 @@ public class ClassInclusionCalculatorTest {
         classB.add(methods.get(2));
         classB.add(methods.get(4));
         
-        double score = calculator.computeClassInclusion(classA, classB);
+        double score = calculator.computeInclusion(classA, classB);
         double expectedScore = methods.get(0).getLength() 
                 + methods.get(2).getLength() 
                 + methods.get(4).getLength();
@@ -79,12 +81,12 @@ public class ClassInclusionCalculatorTest {
         classB.addChildFingerprint(methods.get(2));
         classB.addChildFingerprint(methods.get(4));
         
-        double score = calculator.computeClassInclusion(classA.getChildFingerprints(), classB.getChildFingerprints());
+        double score = calculator.computeInclusion(classA.getChildFingerprints(), classB.getChildFingerprints());
         double expectedScore = methods.get(0).getLength() 
                 + methods.get(2).getLength() 
                 + methods.get(4).getLength();
         
-        double perfectScore = calculator.computeClassInclusion(classB.getChildFingerprints(), classB.getChildFingerprints());
+        double perfectScore = calculator.computeInclusion(classB.getChildFingerprints(), classB.getChildFingerprints());
         
         assert(doubleEquals(score, expectedScore));
         assert(doubleEquals(score, perfectScore));
@@ -102,7 +104,7 @@ public class ClassInclusionCalculatorTest {
         classB.add(new Fingerprint(70, 10,  5));
         classB.add(new Fingerprint(5,   9, 70));
 
-        double score = calculator.computeClassInclusion(classB, classA);
+        double score = calculator.computeInclusion(classB, classA);
 
         double maxScore = methods.get(0).getLength() 
                 + methods.get(1).getLength()  
@@ -126,7 +128,7 @@ public class ClassInclusionCalculatorTest {
         classB.add(new Fingerprint(1,   1,  1));
         classB.add(new Fingerprint(1,   1,  1));
 
-        double score = calculator.computeClassInclusion(classB, classA);
+        double score = calculator.computeInclusion(classB, classA);
         
         double maxScore = methods.get(0).getLength() 
                 + methods.get(1).getLength()  
@@ -143,10 +145,10 @@ public class ClassInclusionCalculatorTest {
         List<Fingerprint> classB = new ArrayList<>();
         classA.addAll(methods);
         
-        double score = calculator.computeClassInclusion(classB, classA);
+        double score = calculator.computeInclusion(classB, classA);
         assert(doubleEquals(score, 0));
         
-        score = calculator.computeClassInclusion(classA, classB);
+        score = calculator.computeInclusion(classA, classB);
         assert(doubleEquals(score, 0));
     }
     

@@ -1,4 +1,4 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.inclusion;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -12,21 +12,22 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class PackageInclusionCalculator {
+public class PackageInclusionCalculator implements InclusionCalculator {
     
-    private final ClassInclusionCalculator calculator; 
+    private final InclusionCalculator calculator; 
     private final boolean allowRepeatedMatching;
     
     private final NumberFormat frmt = new DecimalFormat("#0.00");
     
     private static final Logger LOGGER = LogManager.getLogger(PackageInclusionCalculator.class.getName());
 
-    public PackageInclusionCalculator(ClassInclusionCalculator calculator, boolean allowRepeatedMatching) {
+    public PackageInclusionCalculator(InclusionCalculator calculator, boolean allowRepeatedMatching) {
         this.calculator = calculator;
         this.allowRepeatedMatching = allowRepeatedMatching;
     }
     
-    public double computePackageInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
+    @Override
+    public double computeInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
         logHeader();
         
@@ -53,7 +54,7 @@ public class PackageInclusionCalculator {
             
             for (Fingerprint clazzCandidate : superSetCopy) {
                 
-                double score = calculator.computeClassInclusion(
+                double score = calculator.computeInclusion(
                         clazzCandidate.getChildFingerprints(), clazz.getChildFingerprints());
                 
                 if(Double.isNaN(score) || score < 0) {
@@ -99,7 +100,7 @@ public class PackageInclusionCalculator {
                 clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
             }
             
-            double perfectScore = calculator.computeClassInclusion(
+            double perfectScore = calculator.computeInclusion(
                     clazz.getChildFingerprints(), 
                     clazz.getChildFingerprints()); 
             

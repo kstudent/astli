@@ -1,5 +1,6 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.vector;
 
+import org.androidlibid.proto.match.vector.VectorDifferenceStrategy;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.match.Evaluation;
 import org.androidlibid.proto.match.Evaluation.Position;
-import org.androidlibid.proto.match.VectorDifferenceStrategy.Level;
+import org.androidlibid.proto.match.FingerprintMatcher;
+import org.androidlibid.proto.match.MatchingStrategy;
+import org.androidlibid.proto.match.ResultEvaluator;
+import org.androidlibid.proto.match.vector.VectorDifferenceStrategy.Level;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.when;

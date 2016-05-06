@@ -1,5 +1,7 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.inclusion;
 
+import org.androidlibid.proto.match.inclusion.InclusionStrategy;
+import org.androidlibid.proto.match.inclusion.PackageInclusionCalculator;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.match.Evaluation;
 import org.androidlibid.proto.match.Evaluation.Position;
 import org.androidlibid.proto.match.FingerprintMatcher.Result;
+import org.androidlibid.proto.match.MatchingStrategy;
+import org.androidlibid.proto.match.ResultEvaluator;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.times;
@@ -66,10 +71,10 @@ public class InclusionStrategyTest {
         when(service.getPackageHierarchy(pckgCand1)).thenReturn(pckgCand1);
         when(service.getPackageHierarchy(pckgCand2)).thenReturn(pckgCand2);
         
-        when(calculator.computePackageInclusion(pckgCand1.getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(20.0d);
-        when(calculator.computePackageInclusion(pckgCand2.getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(0.0d);
+        when(calculator.computeInclusion(pckgCand1.getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(20.0d);
+        when(calculator.computeInclusion(pckgCand2.getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(0.0d);
         
-        when(calculator.computePackageInclusion(pckgNeedles.get(pckgName).getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(30.0d);
+        when(calculator.computeInclusion(pckgNeedles.get(pckgName).getChildFingerprints(), pckgNeedles.get(pckgName).getChildFingerprints())).thenReturn(30.0d);
         
         Evaluation eval = new Evaluation();
         

@@ -1,5 +1,7 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.inclusion;
 
+import org.androidlibid.proto.match.inclusion.ClassInclusionCalculator;
+import org.androidlibid.proto.match.inclusion.PackageInclusionCalculator;
 import java.util.ArrayList;
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
@@ -51,7 +53,7 @@ public class PackageInclusionCalculatorTest {
         /*4*/ {0,.5, 0, 0, 0, 0, 0, 1 }
          };
         
-        when(classInclusionCalculator.computeClassInclusion(
+        when(classInclusionCalculator.computeInclusion(
                 any(List.class ), any(List.class )
             )).thenAnswer(getAnswer());
         
@@ -79,7 +81,7 @@ public class PackageInclusionCalculatorTest {
         
         PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator, allowRepeatedMatching);
         
-        double score = calc.computePackageInclusion(package1classes, package2classes);
+        double score = calc.computeInclusion(package1classes, package2classes);
         
         assert(doubleEquals(score, 2));
     }
@@ -90,7 +92,7 @@ public class PackageInclusionCalculatorTest {
         
         PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator, allowRepeatedMatching);
         
-        double score = calc.computePackageInclusion(package1classes, package3classes);
+        double score = calc.computeInclusion(package1classes, package3classes);
         
         assert(doubleEquals(score, 2));
     }
@@ -101,7 +103,7 @@ public class PackageInclusionCalculatorTest {
 
         PackageInclusionCalculator calc = new PackageInclusionCalculator(classInclusionCalculator, allowRepeatedMatching);
         
-        double score = calc.computePackageInclusion(package1classes, package4classes);
+        double score = calc.computeInclusion(package1classes, package4classes);
         
         assert(doubleEquals(score, 1));
     }

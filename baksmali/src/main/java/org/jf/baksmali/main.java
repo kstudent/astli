@@ -46,10 +46,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import org.androidlibid.proto.match.VectorDifferenceStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.androidlibid.proto.match.VectorDifferenceStrategy.Level;
+import static org.androidlibid.proto.match.vector.VectorDifferenceStrategy.Level;
 
 public class main {
 
