@@ -26,6 +26,7 @@ import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.androidlibid.proto.match.Evaluation.Classification;
 import org.androidlibid.proto.match.Evaluation.Position;
+import org.androidlibid.proto.match.inclusion.QuickInclusionCalculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
@@ -117,11 +118,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         new SetupLogger(options, service).logSetup();
         
-        if(options.useVectorDiffStrategy) {
-            FingerprintMatcher matcher = new FingerprintMatcher(options.similarityThreshold);
-            return new VectorDifferenceStrategy(fingerprintService, evaluator, matcher, options.vectorDiffLevel);
-        
-        } else {
+        if(options.strategy.equals(InclusionStrategy.class)) {
             FingerprintMatcher matcher = new FingerprintMatcher();
             
             ClassInclusionCalculator classInclusionCalculator = new ClassInclusionCalculator(
@@ -140,8 +137,20 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             InclusionStrategy strategy = new InclusionStrategy(
                 fingerprintService, packageInclusionCalculator, 
                     evaluator, options.inclusionSettings);
-
             return strategy;
+            
+        } else if(options.strategy.equals(QuickInclusionCalculator.class)) {
+            InclusionStrategy strategy = new InclusionStrategy(
+                fingerprintService, new QuickInclusionCalculator(), 
+                    evaluator, options.inclusionSettings);
+            return strategy;
+            
+        } else if(options.strategy.equals(DebugObfuscationInvarianceStrategy.class)) {
+            return new DebugObfuscationInvarianceStrategy(fingerprintService);
+
+        } else {
+            FingerprintMatcher matcher = new FingerprintMatcher(options.similarityThreshold);
+            return new VectorDifferenceStrategy(fingerprintService, evaluator, matcher, options.vectorDiffLevel);
         }
     }
 }

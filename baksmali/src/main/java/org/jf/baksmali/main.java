@@ -46,6 +46,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import org.androidlibid.proto.match.DebugObfuscationInvarianceStrategy;
+import org.androidlibid.proto.match.inclusion.InclusionStrategy;
+import org.androidlibid.proto.match.inclusion.QuickInclusionCalculator;
+import org.androidlibid.proto.match.vector.VectorDifferenceStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import static org.androidlibid.proto.match.vector.VectorDifferenceStrategy.Level;
@@ -144,12 +148,26 @@ public class main {
                     break;
                 case 'a':
                     int algId = Integer.parseInt(commandLine.getOptionValue('a'));
-                    if(algId < 1 || algId > 2) {
+                    if(algId < 1 || algId > 4) {
                         usage();
                         return;
                     }
                     
-                    options.useVectorDiffStrategy = (algId == 1);
+                    switch(algId) {
+                        case 2 : 
+                            options.strategy = InclusionStrategy.class;
+                            break;
+                        case 3 : 
+                            options.strategy = QuickInclusionCalculator.class;
+                            break;
+                        case 4 : 
+                            options.strategy = DebugObfuscationInvarianceStrategy.class;
+                            break;
+                        default : 
+                            options.strategy = VectorDifferenceStrategy.class;
+                            break;
+                    } 
+                    
                     options.allowRepeatedMatching = false;
                     options.vectorDiffLevel = Level.PACKAGE;
                     break;

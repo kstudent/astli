@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.Library;
+import org.androidlibid.proto.match.inclusion.InclusionStrategy;
+import org.androidlibid.proto.match.vector.VectorDifferenceStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -38,7 +40,7 @@ public class SetupLogger {
         
         String obfLvl    = pieces[pieces.length - 1];
         String apkName   = (pieces.length > 1) ? pieces[pieces.length - 2] : "<unknown>";
-        String algorithm = (options.useVectorDiffStrategy) ? "vectorDiff" : "inclusion" ; 
+        String algorithm = options.strategy.getSimpleName(); 
         
         LOGGER.info("* {} / {} / {}", apkName, obfLvl, algorithm);
         LOGGER.info("** Setup");
@@ -57,11 +59,11 @@ public class SetupLogger {
             LOGGER.info("- IsObfusctated: {}", options.isObfuscated);
             LOGGER.info("- MappingFile: {}",   options.mappingFile);
             
-            if(options.useVectorDiffStrategy) {
+            if(options.strategy.equals(VectorDifferenceStrategy.class)) {
                 LOGGER.info("- Vector Diff Match activated");
                 LOGGER.info("- Vector Diff Level: {}",    options.vectorDiffLevel);
                 LOGGER.info("- Similarity Threshold: {}", frmt.format(options.similarityThreshold));
-            } else {
+            } else if(options.strategy.equals(InclusionStrategy.class)) {
                 LOGGER.info("- Inclusion Match activated");
                 LOGGER.info("- Allow repeated Matching: {}", options.allowRepeatedMatching);
                 LOGGER.info("- Settings: {}", options.inclusionSettings);

@@ -42,7 +42,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.androidlibid.proto.match.MatchingStrategy;
 import org.androidlibid.proto.match.inclusion.InclusionStrategySettings;
+import org.androidlibid.proto.match.vector.VectorDifferenceStrategy;
 import org.androidlibid.proto.match.vector.VectorDifferenceStrategy.Level;
 
 public class baksmaliOptions {
@@ -96,7 +98,7 @@ public class baksmaliOptions {
     public String mappingFile = "";
     
     //vectorDiff strategy settings
-    public boolean useVectorDiffStrategy = true;
+    public Class<? extends Object> strategy = VectorDifferenceStrategy.class;
     public Level vectorDiffLevel = Level.PACKAGE;
     public double similarityThreshold = .5;
     

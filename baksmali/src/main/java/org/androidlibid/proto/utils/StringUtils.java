@@ -1,5 +1,7 @@
 package org.androidlibid.proto.utils;
 
+import java.util.List;
+
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
@@ -25,6 +27,36 @@ public class StringUtils {
         } else {
             return string;
         }
+    }
+    
+    public static String implode(double[] list, String glue) {
+        
+        String[] stringList = new String[list.length];
+        
+        for(int i = 0; i < list.length; i++) {
+            stringList[i] = String.valueOf(list[i]);
+            
+        }
+        
+        return implode(stringList, glue);
+    }
+    
+    public static String implode(Object[] list, String glue) {
+        StringBuilder builder = new StringBuilder();
+        
+        for(int i = 0; i < list.length - 1; i++) {
+           builder.append(list[i].toString()).append(glue);
+        }
+        
+        if(list.length > 0) {
+            builder.append(list[list.length - 1]);
+        }
+        
+        return builder.toString();
+    }
+    
+    public static String implode(List<? extends Object> list, String glue) {
+        return implode(list.toArray(), glue);
     }
     
 }

@@ -60,6 +60,10 @@
         
         <Logger name="org.androidlibid.proto.match.inclusion.PackageInclusionCalculator" level="info"/>
         
+        <Logger name="org.androidlibid.proto.match.inclusion.QuickInclusionCalculator" level="info"/>
+        
+        <Logger name="org.androidlibid.proto.match.DebugObfuscationInvarianceStrategy" level="info"/>
+        
 <!--        <Logger name="org.androidlibid.proto.match.inclusion.ClassInclusionCalculator" level="info" additivity="false">
             <AppenderRef ref="DEBUG"/>
         </Logger>-->

@@ -27,7 +27,7 @@ import static org.androidlibid.proto.match.FingerprintMatcher.Result;
 public class InclusionStrategy extends MatchingStrategy {
 
     private final FingerprintService service;
-    private final PackageInclusionCalculator calculator;
+    private final InclusionCalculator calculator;
     private final ResultEvaluator evaluator; 
     private final InclusionStrategySettings settings;
     
@@ -37,12 +37,12 @@ public class InclusionStrategy extends MatchingStrategy {
     private static final Logger LOGGER = LogManager.getLogger(InclusionStrategy.class.getName());
 
     public InclusionStrategy(FingerprintService service, 
-            PackageInclusionCalculator calculator, ResultEvaluator evaluator) {
+            InclusionCalculator calculator, ResultEvaluator evaluator) {
         this(service, calculator, evaluator, new InclusionStrategySettings());
     }
     
     public InclusionStrategy(FingerprintService service, 
-            PackageInclusionCalculator calculator, ResultEvaluator evaluator, 
+            InclusionCalculator calculator, ResultEvaluator evaluator, 
             InclusionStrategySettings settings) {
         super();
         this.service = service;

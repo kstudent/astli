@@ -1,5 +1,7 @@
 package org.androidlibid.proto;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import org.androidlibid.proto.ast.NodeType;
 import org.androidlibid.proto.ast.FeatureGenerator;
@@ -29,6 +31,8 @@ public class Fingerprint {
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE;
     private static final FeatureGenerator FEATURE_GENERATOR;
+    
+    private static final NumberFormat FRMTR = new DecimalFormat("#0.00");
     
     static {
         FEATURE_GENERATOR = new FeatureGenerator();
@@ -83,6 +87,12 @@ public class Fingerprint {
         this.name = "";
     }
     
+    public Fingerprint(Fingerprint copy) {
+        this.vector = copy.vector.copy();
+        this.name = copy.name;
+        this.computedSimilarityScore = copy.computedSimilarityScore;
+    }
+    
     public void incrementFeature(NodeType... dimension) {
         Fingerprint.this.incrementFeature(Arrays.asList(dimension));
     }
@@ -109,6 +119,16 @@ public class Fingerprint {
 
     public void sumFeatures(Fingerprint that) {
         this.vector = this.vector.add(that.vector);
+    }
+    
+    public void subtractFeatures(Fingerprint that) {
+        this.vector = this.vector.subtract(that.vector);
+    }
+    
+    public void abs() {
+        for (int i = 0; i < vector.length(); i++) {
+            if(vector.get(i) < 0) vector.set(i, vector.get(i) * -1);
+        }
     }
     
     public double getLength() {
@@ -196,11 +216,11 @@ public class Fingerprint {
         int numEntries = Math.min(FEATURES.size(), vector.length());
         
         for (int i = 0; i < numEntries; i++) {
-            if (vector.get(i) != 0.0) {
+//            if (vector.get(i) != 0.0) {
                 List<NodeType> feature = FEATURES.get(i);
                 String featureString = String.format("%-" + LONGEST_FEATURE + "s", feature.toString());
-                string = string.append(featureString).append(" : ").append(vector.get(i)).append("\n");
-            }
+                string = string.append(featureString).append(" : ").append(FRMTR.format(vector.get(i))).append("\n");
+//            }
         }
         return string.toString();
     }
