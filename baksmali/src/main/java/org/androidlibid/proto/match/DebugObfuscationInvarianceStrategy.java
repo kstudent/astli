@@ -75,10 +75,17 @@ public class DebugObfuscationInvarianceStrategy extends MatchingStrategy {
         
         double errorAbs = diff.getFeatureVector().manhattanNorm();
         
-                
+        if(errorAbs > 0) {
+            LOGGER.info("*** Diff (by errorAbs) : {}", needle.getName());
+            LOGGER.info("{}", needle);
+            LOGGER.info("{}", candidate);
+        } else {
+            LOGGER.info("*** No Diff for {}", needle.getName());
+        }
+        
 //        LOGGER.info("{}, ", toPythonArray(diff));
 //        LOGGER.info("{}, ", diff);
-        LOGGER.info("({}, {}),", toPythonArray(needle), toPythonArray(candidate));
+//        LOGGER.info("({}, {}),", toPythonArray(needle), toPythonArray(candidate));
         
 //        LOGGER.info("diff: {}", diff);
 //        BasicVector normalizedV = (BasicVector) diff.getFeatureVector().divide(errorAbs);   

@@ -67,7 +67,8 @@ dependencies {
     compile 'net.java.dev.activeobjects:activeobjects:1.1.5'
     testCompile 'net.java.dev.activeobjects:activeobjects-test:1.1.5'
     
-    runtime 'org.slf4j:slf4j-simple:1.7.14'
+    //runtime 'org.slf4j:slf4j-simple:1.7.14'
+    compile 'org.slf4j:slf4j-simple:1.7.14'
     runtime 'org.hsqldb:hsqldb:2.3.3'
     
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
@@ -212,7 +213,7 @@ def getLatestFolderName() {
     return "1"
 }
 
-def algIDs = [1,2];
+def algIDs = [1,2,3,4];
 
 task fossEvaluate {}
 
