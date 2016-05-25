@@ -15,22 +15,22 @@ import org.jf.dexlib2.iface.MethodImplementation;
 import org.jf.dexlib2.iface.MethodParameter;
 import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import static org.mockito.Mockito.mock;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ASTMethodDefinitionTest {
+public class ASTBuilderTest {
 
     MethodDefinitionImpl methodDefinitionImpl;
     List<MethodItem> methodItems;
     ArrayList<MethodParameter> methodParameters;
     
-    private static final Logger LOGGER = LogManager.getLogger(ASTMethodDefinitionTest.class);
+    private static final Logger LOGGER = LogManager.getLogger(ASTBuilderTest.class);
     
     @Test
     public void testCreateEmptyAST() throws IOException {
@@ -44,12 +44,11 @@ public class ASTMethodDefinitionTest {
         Node method = methodDefinition.buildAST();
         
         assert(method.getType().equals(NodeType.METHOD));
-        assert(method.getChildren().isEmpty());
         assert(method.getParent() == null);
     }
     
     @Test
-    public void testCreateAST() throws IOException {
+    public void testCreateASTofMethod() throws IOException {
         
         boolean noParameterRegister = false;
         int accessFlags = 0;
@@ -61,15 +60,19 @@ public class ASTMethodDefinitionTest {
         addInstruction(Opcode.INVOKE_DIRECT,  5, 5,6,7,8,9);
         addInstruction(Opcode.INVOKE_DIRECT,  0);
         addParameter("I");
+        addParameter("Lorg/pckgA/subpckgA/classB;");
+        addParameter("Lorg/pckgA/subpckgB/classB;");
+        addParameter("[[Z");
         
         Node method = methodDefinition.buildAST();
 
         assert(method.getType().equals(NodeType.METHOD));
         assert(method.getChildren().size() == 5);
         
-        Node argument = method.getChildren().get(0);
-        assert(argument.getType().equals(NodeType.ARGUMENT));
-        assert(argument.getChildren().isEmpty());
+        Node signature = method.getChildren().get(0);
+        assert(signature.getChildren().isEmpty());
+        assert(signature.getType() == NodeType.SIGNATURE);
+        assert(signature.getSignature().equals("IOE[[Z:V"));
         
         Node direct1 = method.getChildren().get(1);
         assert(direct1.getType().equals(NodeType.DIRECT));
@@ -103,6 +106,7 @@ public class ASTMethodDefinitionTest {
 
         Method method = mock(Method.class);
         when(method.getAccessFlags()).thenReturn(accessFlags);
+        when(method.getReturnType()).thenReturn("V");
         when(methodDefinitionImpl.getMethod()).thenReturn(method);
         
         MethodImplementation methodImplementation = mock(MethodImplementation.class);
@@ -116,7 +120,7 @@ public class ASTMethodDefinitionTest {
         when(methodDefinitionImpl.getMethodParameters())
                 .thenAnswer(new CreateImmutableCopyOfMethodParameters());
         
-        return new ASTBuilder(methodDefinitionImpl, noParameterRegister);
+        return new ASTBuilder(methodDefinitionImpl, noParameterRegister, "Lorg/pckgA/subpckgA/classA;");
     }
     
     private void addInstruction(Opcode opcode, int registerCount, int... registerValues) {

@@ -36,6 +36,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.util.TypeUtils;
 import java.io.IOException;
 import java.util.*;
+import org.androidlibid.proto.SmaliNameConverter;
 import org.jf.baksmali.Adaptors.Format.InstructionMethodItem;
 import org.jf.baksmali.Adaptors.MethodDefinition;
 import org.jf.baksmali.Adaptors.MethodItem;
@@ -51,10 +52,13 @@ public class ASTBuilder {
 
     private final MethodDefinition methodDefinition;
     private final boolean noParameterRegisters;
+    private final String currentPackage;
 
-    public ASTBuilder(MethodDefinition methodDefinition, boolean noParameterRegisters) {
+    public ASTBuilder(MethodDefinition methodDefinition, 
+            boolean noParameterRegisters, String classType) {
         this.methodDefinition     = methodDefinition;
         this.noParameterRegisters = noParameterRegisters;
+        this.currentPackage       = extractPackage(classType);
     }
     
     public Node buildAST() throws IOException {
@@ -66,13 +70,11 @@ public class ASTBuilder {
             parameterRegisterCount++;
         }
 
-        for (MethodParameter parameter: getMethodParameters()) {
-            root.addChild(new Node(NodeType.ARGUMENT));
-            parameterRegisterCount++;
-            if (TypeUtils.isWideType(parameter.getType())) {
-                parameterRegisterCount++;
-            }
-        }
+        parameterRegisterCount += countParameterRegisters(); 
+        
+        String signature = createSignature();
+        
+        root.addChild(new Node(signature));
 
         List<MethodItem> methodItems = getMethodItems();
         for (MethodItem methodItem: methodItems) {
@@ -132,6 +134,10 @@ public class ASTBuilder {
     private List<MethodItem> getMethodItems() {
         return methodDefinition.getMethodItems();
     }
+    
+    private String getMethodReturnType() {
+        return methodDefinition.getMethod().getReturnType();
+    }
 
     private Node createRegisterNode(int register, int registerCount, int parameterRegisterCount) {
         if (!noParameterRegisters) {
@@ -140,5 +146,64 @@ public class ASTBuilder {
             }
         }
         return new Node(NodeType.LOCAL);
+    }
+
+    private String extractPackage(String smaliType) {
+        String className = SmaliNameConverter.convertTypeFromSmali(smaliType);
+        return SmaliNameConverter.extractPackageNameFromClassName(className);
+    }
+    
+    private int countParameterRegisters() {
+        
+        int parameterRegisterCount = 0; 
+        
+        for (MethodParameter parameter: getMethodParameters()) {
+            parameterRegisterCount++;
+            if (TypeUtils.isWideType(parameter.getType())) {
+                parameterRegisterCount++;
+            }
+        }
+        
+        return parameterRegisterCount; 
+    }
+
+    private String createSignature() {
+        StringBuilder signature = new StringBuilder();
+        
+        for (MethodParameter parameter: getMethodParameters()) {
+            signature.append(prepareType(parameter.getType()));
+        }
+        
+        signature.append(":").append(prepareType(getMethodReturnType()));
+        
+       return signature.toString();
+    }
+    
+    private String prepareType(String smaliType) {
+        int arrayDimensions = 0;
+        
+        String typeWithoutBrackets = smaliType;
+        
+        while (typeWithoutBrackets.startsWith("[")) {
+            arrayDimensions++;
+            typeWithoutBrackets = typeWithoutBrackets.substring(1);
+        }
+        
+        if(SmaliNameConverter.isPrimitiveSmaliType(typeWithoutBrackets)) {
+            return smaliType;
+        }
+            
+        String packageOfType = extractPackage(typeWithoutBrackets);
+
+        StringBuilder type = new StringBuilder();
+
+        for(int i = 0; i < arrayDimensions; i++) {
+            type.append("[");
+        }
+
+        boolean isInternalObject = (packageOfType.equals(currentPackage));            
+        type.append((isInternalObject)? "O" : "E");
+
+        return type.toString();
     }
 }

@@ -3,19 +3,33 @@ package org.androidlibid.proto.ast;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class Node {
     
-    @Nonnull  private final List<Node> children;
     @Nullable private Node parent;
-    @Nonnull  private final NodeType type;
+    
+    private final List<Node> children;
+    private final NodeType type;
+    private final String signature; 
 
-    public Node(NodeType type) {
+    private Node(NodeType type, String signature) {
         this.type = type;
-        children = new LinkedList<>();
-        parent = null;
+        this.children = new LinkedList<>();
+        this.parent = null;
+        this.signature = signature;
+    }
+    
+    public Node(NodeType type) {
+        this(type, "");
+    }
+    
+    public Node(String signature) {
+        this(NodeType.SIGNATURE, signature);
+    }
+
+    public String getSignature() {
+        return signature;
     }
     
     public NodeType getType() {
@@ -42,12 +56,18 @@ public class Node {
     }
     
     private String toString(@Nonnegative int level) {
-        StringBuffer indentation = new StringBuffer();
+        StringBuilder indentation = new StringBuilder();
         for(int i = 0; i < level; i++) {
             indentation.append("  ");
         }
         
-        StringBuffer s = new StringBuffer(indentation.toString() + type.getName() + "\n");
+        StringBuilder s = new StringBuilder(indentation.toString() + type.getName());
+        
+        if(!signature.isEmpty()) {
+            s.append(": ").append(signature);
+        }
+        
+        s.append("\n");
         
         for (Node child : children) {
             s.append(child.toString(level + 1));
@@ -55,11 +75,4 @@ public class Node {
         
         return s.toString(); 
     }
-    
-    
-    
-    
-    
-    
-    
 }

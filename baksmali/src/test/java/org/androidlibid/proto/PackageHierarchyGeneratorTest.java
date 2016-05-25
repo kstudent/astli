@@ -148,20 +148,16 @@ public class PackageHierarchyGeneratorTest {
 
         when(astC.buildASTs()).thenReturn(methodsofClass);
 
-        Fingerprint methodFingerprint = perpareMethodFingerprint(i);
+        Fingerprint methodFingerprint = perpareMethodFingerprint();
         when(ast2fpt.createFingerprint(methodNode)).thenReturn(methodFingerprint);
         
         return astC;
     }
 
-    private Fingerprint perpareMethodFingerprint(int i) {
+    private Fingerprint perpareMethodFingerprint() {
         Fingerprint methodFingerprint = new Fingerprint();
         methodFingerprint.incrementFeature(NodeType.METHOD);
 
-        for(int j = 0; j < i; j++) {
-            methodFingerprint.incrementFeature(NodeType.ARGUMENT);
-        }
-        
         return methodFingerprint;
     }
 

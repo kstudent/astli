@@ -29,6 +29,6 @@ public class ASTBuilderFactory {
         ClassDefinition classDefinition   = new ClassDefinitionImpl(options, classDef);
         MethodDefinition methodDefinition = new MethodDefinitionImpl(classDefinition, method, methodImpl);
         
-        return new ASTBuilder(methodDefinition, options.noParameterRegisters);
+        return new ASTBuilder(methodDefinition, options.noParameterRegisters, classDef.getType());
     }
 }

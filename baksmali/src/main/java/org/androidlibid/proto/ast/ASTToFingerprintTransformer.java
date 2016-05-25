@@ -48,21 +48,21 @@ public class ASTToFingerprintTransformer {
     }
 
     private void countHorizontalFeatures(Node current, Fingerprint fingerprint) {
-        for (Node child1 : current.getChildren()) {
-            
-            if(child1.getType().isLeaf()) {
-                List<Node> otherChildren = new LinkedList<>(current.getChildren());
-                otherChildren.remove(child1);
-
-                for (Node child2 : otherChildren) {
-                    if(child2.getType().isLeaf()) {
-                        fingerprint.incrementFeature(child1.getType(), child2.getType());
-                    }
-                }
-            } else {
-                countHorizontalFeatures(child1, fingerprint);
-            }
-        }
+//        for (Node child1 : current.getChildren()) {
+//            
+//            if(child1.getType().isLeaf()) {
+//                List<Node> otherChildren = new LinkedList<>(current.getChildren());
+//                otherChildren.remove(child1);
+//
+//                for (Node child2 : otherChildren) {
+//                    if(child2.getType().isLeaf()) {
+//                        fingerprint.incrementFeature(child1.getType(), child2.getType());
+//                    }
+//                }
+//            } else {
+//                countHorizontalFeatures(child1, fingerprint);
+//            }
+//        }
     }
 }
 

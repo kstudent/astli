@@ -29,26 +29,23 @@ public class Fingerprint {
     private double computedSimilarityScore; 
 
     private static final List<List<NodeType>> FEATURES;
-    private static final int LONGEST_FEATURE;
-    private static final FeatureGenerator FEATURE_GENERATOR;
+    private static final int LONGEST_FEATURE_LENGTH;
     
     private static final NumberFormat FRMTR = new DecimalFormat("#0.00");
     
     static {
-        FEATURE_GENERATOR = new FeatureGenerator();
-        FEATURES = FEATURE_GENERATOR.generateVerticalFeatures();
-        FEATURES.addAll(FEATURE_GENERATOR.generateHorizontalFeatures());
-        int longestFeature = 0; 
-        for(List<NodeType> feature : FEATURES){
+        FEATURES = new FeatureGenerator().generateFeatures();
+        int longestFeatureslength = 0; 
+        for(List<NodeType> feature : FEATURES) {
             int featureLength = 0;
             for(NodeType type : feature) {
                 featureLength += type.getName().length() + 2;
             }
-            if(featureLength > longestFeature) {
-                longestFeature = featureLength;
+            if(featureLength > longestFeatureslength) {
+                longestFeatureslength = featureLength;
             }
         }
-        LONGEST_FEATURE = longestFeature;
+        LONGEST_FEATURE_LENGTH = longestFeatureslength;
     }
     
     public static int getFeaturesSize() {
@@ -218,7 +215,7 @@ public class Fingerprint {
         for (int i = 0; i < numEntries; i++) {
 //            if (vector.get(i) != 0.0) {
                 List<NodeType> feature = FEATURES.get(i);
-                String featureString = String.format("%-" + LONGEST_FEATURE + "s", feature.toString());
+                String featureString = String.format("%-" + LONGEST_FEATURE_LENGTH + "s", feature.toString());
                 string = string.append(featureString).append(" : ").append(FRMTR.format(vector.get(i))).append("\n");
 //            }
         }
