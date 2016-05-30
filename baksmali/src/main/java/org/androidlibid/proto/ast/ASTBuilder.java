@@ -52,13 +52,15 @@ public class ASTBuilder {
 
     private final MethodDefinition methodDefinition;
     private final boolean noParameterRegisters;
+    private final String currentClassType;
     private final String currentPackage;
 
     public ASTBuilder(MethodDefinition methodDefinition, 
-            boolean noParameterRegisters, String classType) {
+            boolean noParameterRegisters, String smaliClassType) {
         this.methodDefinition     = methodDefinition;
         this.noParameterRegisters = noParameterRegisters;
-        this.currentPackage       = extractPackage(classType);
+        this.currentClassType     = SmaliNameConverter.convertTypeFromSmali(smaliClassType);
+        this.currentPackage       = SmaliNameConverter.extractPackageNameFromClassName(currentClassType);
     }
     
     public Node buildAST() throws IOException {
@@ -148,11 +150,6 @@ public class ASTBuilder {
         return new Node(NodeType.LOCAL);
     }
 
-    private String extractPackage(String smaliType) {
-        String className = SmaliNameConverter.convertTypeFromSmali(smaliType);
-        return SmaliNameConverter.extractPackageNameFromClassName(className);
-    }
-    
     private int countParameterRegisters() {
         
         int parameterRegisterCount = 0; 
@@ -179,6 +176,12 @@ public class ASTBuilder {
        return signature.toString();
     }
     
+    // returns primitive type letters (see
+    // https://github.com/JesusFreke/smali/wiki/TypesMethodsAndFields)
+    // or one of the following letters
+    // E - Type that is not located in the same package (External)
+    // O - Type that is located in the same package 
+    // T - Current Class Type (This)
     private String prepareType(String smaliType) {
         int arrayDimensions = 0;
         
@@ -193,7 +196,8 @@ public class ASTBuilder {
             return smaliType;
         }
             
-        String packageOfType = extractPackage(typeWithoutBrackets);
+        String classOfType   = SmaliNameConverter.convertTypeFromSmali(typeWithoutBrackets);
+        String packageOfType = SmaliNameConverter.extractPackageNameFromClassName(classOfType);
 
         StringBuilder type = new StringBuilder();
 
@@ -201,8 +205,13 @@ public class ASTBuilder {
             type.append("[");
         }
 
+        boolean isCurrentClassObject = (classOfType.equals(currentClassType));            
         boolean isInternalObject = (packageOfType.equals(currentPackage));            
-        type.append((isInternalObject)? "O" : "E");
+        
+        char typeChar =  isCurrentClassObject? 'T' : 
+                         isInternalObject?     'O' : 'E' ;
+        
+        type.append(typeChar);
 
         return type.toString();
     }
