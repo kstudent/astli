@@ -5,12 +5,12 @@ package org.androidlibid.proto.ast;
  * @author chri
  */
 public enum NodeType {
-    METHOD("method"),
-    VIRTUAL("virtual"),
-    DIRECT("direct"), 
-    SIGNATURE("signature"),
-    PARAMETER("parameter"),
-    LOCAL("local");
+    MTH("method"),
+    VRT("virtual"),
+    DRC("direct"), 
+    SGN("signature"),
+    PAR("parameter"),
+    LOC("local");
     
     private final String name;
 

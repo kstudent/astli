@@ -37,19 +37,22 @@ public class ResultEvaluator {
             positionNumber = findPosition(needleName, matchesByDistance);
             
             if(positionNumber > matchesByDistance.size()) {
-                DETAILLOGGER.info("* NEXT {} (max : {}) not found", needle.getName(), needle.getComputedSimilarityScore());
+//                DETAILLOGGER.info("* NEXT {} (max : {}) not found", 
+//                        needle.getName(), 
+//                        needle.getComputedSimilarityScore()
+//                );
                 positionStatus = Position.NOT_IN_CANDIDATES;
                 positionNumber = -1;
             } else if( positionNumber > 1 ) {
                 DETAILLOGGER.info("* NEXT {} (max : {}) found at position {}", 
                         needle.getName(), 
-                        frmt.format(needle.getComputedSimilarityScore()), 
+//                        frmt.format(needle.getComputedSimilarityScore()), 
                         positionNumber);
                 positionStatus = Position.NOT_FIRST;
             } else {
                 DETAILLOGGER.info("* {} (max : {}) found position 1", 
                         needle.getName(), 
-                        frmt.format(needle.getComputedSimilarityScore()), 
+//                        frmt.format(needle.getComputedSimilarityScore()), 
                         positionNumber);
                 positionStatus = Position.OK;
             }
@@ -119,14 +122,14 @@ public class ResultEvaluator {
             eucDiffR = eucDiffR  / maxLength;
 
             double simScoreN = 0.0d;
-            if(needle.getComputedSimilarityScore() > 0.0d) {
-                simScoreN = matchByDistance.getComputedSimilarityScore() / needle.getComputedSimilarityScore();
-            }
+//            if(needle.getComputedSimilarityScore() > 0.0d) {
+//                simScoreN = matchByDistance.getComputedSimilarityScore() / needle.getComputedSimilarityScore();
+//            }
 
             DETAILLOGGER.info("| {} | {} | {} | {} | {} | {} |", 
                     i, 
                     matchByDistance.getName(),
-                    frmt.format(matchByDistance.getComputedSimilarityScore()), 
+//                    frmt.format(matchByDistance.getComputedSimilarityScore()), 
                     frmt.format(simScoreN), 
                     frmt.format(matchByDistance.getDistanceToFingerprint(needle)), 
                     frmt.format(eucDiffR)
@@ -156,7 +159,7 @@ public class ResultEvaluator {
         Fingerprint needle = result.getNeedle();
         Collection<Fingerprint> matchesByDistance = result.getMatchesByDistance();
         String needleName  = needle.getName();
-        double needleScore = needle.getComputedSimilarityScore();
+//        double needleScore = needle.getComputedSimilarityScore();
         
         String firstMatchName = "<none>"; 
         double firstmatchScore = 0.0d;
@@ -164,17 +167,17 @@ public class ResultEvaluator {
         if(!matchesByDistance.isEmpty()) {
             Fingerprint firstMatch = matchesByDistance.iterator().next();
             firstMatchName  = firstMatch.getName();
-            firstmatchScore = firstMatch.getComputedSimilarityScore();
+//            firstmatchScore = firstMatch.getComputedSimilarityScore();
         }
         
         double scoreN = 0.0d;
-        if(needleScore > 0) {
-            scoreN = firstmatchScore / needleScore;
-        }
+//        if(needleScore > 0) {
+//            scoreN = firstmatchScore / needleScore;
+//        }
         
         RESULTLOGGER.info("| {} | {} | {} | {} | {} | {} | {} | {} |", 
             needleName,
-            frmt.format(needleScore),
+//            frmt.format(needleScore),
             firstMatchName,
             frmt.format(firstmatchScore),
             frmt.format(scoreN), 

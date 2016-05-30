@@ -45,7 +45,7 @@ public class ASTBuilderTest {
         
         Node method = astBuilder.buildAST();
         
-        assert(method.getType().equals(NodeType.METHOD));
+        assert(method.getType().equals(NodeType.MTH));
         assert(method.getParent() == null);
     }
     
@@ -68,27 +68,27 @@ public class ASTBuilderTest {
         
         Node method = astBuidler.buildAST();
         
-        assert(method.getType().equals(NodeType.METHOD));
+        assert(method.getType().equals(NodeType.MTH));
         assert(method.getChildren().size() == 3);
         
         Node signature = method.getChildren().get(0);
         assert(signature.getChildren().isEmpty());
-        assert(signature.getType() == NodeType.SIGNATURE);
+        assert(signature.getType() == NodeType.SGN);
         assert(signature.getSignature().equals("III:V"));
         
         Node direct = method.getChildren().get(1);
-        assert(direct.getType().equals(NodeType.DIRECT));
+        assert(direct.getType().equals(NodeType.DRC));
         assert(direct.getChildren().size() == 3);
-        assert(direct.getChildren().get(0).getType().equals(NodeType.LOCAL));
-        assert(direct.getChildren().get(1).getType().equals(NodeType.LOCAL));
-        assert(direct.getChildren().get(2).getType().equals(NodeType.LOCAL));
+        assert(direct.getChildren().get(0).getType().equals(NodeType.LOC));
+        assert(direct.getChildren().get(1).getType().equals(NodeType.LOC));
+        assert(direct.getChildren().get(2).getType().equals(NodeType.LOC));
         
         Node virtual = method.getChildren().get(2);
-        assert(virtual.getType().equals(NodeType.VIRTUAL));
+        assert(virtual.getType().equals(NodeType.VRT));
         assert(virtual.getChildren().size() == 3);
-        assert(virtual.getChildren().get(0).getType().equals(NodeType.PARAMETER));
-        assert(virtual.getChildren().get(1).getType().equals(NodeType.PARAMETER));
-        assert(virtual.getChildren().get(2).getType().equals(NodeType.PARAMETER));
+        assert(virtual.getChildren().get(0).getType().equals(NodeType.PAR));
+        assert(virtual.getChildren().get(1).getType().equals(NodeType.PAR));
+        assert(virtual.getChildren().get(2).getType().equals(NodeType.PAR));
         
     }
     
@@ -107,12 +107,12 @@ public class ASTBuilderTest {
         
         Node method = astBuidler.buildAST();
         
-        assert(method.getType().equals(NodeType.METHOD));
+        assert(method.getType().equals(NodeType.MTH));
         assert(method.getChildren().size() == 1);
         
         Node signature = method.getChildren().get(0);
         assert(signature.getChildren().isEmpty());
-        assert(signature.getType() == NodeType.SIGNATURE);
+        assert(signature.getType() == NodeType.SGN);
         assert(signature.getSignature().equals("[Z[[T:V"));
     }
     
@@ -136,12 +136,12 @@ public class ASTBuilderTest {
         
         Node method = methodDefinition.buildAST();
 
-        assert(method.getType().equals(NodeType.METHOD));
+        assert(method.getType().equals(NodeType.MTH));
         assert(method.getChildren().size() == 1);
         
         Node signature = method.getChildren().get(0);
         assert(signature.getChildren().isEmpty());
-        assert(signature.getType() == NodeType.SIGNATURE);
+        assert(signature.getType() == NodeType.SGN);
         assert(signature.getSignature().equals("TOE:E"));
         
     } 

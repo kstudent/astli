@@ -28,12 +28,12 @@ public class NodeTest {
 
     @Test
     public void testToString() {
-        Node root = new Node(NodeType.METHOD);
-        Node child2 = new Node(NodeType.DIRECT);
-        Node child3 = new Node(NodeType.VIRTUAL);
-        Node child4 = new Node(NodeType.LOCAL);
-        Node child5 = new Node(NodeType.LOCAL);
-        Node child6 = new Node(NodeType.PARAMETER);
+        Node root = new Node(NodeType.MTH);
+        Node child2 = new Node(NodeType.DRC);
+        Node child3 = new Node(NodeType.VRT);
+        Node child4 = new Node(NodeType.LOC);
+        Node child5 = new Node(NodeType.LOC);
+        Node child6 = new Node(NodeType.PAR);
 
         root.addChild(child2);
         root.addChild(child3);

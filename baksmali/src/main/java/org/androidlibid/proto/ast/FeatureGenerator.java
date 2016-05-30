@@ -12,17 +12,17 @@ public class FeatureGenerator {
     
     public List<List<NodeType>> generateFeatures() {
         List<List<NodeType>> features = new ArrayList<>();
-        features.add(createFeature(NodeType.VIRTUAL));
-        features.add(createFeature(NodeType.DIRECT));
-        features.add(createFeature(NodeType.PARAMETER));
-        features.add(createFeature(NodeType.LOCAL));
-        features.add(createFeature(NodeType.VIRTUAL,   NodeType.PARAMETER));
-        features.add(createFeature(NodeType.VIRTUAL,   NodeType.LOCAL));
-        features.add(createFeature(NodeType.DIRECT,    NodeType.PARAMETER));
-        features.add(createFeature(NodeType.DIRECT,    NodeType.LOCAL));
-        features.add(createFeature(NodeType.LOCAL,     NodeType.LOCAL));
-        features.add(createFeature(NodeType.LOCAL,     NodeType.PARAMETER));
-        features.add(createFeature(NodeType.PARAMETER, NodeType.PARAMETER));
+        features.add(createFeature(NodeType.VRT));
+        features.add(createFeature(NodeType.DRC));
+        features.add(createFeature(NodeType.PAR));
+        features.add(createFeature(NodeType.LOC));
+        features.add(createFeature(NodeType.VRT, NodeType.PAR));
+        features.add(createFeature(NodeType.VRT, NodeType.LOC));
+        features.add(createFeature(NodeType.DRC, NodeType.PAR));
+        features.add(createFeature(NodeType.DRC, NodeType.LOC));
+        features.add(createFeature(NodeType.LOC, NodeType.LOC));
+        features.add(createFeature(NodeType.LOC, NodeType.PAR));
+        features.add(createFeature(NodeType.PAR, NodeType.PAR));
         return features;
     }
     

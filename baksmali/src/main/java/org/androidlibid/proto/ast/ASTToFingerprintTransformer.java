@@ -1,7 +1,5 @@
 package org.androidlibid.proto.ast;
 
-import java.util.LinkedList;
-import java.util.List;
 import org.androidlibid.proto.Fingerprint;
 
 /**
@@ -12,58 +10,54 @@ public class ASTToFingerprintTransformer {
     
     public Fingerprint createFingerprint(Node root) {
         Fingerprint fingerprint = new Fingerprint();
-        
-        countVerticalFeatures(root, fingerprint);
-        countHorizontalFeatures(root, fingerprint);
+
+        countVerticalFeatures(fingerprint, root);
+        countHorizontalFeatures(fingerprint, root);
         
         return fingerprint;
     } 
     
-    private void countVerticalFeatures(Node current, Fingerprint fingerprint) {
+    private void countVerticalFeatures(Fingerprint print, Node root) {
     
-        generateVerticalFeature(current, fingerprint);
-        
-        for (Node child : current.getChildren()) {
-            countVerticalFeatures(child, fingerprint);
-        }
-        
-    }
-    
-    private void generateVerticalFeature(Node current, Fingerprint fingerprint) {
-        
-        if(current.getParent() == null) {
-            fingerprint.incrementFeature(current.getType());
-        } else {
-            LinkedList<NodeType> feature = new LinkedList<>();
-
-            feature.addFirst(current.getType());
-            fingerprint.incrementFeature(feature);
-
-            while (current.getParent().getParent() != null) {
-                current = current.getParent();
-                feature.addFirst(current.getType());
-                fingerprint.incrementFeature(feature);
+        for(Node lvl1 : root.getChildren()) {
+            
+            if (!lvl1.getType().equals(NodeType.SGN)) {
+                print.incrementFeature(lvl1.getType());
+            }
+            
+            for(Node lvl2 : lvl1.getChildren()) {
+                print.incrementFeature(lvl2.getType());
+                print.incrementFeature(lvl1.getType(), lvl2.getType());
             }
         }
+        
     }
-
-    private void countHorizontalFeatures(Node current, Fingerprint fingerprint) {
-//        for (Node child1 : current.getChildren()) {
-//            
-//            if(child1.getType().isLeaf()) {
-//                List<Node> otherChildren = new LinkedList<>(current.getChildren());
-//                otherChildren.remove(child1);
-//
-//                for (Node child2 : otherChildren) {
-//                    if(child2.getType().isLeaf()) {
-//                        fingerprint.incrementFeature(child1.getType(), child2.getType());
-//                    }
-//                }
-//            } else {
-//                countHorizontalFeatures(child1, fingerprint);
-//            }
-//        }
+    
+    private void countHorizontalFeatures(Fingerprint print, Node root) {
+        
+        for(Node lvl1 : root.getChildren()) { 
+            
+            int locals = 0, params = 0;
+            
+            for(Node lvl2 : lvl1.getChildren()) {
+                if(lvl2.getType().equals(NodeType.LOC)) locals++;
+                if(lvl2.getType().equals(NodeType.PAR)) params++;
+            }
+            
+            int llPairs = fromNChoose2(locals); 
+            int ppPairs = fromNChoose2(params); 
+            int lpPairs = fromNChoose2(locals + params) - llPairs - ppPairs; 
+            
+            print.incrementFeatureBy(llPairs, NodeType.LOC, NodeType.LOC);
+            print.incrementFeatureBy(lpPairs, NodeType.LOC, NodeType.PAR);
+            print.incrementFeatureBy(ppPairs, NodeType.PAR, NodeType.PAR);
+            
+        }
     }
+    
+    private int fromNChoose2(int n){
+        return (n * (n-1)) / 2;
+    }   
 }
 
 

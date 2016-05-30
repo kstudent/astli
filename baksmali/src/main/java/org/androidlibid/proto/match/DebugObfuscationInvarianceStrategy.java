@@ -27,40 +27,40 @@ public class DebugObfuscationInvarianceStrategy extends MatchingStrategy {
     @Override
     public void matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
         
-        for(Fingerprint packageNeedle : packagePrints.values()) {
-            
-//            LOGGER.info("* {} ", packageNeedle.getName());
-            
-            for(Fingerprint packageCandidate : service.findPackagesByName(packageNeedle.getName())) {
-                for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
-
-                    findClassInPackages(classNeedle, packageCandidate); 
-                }
-            }
-        }
+//        for(MethodFingerprint packageNeedle : packagePrints.values()) {
+//            
+////            LOGGER.info("* {} ", packageNeedle.getName());
+//            
+//            for(MethodFingerprint packageCandidate : service.findPackagesByName(packageNeedle.getName())) {
+//                for(MethodFingerprint classNeedle : packageNeedle.getChildFingerprints()) {
+//
+//                    findClassInPackages(classNeedle, packageCandidate); 
+//                }
+//            }
+//        }
         
     }
 
     private void findClassInPackages(Fingerprint classNeedle, Fingerprint packageCandidate) {
         
-        Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
-        
-        for (Fingerprint classCandidate : packageHierarchy.getChildFingerprints()) {
-            if(classCandidate.getName().matches(classNeedle.getName())) {
-                findMethods(classCandidate, classNeedle);
-            }
-        }
+//        MethodFingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
+//        
+//        for (MethodFingerprint classCandidate : packageHierarchy.getChildFingerprints()) {
+//            if(classCandidate.getName().matches(classNeedle.getName())) {
+//                findMethods(classCandidate, classNeedle);
+//            }
+//        }
         
     }
 
     private void findMethods(Fingerprint classCandidate, Fingerprint classNeedle) {
-        for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
-            for(Fingerprint methodCandidate : classCandidate.getChildFingerprints()) {
-                if(methodNeedle.getName().equals(methodCandidate.getName())) {
-                    printObfuscationInvariance(methodNeedle, methodCandidate);
-                }
-            }
-        }
+//        for(MethodFingerprint methodNeedle : classNeedle.getChildFingerprints()) {
+//            for(MethodFingerprint methodCandidate : classCandidate.getChildFingerprints()) {
+//                if(methodNeedle.getName().equals(methodCandidate.getName())) {
+//                    printObfuscationInvariance(methodNeedle, methodCandidate);
+//                }
+//            }
+//        }
     }
 
     private void printObfuscationInvariance(Fingerprint needle, Fingerprint candidate) {

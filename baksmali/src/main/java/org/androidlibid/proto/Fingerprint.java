@@ -2,15 +2,14 @@ package org.androidlibid.proto;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import org.androidlibid.proto.ast.NodeType;
 import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Nullable;
 import org.androidlibid.proto.ao.VectorEntity;
+import org.apache.commons.lang.NotImplementedException;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
@@ -18,19 +17,10 @@ public class Fingerprint {
 
     private String name;
     private Vector vector;
-    
-    @Nullable
-    private Fingerprint parent; 
-    private List<Fingerprint> children = new ArrayList<>();
-    
-    @Nullable
-    private VectorEntity entity;
-    
-    private double computedSimilarityScore; 
+    private String signature;
 
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE_LENGTH;
-    
     private static final NumberFormat FRMTR = new DecimalFormat("#0.00");
     
     static {
@@ -67,7 +57,6 @@ public class Fingerprint {
         } else {
             this.name = entityName;
         }
-        this.entity = entity;
     }
     
     public Fingerprint(String name) {
@@ -87,19 +76,30 @@ public class Fingerprint {
     public Fingerprint(Fingerprint copy) {
         this.vector = copy.vector.copy();
         this.name = copy.name;
-        this.computedSimilarityScore = copy.computedSimilarityScore;
     }
     
     public void incrementFeature(NodeType... dimension) {
-        Fingerprint.this.incrementFeature(Arrays.asList(dimension));
+        Fingerprint.this.incrementFeatureBy(1, Arrays.asList(dimension));
+    }
+    
+    public void incrementFeatureBy(int value, NodeType... dimension) {
+        Fingerprint.this.incrementFeatureBy(value, Arrays.asList(dimension));
     }
 
     public void incrementFeature(List<NodeType> dimension) {
+        incrementFeatureBy(1, dimension);
+    }
+    
+    public void incrementFeatureBy(int value, List<NodeType> dimension) {
+        if(value == 0) {
+            return;
+        }
+        
         int index = FEATURES.indexOf(dimension);
         if(index == -1) {
             throw new IllegalArgumentException("Dimension not found");
         }
-        vector.set(index, vector.get(index) + 1);
+        vector.set(index, vector.get(index) + value);
     }
     
     public double getFeatureCount(NodeType... feature) {
@@ -175,34 +175,13 @@ public class Fingerprint {
     public double getFeatureCount(int index) {
         return this.vector.get(index);
     }
-    
-    public List<Fingerprint> getChildFingerprints() {
-        return children;
+   
+    public String getSignature() {
+        return signature;
     }
 
-    public void addChildFingerprint(Fingerprint child) {
-        this.children.add(child);
-        child.setParent(this);
-    }
-
-    public @Nullable VectorEntity getEntity() {
-        return entity;
-    }
-
-    public @Nullable Fingerprint getParent() {
-        return parent;
-    }
-
-    private void setParent(@Nullable Fingerprint parent) {
-        this.parent = parent;
-    }
-    
-    public double getComputedSimilarityScore() {
-        return computedSimilarityScore;
-    }
-
-    public void setComputedSimilarityScore(double score) {
-        this.computedSimilarityScore = score;
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
     
     @Override
@@ -213,38 +192,36 @@ public class Fingerprint {
         int numEntries = Math.min(FEATURES.size(), vector.length());
         
         for (int i = 0; i < numEntries; i++) {
-//            if (vector.get(i) != 0.0) {
-                List<NodeType> feature = FEATURES.get(i);
-                String featureString = String.format("%-" + LONGEST_FEATURE_LENGTH + "s", feature.toString());
-                string = string.append(featureString).append(" : ").append(FRMTR.format(vector.get(i))).append("\n");
-//            }
+            List<NodeType> feature = FEATURES.get(i);
+            String featureString = String.format("%-" + LONGEST_FEATURE_LENGTH + "s", feature.toString());
+            string = string.append(featureString).append(" : ").append(FRMTR.format(vector.get(i))).append("\n");
         }
         return string.toString();
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Fingerprint other = (Fingerprint) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
-    }
+//
+//    @Override
+//    public int hashCode() {
+//        int hash = 5;
+//        return hash;
+//    }
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj) {
+//            return true;
+//        }
+//        if (obj == null) {
+//            return false;
+//        }
+//        if (getClass() != obj.getClass()) {
+//            return false;
+//        }
+//        final MethodFingerprint other = (MethodFingerprint) obj;
+//        if (!Objects.equals(this.name, other.name)) {
+//            return false;
+//        }
+//        return true;
+//    }
     
     public static Comparator<Fingerprint> sortByLengthDESC = new Comparator<Fingerprint>() {
         @Override
@@ -260,11 +237,12 @@ public class Fingerprint {
     public static Comparator<Fingerprint> sortBySimScoreDESC = new Comparator<Fingerprint>() {
         @Override
         public int compare(Fingerprint that, Fingerprint other) {
-            double scoreNeedleThat  = that.getComputedSimilarityScore();
-            double scoreNeedleOther = other.getComputedSimilarityScore();
-            if (scoreNeedleThat > scoreNeedleOther) return -1;
-            if (scoreNeedleThat < scoreNeedleOther) return  1;
-            return 0;
+            throw new NotImplementedException();
+//            double scoreNeedleThat  = that.getComputedSimilarityScore();
+//            double scoreNeedleOther = other.getComputedSimilarityScore();
+//            if (scoreNeedleThat > scoreNeedleOther) return -1;
+//            if (scoreNeedleThat < scoreNeedleOther) return  1;
+//            return 0;
         }
     };
     

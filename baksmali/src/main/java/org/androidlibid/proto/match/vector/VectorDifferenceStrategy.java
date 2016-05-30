@@ -63,63 +63,63 @@ public class VectorDifferenceStrategy extends MatchingStrategy {
         
         List<Fingerprint> haystack; 
          
-        switch(level) {
-            case METHOD: 
-                
-                haystack = service.findMethodsByPackageDepth(packageDepth);
-                
-                for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
-                    for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
-                        Result methodResult = matcher.matchFingerprints(haystack, methodNeedle);
-                        
-                        Result result = postProcessMethodResult(methodResult);
-                        
-                        incrementStats(evaluator.evaluateResult(result));
-                    }
-                }
-                    
-                break;
-                
-            case CLASS:
-                haystack = service.findClassesByPackageDepth(packageDepth);
-                
-                for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
-                    Result classResult = matcher.matchFingerprints(haystack, classNeedle);
-                    
-                    Result result = postProcessClassResult(classResult);
-                    
-                    incrementStats(evaluator.evaluateResult(result));
-                }
-                    
-                break;
-                
-            case PACKAGE:
-                haystack = service.findPackagesByDepth(packageDepth);
-                Result result = matcher.matchFingerprints(haystack, packageNeedle);
-                incrementStats(evaluator.evaluateResult(result));
-                break;
-        }
+//        switch(level) {
+//            case METHOD: 
+//                
+//                haystack = service.findMethodsByPackageDepth(packageDepth);
+//                
+//                for(MethodFingerprint classNeedle : packageNeedle.getChildFingerprints()) {
+//                    for(MethodFingerprint methodNeedle : classNeedle.getChildFingerprints()) {
+//                        Result methodResult = matcher.matchFingerprints(haystack, methodNeedle);
+//                        
+//                        Result result = postProcessMethodResult(methodResult);
+//                        
+//                        incrementStats(evaluator.evaluateResult(result));
+//                    }
+//                }
+//                    
+//                break;
+//                
+//            case CLASS:
+//                haystack = service.findClassesByPackageDepth(packageDepth);
+//                
+//                for(MethodFingerprint classNeedle : packageNeedle.getChildFingerprints()) {
+//                    Result classResult = matcher.matchFingerprints(haystack, classNeedle);
+//                    
+//                    Result result = postProcessClassResult(classResult);
+//                    
+//                    incrementStats(evaluator.evaluateResult(result));
+//                }
+//                    
+//                break;
+//                
+//            case PACKAGE:
+//                haystack = service.findPackagesByDepth(packageDepth);
+//                Result result = matcher.matchFingerprints(haystack, packageNeedle);
+//                incrementStats(evaluator.evaluateResult(result));
+//                break;
+//        }
     }
 
     private Result postProcessClassResult(Result classResult) {
         
         Result result = new Result();
         
-        if(classResult.getMatchByName() != null) {
-            result.setMatchByName(classResult.getMatchByName().getParent());
-        }
-        
-        if(classResult.getNeedle() != null) {
-            result.setNeedle(classResult.getNeedle().getParent());
-        }
-        
-        Set<Fingerprint> matchesByDistance = new HashSet<>();
-        
-        for(Fingerprint matchByDistance : classResult.getMatchesByDistance()) {
-            matchesByDistance.add(matchByDistance.getParent());
-        }
-        
-        result.setMatchesByDistance(matchesByDistance);
+//        if(classResult.getMatchByName() != null) {
+//            result.setMatchByName(classResult.getMatchByName().getParent());
+//        }
+//        
+//        if(classResult.getNeedle() != null) {
+//            result.setNeedle(classResult.getNeedle().getParent());
+//        }
+//        
+//        Set<MethodFingerprint> matchesByDistance = new HashSet<>();
+//        
+//        for(MethodFingerprint matchByDistance : classResult.getMatchesByDistance()) {
+//            matchesByDistance.add(matchByDistance.getParent());
+//        }
+//        
+//        result.setMatchesByDistance(matchesByDistance);
         
         return result;
     }
@@ -128,23 +128,23 @@ public class VectorDifferenceStrategy extends MatchingStrategy {
     
         Result result = new Result();
         
-        if(methodResult.getMatchByName() != null && methodResult.getMatchByName().getParent() != null) {
-            result.setMatchByName(methodResult.getMatchByName().getParent().getParent());
-        }
+//        if(methodResult.getMatchByName() != null && methodResult.getMatchByName().getParent() != null) {
+//            result.setMatchByName(methodResult.getMatchByName().getParent().getParent());
+//        }
+//        
+//        if(methodResult.getNeedle() != null && methodResult.getNeedle().getParent() != null) {
+//            result.setNeedle(methodResult.getNeedle().getParent().getParent());
+//        }
+//        
+//        Set<MethodFingerprint> matchesByDistance = new HashSet<>();
+//        
+//        for(MethodFingerprint matchByDistance : methodResult.getMatchesByDistance()) {
+//            if(matchByDistance.getParent() != null) {
+//                matchesByDistance.add(matchByDistance.getParent());
+//            }
+//        }
         
-        if(methodResult.getNeedle() != null && methodResult.getNeedle().getParent() != null) {
-            result.setNeedle(methodResult.getNeedle().getParent().getParent());
-        }
-        
-        Set<Fingerprint> matchesByDistance = new HashSet<>();
-        
-        for(Fingerprint matchByDistance : methodResult.getMatchesByDistance()) {
-            if(matchByDistance.getParent() != null) {
-                matchesByDistance.add(matchByDistance.getParent());
-            }
-        }
-        
-        result.setMatchesByDistance(matchesByDistance);
+//        result.setMatchesByDistance(matchesByDistance);
         
         return result;
     

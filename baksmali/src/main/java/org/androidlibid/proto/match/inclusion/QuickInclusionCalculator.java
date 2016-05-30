@@ -26,71 +26,73 @@ public class QuickInclusionCalculator implements InclusionCalculator {
     @Override
     public double computeInclusion(List<Fingerprint> classCandidates, List<Fingerprint> subSet) {
         
-        logHeader();
-        
-        List<Fingerprint> classCandidatesCopy = new LinkedList<>(classCandidates);
-        
-        if(subSet.isEmpty()) {
-            return 0;
-        }
-        
-        double totalScore = 0; 
-        
-        for(Fingerprint classNeedle : subSet) {
-            
-            Fingerprint methodNeedle = classNeedle.getChildFingerprints().get(0);
-            
-            Fingerprint classCandiate;
-            
-            do {
-                classCandiate = findClassCandidateByNeedle(methodNeedle, classCandidatesCopy);
-
-                if(classCandiate == null) {
-                    break;
-                }
-
-            } while (!isClassIncluded(classNeedle, classCandiate));
-            
-            if(classCandiate == null) {
-                logResult(classNeedle, classCandiate, 0);
-            } else {
-                double score = classNeedle.getLength(); 
-                logResult(classNeedle, classCandiate, score);
-                totalScore += score;
-                classCandidatesCopy.remove(classCandiate);
-            }
-        }
-        
-        return totalScore;
+//        logHeader();
+//        
+//        List<MethodFingerprint> classCandidatesCopy = new LinkedList<>(classCandidates);
+//        
+//        if(subSet.isEmpty()) {
+//            return 0;
+//        }
+//        
+//        double totalScore = 0; 
+//        
+//        for(MethodFingerprint classNeedle : subSet) {
+//            
+//            MethodFingerprint methodNeedle = classNeedle.getChildFingerprints().get(0);
+//            
+//            MethodFingerprint classCandiate;
+//            
+//            do {
+//                classCandiate = findClassCandidateByNeedle(methodNeedle, classCandidatesCopy);
+//
+//                if(classCandiate == null) {
+//                    break;
+//                }
+//
+//            } while (!isClassIncluded(classNeedle, classCandiate));
+//            
+//            if(classCandiate == null) {
+//                logResult(classNeedle, classCandiate, 0);
+//            } else {
+//                double score = classNeedle.getLength(); 
+//                logResult(classNeedle, classCandiate, score);
+//                totalScore += score;
+//                classCandidatesCopy.remove(classCandiate);
+//            }
+//        }
+//        
+//        return totalScore;
+        return 0;
 
     }
 
     private boolean isClassIncluded(Fingerprint classNeedle, Fingerprint classCandidate) {
         
-        List<Fingerprint> methodCandidates = new LinkedList<>(classCandidate.getChildFingerprints());
-        
-        for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
-            
-            boolean foundSimilarMethod = false; 
-            
-            for(Iterator<Fingerprint> it = methodCandidates.iterator(); it.hasNext();) {
-                Fingerprint methodCandidate = it.next();
-                
-                double sim = methodNeedle.getNonCommutativeSimilarityScoreToFingerprint(methodCandidate);
-                double simN = sim / methodNeedle.getLength();
-                
-                if(simN > methodSimThresold) {
-                    foundSimilarMethod = true;
-                    it.remove();
-                    break;
-                }
-            }
-            
-            if(!foundSimilarMethod) {
-                return false;
-            }
-        }
-        
+//        List<MethodFingerprint> methodCandidates = new LinkedList<>(classCandidate.getChildFingerprints());
+//        
+//        for(MethodFingerprint methodNeedle : classNeedle.getChildFingerprints()) {
+//            
+//            boolean foundSimilarMethod = false; 
+//            
+//            for(Iterator<MethodFingerprint> it = methodCandidates.iterator(); it.hasNext();) {
+//                MethodFingerprint methodCandidate = it.next();
+//                
+//                double sim = methodNeedle.getNonCommutativeSimilarityScoreToFingerprint(methodCandidate);
+//                double simN = sim / methodNeedle.getLength();
+//                
+//                if(simN > methodSimThresold) {
+//                    foundSimilarMethod = true;
+//                    it.remove();
+//                    break;
+//                }
+//            }
+//            
+//            if(!foundSimilarMethod) {
+//                return false;
+//            }
+//        }
+//        
+//        return true;
         return true;
         
     }
@@ -144,22 +146,22 @@ public class QuickInclusionCalculator implements InclusionCalculator {
 
     private Fingerprint findClassCandidateByNeedle(Fingerprint methodNeedle, List<Fingerprint> classCandidates) {
         
-        for(Fingerprint classCandidate : classCandidates) {
-            
-            for(Fingerprint methodCandidate : classCandidate.getChildFingerprints()) {
-                
-                if(methodCandidate.getName().equals(methodNeedle.getName())) {
-                    debugDiff(methodNeedle, methodCandidate);
-                }
-                
-                double sim = methodNeedle.getNonCommutativeSimilarityScoreToFingerprint(methodCandidate);
-                double simN = sim / methodNeedle.getLength();
-
-                if(simN > methodSimThresold) {
-                    return classCandidate;
-                }
-            }
-        }
+//        for(MethodFingerprint classCandidate : classCandidates) {
+//            
+//            for(MethodFingerprint methodCandidate : classCandidate.getChildFingerprints()) {
+//                
+//                if(methodCandidate.getName().equals(methodNeedle.getName())) {
+//                    debugDiff(methodNeedle, methodCandidate);
+//                }
+//                
+//                double sim = methodNeedle.getNonCommutativeSimilarityScoreToFingerprint(methodCandidate);
+//                double simN = sim / methodNeedle.getLength();
+//
+//                if(simN > methodSimThresold) {
+//                    return classCandidate;
+//                }
+//            }
+//        }
         
         return null;
     }

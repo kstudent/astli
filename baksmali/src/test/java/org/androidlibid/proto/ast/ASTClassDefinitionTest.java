@@ -43,7 +43,7 @@ public class ASTClassDefinitionTest {
                 any(Method.class), 
                 any(MethodImplementation.class)
             )).thenReturn(astBuilder);
-        when(astBuilder.buildAST()).thenReturn(new Node(NodeType.METHOD));
+        when(astBuilder.buildAST()).thenReturn(new Node(NodeType.MTH));
     }
         
     @Test
@@ -66,9 +66,9 @@ public class ASTClassDefinitionTest {
         
         assert(asts.size() == 2); 
         assert(virtualMethod != null);
-        assert(virtualMethod.getType().equals(NodeType.METHOD));
+        assert(virtualMethod.getType().equals(NodeType.MTH));
         assert(directMethod != null);
-        assert(directMethod.getType().equals(NodeType.METHOD));
+        assert(directMethod.getType().equals(NodeType.MTH));
     }
     
     @Test
@@ -90,9 +90,9 @@ public class ASTClassDefinitionTest {
         
         assert(asts.size() == 2); 
         assert(virtualMethod != null);
-        assert(virtualMethod.getType().equals(NodeType.METHOD));
+        assert(virtualMethod.getType().equals(NodeType.MTH));
         assert(directMethod != null);
-        assert(directMethod.getType().equals(NodeType.METHOD));
+        assert(directMethod.getType().equals(NodeType.MTH));
     }
     
     @SuppressWarnings("unchecked")

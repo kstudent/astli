@@ -26,27 +26,28 @@ public class ClassFingerprintCreator {
     public Fingerprint createClassFingerprint(Map<String, Node> methodASTs, 
             String smaliClassName, boolean addMethodFingerprintsAsChildren) throws IOException {
         
-        String className = SmaliNameConverter.convertTypeFromSmali(smaliClassName);
-        Fingerprint classFingerprint = new Fingerprint(className);
-                
-        for(String methodSignature : methodASTs.keySet()) {
-            
-            Node node = methodASTs.get(methodSignature);
-            Fingerprint methodFingerprint = ast2fpt.createFingerprint(node);
-            
-            logMethod(methodSignature, node, methodFingerprint);
-            
-            if(methodFingerprint.getLength() > 1.0d) {
-                classFingerprint.sumFeatures(methodFingerprint);
-                
-                if(addMethodFingerprintsAsChildren) {
-                    methodFingerprint.setName(className + ":" + methodSignature);
-                    classFingerprint.addChildFingerprint(methodFingerprint);
-                }
-            } 
-        }
+//        String className = SmaliNameConverter.convertTypeFromSmali(smaliClassName);
+//        MethodFingerprint classFingerprint = new MethodFingerprint(className);
+//                
+//        for(String methodSignature : methodASTs.keySet()) {
+//            
+//            Node node = methodASTs.get(methodSignature);
+//            MethodFingerprint methodFingerprint = ast2fpt.createFingerprint(node);
+//            
+//            logMethod(methodSignature, node, methodFingerprint);
+//            
+//            if(methodFingerprint.getLength() > 1.0d) {
+//                classFingerprint.sumFeatures(methodFingerprint);
+//                
+//                if(addMethodFingerprintsAsChildren) {
+//                    methodFingerprint.setName(className + ":" + methodSignature);
+//                    classFingerprint.addChildFingerprint(methodFingerprint);
+//                }
+//            } 
+//        }
         
-        return classFingerprint;
+//        return classFingerprint;
+        return null;
     }
 
     private void logMethod(String methodSignature, Node ast, Fingerprint methodFingerprint) {

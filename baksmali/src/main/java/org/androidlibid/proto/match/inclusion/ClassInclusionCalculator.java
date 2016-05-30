@@ -100,29 +100,29 @@ public class ClassInclusionCalculator implements InclusionCalculator {
     }
 
     private void logClassAndMethodsHeader(List<Fingerprint> superSet, List<Fingerprint> subSet) {
-        if(!LOGGER.isInfoEnabled() || superSet.isEmpty() || superSet.get(0) == null 
-            || subSet.isEmpty() || subSet.get(0) == null || !isLoggingActivated
-        ) {
-            return;
-        }
-            
-        Fingerprint superClass = superSet.get(0).getParent();
-        Fingerprint subClass = subSet.get(0).getParent();
-            
-        if(superClass == null || subClass == null) { 
-            return;
-        } 
-        
-        String superSetName = extractMethodName(superClass.getName());
-        String subSetName   = extractMethodName(subClass.getName());
-        LOGGER.info("**** {} (#Methods: {}, Length: {}) -> {} (#Methods: {}, Length: {}) ?", 
-            subSetName, 
-            subSet.size(),
-            frmt.format(subClass.getLength()),
-            superSetName, 
-            superSet.size(),
-            frmt.format(superClass.getLength())
-        ); 
+//        if(!LOGGER.isInfoEnabled() || superSet.isEmpty() || superSet.get(0) == null 
+//            || subSet.isEmpty() || subSet.get(0) == null || !isLoggingActivated
+//        ) {
+//            return;
+//        }
+//            
+//        MethodFingerprint superClass = superSet.get(0).getParent();
+//        MethodFingerprint subClass = subSet.get(0).getParent();
+//            
+//        if(superClass == null || subClass == null) { 
+//            return;
+//        } 
+//        
+//        String superSetName = extractMethodName(superClass.getName());
+//        String subSetName   = extractMethodName(subClass.getName());
+//        LOGGER.info("**** {} (#Methods: {}, Length: {}) -> {} (#Methods: {}, Length: {}) ?", 
+//            subSetName, 
+//            subSet.size(),
+//            frmt.format(subClass.getLength()),
+//            superSetName, 
+//            superSet.size(),
+//            frmt.format(superClass.getLength())
+//        ); 
         
     }
 

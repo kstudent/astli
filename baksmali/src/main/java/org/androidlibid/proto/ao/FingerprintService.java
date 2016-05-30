@@ -34,15 +34,15 @@ public class FingerprintService {
         
         List<Fingerprint> haystack = new ArrayList<>();
         
-        for (Package pckg : service.findPackagesByDepth(depth)) {
-            Fingerprint pckgFingerprint = new Fingerprint(pckg);
-            
-            for(Clazz classEntity : pckg.getClazzes()) {
-                Fingerprint classFingerprint = new Fingerprint(classEntity);
-                pckgFingerprint.addChildFingerprint(classFingerprint);
-                haystack.add(classFingerprint);
-            }
-        }
+//        for (Package pckg : service.findPackagesByDepth(depth)) {
+//            MethodFingerprint pckgFingerprint = new MethodFingerprint(pckg);
+//            
+//            for(Clazz classEntity : pckg.getClazzes()) {
+//                MethodFingerprint classFingerprint = new MethodFingerprint(classEntity);
+//                pckgFingerprint.addChildFingerprint(classFingerprint);
+//                haystack.add(classFingerprint);
+//            }
+//        }
         
         return haystack; 
     }
@@ -51,21 +51,21 @@ public class FingerprintService {
         
         List<Fingerprint> haystack = new ArrayList<>();
         
-        for (Package pckg : service.findPackagesByDepth(depth)) {
-            Fingerprint pckgFingerprint = new Fingerprint(pckg);
-            
-            for(Clazz classEntity : pckg.getClazzes()) {
-                Fingerprint classFingerprint = new Fingerprint(classEntity);
-                pckgFingerprint.addChildFingerprint(classFingerprint);
-                
-                for (Method methodEntity : classEntity.getMethods()) {
-                    Fingerprint methodFingerprint = new Fingerprint(methodEntity);
-                    classFingerprint.addChildFingerprint(methodFingerprint);
-
-                    haystack.add(methodFingerprint);
-                }
-            }
-        }
+//        for (Package pckg : service.findPackagesByDepth(depth)) {
+//            MethodFingerprint pckgFingerprint = new MethodFingerprint(pckg);
+//            
+//            for(Clazz classEntity : pckg.getClazzes()) {
+//                MethodFingerprint classFingerprint = new MethodFingerprint(classEntity);
+//                pckgFingerprint.addChildFingerprint(classFingerprint);
+//                
+//                for (Method methodEntity : classEntity.getMethods()) {
+//                    MethodFingerprint methodFingerprint = new MethodFingerprint(methodEntity);
+//                    classFingerprint.addChildFingerprint(methodFingerprint);
+//
+//                    haystack.add(methodFingerprint);
+//                }
+//            }
+//        }
         
         return haystack; 
     }
@@ -83,40 +83,42 @@ public class FingerprintService {
     
     public Fingerprint getPackageByMethod(Fingerprint keyMethod) {
         
-        Method keyMethodEntity = (Method) keyMethod.getEntity();
-        if(keyMethodEntity == null) {
-            throw new RuntimeException("Method.getEntity() was null."); 
-        }
+//        Method keyMethodEntity = (Method) keyMethod.getEntity();
+//        if(keyMethodEntity == null) {
+//            throw new RuntimeException("Method.getEntity() was null."); 
+//        }
 
-        Package packageEntity = keyMethodEntity.getClazz().getPackage();
+//        Package packageEntity = keyMethodEntity.getClazz().getPackage();
         
-        return new Fingerprint(packageEntity);
+//        return new MethodFingerprint(packageEntity);
+        return new Fingerprint();
     }
     
     public Fingerprint getPackageHierarchy(Fingerprint pckg) {
         
-        Package packageEntity = (Package) pckg.getEntity();
-        if(packageEntity == null) {
-            throw new RuntimeException("Package.getEntity() was null."); 
-        }
+//        Package packageEntity = (Package) pckg.getEntity();
+//        if(packageEntity == null) {
+//            throw new RuntimeException("Package.getEntity() was null."); 
+//        }
+//        
+//        if(!pckg.getChildFingerprints().isEmpty()) {
+//            throw new RuntimeException("Package already had children!"); 
+//        }
         
-        if(!pckg.getChildFingerprints().isEmpty()) {
-            throw new RuntimeException("Package already had children!"); 
-        }
+//        MethodFingerprint packageHierarchy = new MethodFingerprint(packageEntity);
         
-        Fingerprint packageHierarchy = new Fingerprint(packageEntity);
+//        for(Clazz clazzEntity : packageEntity.getClazzes()) {
+//            MethodFingerprint clazz = new MethodFingerprint(clazzEntity);
+//            
+//            for(Method methodEntity : clazzEntity.getMethods()) {
+//                MethodFingerprint method = new MethodFingerprint(methodEntity);
+//                clazz.addChildFingerprint(method);
+//            }
+//            packageHierarchy.addChildFingerprint(clazz);
+//        }
         
-        for(Clazz clazzEntity : packageEntity.getClazzes()) {
-            Fingerprint clazz = new Fingerprint(clazzEntity);
-            
-            for(Method methodEntity : clazzEntity.getMethods()) {
-                Fingerprint method = new Fingerprint(methodEntity);
-                clazz.addChildFingerprint(method);
-            }
-            packageHierarchy.addChildFingerprint(clazz);
-        }
-        
-        return packageHierarchy;
+//        return packageHierarchy;
+        return null;
     }
     
     public List<Fingerprint> findPackagesByName(String name) throws SQLException{
@@ -152,14 +154,15 @@ public class FingerprintService {
                 mvnIdentifier
         );
 
-        for(Fingerprint method : classFingerprint.getChildFingerprints()) {
-            service.saveMethod(
-                    method.getFeatureVector().toBinary(), 
-                    method.getName(), 
-                    method.getLength(), 
-                    clazz
-            );
-        }
+//        for(MethodFingerprint method : classFingerprint.getChildFingerprints()) {
+//            service.saveMethod(
+//                    method.getFeatureVector().toBinary(), 
+//                    method.getName(), 
+//                    method.getLength(), 
+//                    clazz
+//            );
+//        }
+
     }
     
     

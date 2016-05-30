@@ -29,61 +29,62 @@ public class PackageInclusionCalculator implements InclusionCalculator {
     @Override
     public double computeInclusion(List<Fingerprint> superSet, List<Fingerprint> subSet) {
         
-        logHeader();
-        
-        List<Fingerprint> superSetCopy = new LinkedList<>(superSet);
-        
-        if(subSet.isEmpty()) {
-            return 0;
-        }
-        
-        double packageScore = 0;
-
-        for (Fingerprint clazz : subSet) {
-            
-            if (superSetCopy.isEmpty()) {
-                break;
-            }
-            
-            String clazzName = clazz.getName();
-            
-            logClassHeader(clazz);
-            
-            double maxScore = -1;
-            Fingerprint maxScoreClazz = null;
-            
-            for (Fingerprint clazzCandidate : superSetCopy) {
-                
-                double score = calculator.computeInclusion(
-                        clazzCandidate.getChildFingerprints(), clazz.getChildFingerprints());
-                
-                if(Double.isNaN(score) || score < 0) {
-                    throw new RuntimeException("Like, srsly?");
-                }
-                
-                if(score > maxScore) {
-                    maxScoreClazz = clazzCandidate;
-                    maxScore      = score;
-                } 
-            }
-            
-            if(maxScore == -1 || maxScoreClazz == null) {
-                throw new RuntimeException("fix your code, maniac");
-            }
-            
-            logResult(clazz, maxScoreClazz, maxScore);
-            
-            packageScore += maxScore;
-            
-            if(!allowRepeatedMatching) {
-                if(!superSetCopy.remove(maxScoreClazz)) {
-                    throw new RuntimeException("Tried to remove element"
-                                + " that is not in the set.");
-                }
-            }
-        }
-        
-        return packageScore;
+//        logHeader();
+//        
+//        List<MethodFingerprint> superSetCopy = new LinkedList<>(superSet);
+//        
+//        if(subSet.isEmpty()) {
+//            return 0;
+//        }
+//        
+//        double packageScore = 0;
+//
+//        for (MethodFingerprint clazz : subSet) {
+//            
+//            if (superSetCopy.isEmpty()) {
+//                break;
+//            }
+//            
+//            String clazzName = clazz.getName();
+//            
+//            logClassHeader(clazz);
+//            
+//            double maxScore = -1;
+//            MethodFingerprint maxScoreClazz = null;
+//            
+//            for (MethodFingerprint clazzCandidate : superSetCopy) {
+//                
+//                double score = calculator.computeInclusion(
+//                        clazzCandidate.getChildFingerprints(), clazz.getChildFingerprints());
+//                
+//                if(Double.isNaN(score) || score < 0) {
+//                    throw new RuntimeException("Like, srsly?");
+//                }
+//                
+//                if(score > maxScore) {
+//                    maxScoreClazz = clazzCandidate;
+//                    maxScore      = score;
+//                } 
+//            }
+//            
+//            if(maxScore == -1 || maxScoreClazz == null) {
+//                throw new RuntimeException("fix your code, maniac");
+//            }
+//            
+//            logResult(clazz, maxScoreClazz, maxScore);
+//            
+//            packageScore += maxScore;
+//            
+//            if(!allowRepeatedMatching) {
+//                if(!superSetCopy.remove(maxScoreClazz)) {
+//                    throw new RuntimeException("Tried to remove element"
+//                                + " that is not in the set.");
+//                }
+//            }
+//        }
+//        
+//        return packageScore;
+        return 0;
 
     }
 
@@ -93,20 +94,20 @@ public class PackageInclusionCalculator implements InclusionCalculator {
 
     private void logClassHeader(Fingerprint clazz) {
         
-        if(LOGGER.isDebugEnabled()) {
-            String clazzName = clazz.getName();
-            
-            if(clazzName.contains(":")) {
-                clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
-            }
-            
-            double perfectScore = calculator.computeInclusion(
-                    clazz.getChildFingerprints(), 
-                    clazz.getChildFingerprints()); 
-            
-            LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", 
-                    clazzName, clazz.getChildFingerprints().size(), frmt.format(perfectScore)); 
-        }
+//        if(LOGGER.isDebugEnabled()) {
+//            String clazzName = clazz.getName();
+//            
+//            if(clazzName.contains(":")) {
+//                clazzName = clazzName.substring(clazzName.indexOf(":") + 1);
+//            }
+//            
+//            double perfectScore = calculator.computeInclusion(
+//                    clazz.getChildFingerprints(), 
+//                    clazz.getChildFingerprints()); 
+//            
+//            LOGGER.debug("*** myself: {}, which has {} methods and perfect score : {}.", 
+//                    clazzName, clazz.getChildFingerprints().size(), frmt.format(perfectScore)); 
+//        }
     }
 
     private void logResult(Fingerprint clazz, Fingerprint maxScoreClazz, 

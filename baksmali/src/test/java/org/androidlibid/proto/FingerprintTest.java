@@ -48,26 +48,26 @@ public class FingerprintTest {
                 
         Fingerprint f = new Fingerprint(vector);
         
-        assert(f.getFeatureCount(NodeType.METHOD) == 0);
-        f.incrementFeature(NodeType.METHOD);
-        assert(f.getFeatureCount(NodeType.METHOD) == 1);
+        assert(f.getFeatureCount(NodeType.MTH) == 0);
+        f.incrementFeature(NodeType.MTH);
+        assert(f.getFeatureCount(NodeType.MTH) == 1);
         
-        assert(f.getFeatureCount(NodeType.VIRTUAL) == 0);
-        f.incrementFeature(NodeType.VIRTUAL);
-        f.incrementFeature(NodeType.VIRTUAL);
-        assert(f.getFeatureCount(NodeType.VIRTUAL) == 2);
+        assert(f.getFeatureCount(NodeType.VRT) == 0);
+        f.incrementFeature(NodeType.VRT);
+        f.incrementFeature(NodeType.VRT);
+        assert(f.getFeatureCount(NodeType.VRT) == 2);
         
-        assert(f.getFeatureCount(NodeType.LOCAL) == 0);
-        f.incrementFeature(NodeType.LOCAL);
-        assert(f.getFeatureCount(NodeType.LOCAL) == 1);
-        f.incrementFeature(NodeType.LOCAL);
-        assert(f.getFeatureCount(NodeType.LOCAL) == 2);
+        assert(f.getFeatureCount(NodeType.LOC) == 0);
+        f.incrementFeature(NodeType.LOC);
+        assert(f.getFeatureCount(NodeType.LOC) == 1);
+        f.incrementFeature(NodeType.LOC);
+        assert(f.getFeatureCount(NodeType.LOC) == 2);
         
-        assert(f.getFeatureCount(NodeType.PARAMETER, NodeType.LOCAL) == 0);
-        f.incrementFeature(NodeType.PARAMETER, NodeType.LOCAL);
-        assert(f.getFeatureCount(NodeType.PARAMETER, NodeType.LOCAL) == 1);
-        f.incrementFeature(NodeType.PARAMETER, NodeType.LOCAL);
-        assert(f.getFeatureCount(NodeType.PARAMETER, NodeType.LOCAL) == 2);
+        assert(f.getFeatureCount(NodeType.PAR, NodeType.LOC) == 0);
+        f.incrementFeature(NodeType.PAR, NodeType.LOC);
+        assert(f.getFeatureCount(NodeType.PAR, NodeType.LOC) == 1);
+        f.incrementFeature(NodeType.PAR, NodeType.LOC);
+        assert(f.getFeatureCount(NodeType.PAR, NodeType.LOC) == 2);
         
     }
     
@@ -100,13 +100,13 @@ public class FingerprintTest {
         
         Fingerprint f1 = new Fingerprint(vector);
         Fingerprint f2 = new Fingerprint(vector);
-        assert(f1.getFeatureCount(NodeType.METHOD) == 0);
-        f1.incrementFeature(NodeType.METHOD);
-        assert(f1.getFeatureCount(NodeType.METHOD) == 1);
-        f2.incrementFeature(NodeType.METHOD);
-        assert(f2.getFeatureCount(NodeType.METHOD) == 1);
+        assert(f1.getFeatureCount(NodeType.MTH) == 0);
+        f1.incrementFeature(NodeType.MTH);
+        assert(f1.getFeatureCount(NodeType.MTH) == 1);
+        f2.incrementFeature(NodeType.MTH);
+        assert(f2.getFeatureCount(NodeType.MTH) == 1);
         f1.sumFeatures(f2);
-        assert(f1.getFeatureCount(NodeType.METHOD) == 2);    
+        assert(f1.getFeatureCount(NodeType.MTH) == 2);    
     }
     
     @Test 

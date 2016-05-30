@@ -83,29 +83,30 @@ public class InclusionStrategy extends MatchingStrategy {
     
     private @Nullable Result findMatchForPackage(Fingerprint packageNeedle) throws SQLException {
       
-        Result result = new Result();
-        result.setNeedle(packageNeedle);
-        
-        List<Fingerprint> packageMatches = new ArrayList<Fingerprint>();
-        result.setMatchesByDistance(packageMatches);
-        
-        LOGGER.info("* {} ", packageNeedle.getName()); 
-        
-        LOGGER.info("** package self check "); 
-        double perfectScore = computeInclusionScore(packageNeedle, packageNeedle);
-        packageNeedle.setComputedSimilarityScore(perfectScore);
-
-        LOGGER.info("** package self check score: {}", frmt.format(perfectScore)); 
-        
-        checkPackageAgainstSimilarMethods(result);
-        
-        removeRejectedMatches(packageMatches, perfectScore);
-        
-        Collections.sort(packageMatches, Fingerprint.sortBySimScoreDESC);
-
-        updateMatchByName(result);
-        
-        return result;
+//        Result result = new Result();
+//        result.setNeedle(packageNeedle);
+//        
+//        List<MethodFingerprint> packageMatches = new ArrayList<MethodFingerprint>();
+//        result.setMatchesByDistance(packageMatches);
+//        
+//        LOGGER.info("* {} ", packageNeedle.getName()); 
+//        
+//        LOGGER.info("** package self check "); 
+//        double perfectScore = computeInclusionScore(packageNeedle, packageNeedle);
+//        packageNeedle.setComputedSimilarityScore(perfectScore);
+//
+//        LOGGER.info("** package self check score: {}", frmt.format(perfectScore)); 
+//        
+//        checkPackageAgainstSimilarMethods(result);
+//        
+//        removeRejectedMatches(packageMatches, perfectScore);
+//        
+//        Collections.sort(packageMatches, MethodFingerprint.sortBySimScoreDESC);
+//
+//        updateMatchByName(result);
+//        
+//        return result;
+        return null;
     }
     
     /**
@@ -148,48 +149,48 @@ public class InclusionStrategy extends MatchingStrategy {
     private boolean tryFindingNeedleInHaystack(Result result, Fingerprint methodNeedle, List<Fingerprint> methodHaystack) {
         
         Fingerprint packageNeedle = result.getNeedle();
-        Collection<Fingerprint> comparedMatches = result.getMatchesByDistance();
-        
-        double perfectScore = packageNeedle.getComputedSimilarityScore();
-        
-        for(Fingerprint methodCandidate : methodHaystack) {
-            
-            if (!isItWorthToCheckCandidate(methodNeedle, methodCandidate)) {
-                continue;
-            } 
-
-            Fingerprint packageCandidate = service.getPackageByMethod(methodCandidate);
-            String packageCandidateName = packageCandidate.getName();
-
-            if (isNameInCollection(packageCandidateName, comparedMatches) 
-                    || isNameInCollection(packageCandidateName, prettySureMatches)) {
-                continue;
-            }
-            
-            LOGGER.info("*** check against db version of {}", packageCandidateName);
-            
-            Fingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
-            
-            double packageScore = computeInclusionScore(packageNeedle, packageHierarchy);
-            
-            LOGGER.info("*** check against db version of {} done", packageCandidateName);
-
-            packageCandidate.setComputedSimilarityScore(packageScore);
-            comparedMatches.add(packageCandidate);
-
-            if(packageCandidateName.equals(packageNeedle.getName())) {
-                result.setMatchByName(packageCandidate);
-            }
-
-            double normalizedScore = packageScore / perfectScore;
-            
-            logResult(packageNeedle.getName(), packageCandidateName, packageScore, normalizedScore);
-
-            if(normalizedScore > settings.getPackageAcceptThreshold(packageScore)) {
-                prettySureMatches.add(packageCandidate);
-                return true; 
-            } 
-        }
+//        Collection<MethodFingerprint> comparedMatches = result.getMatchesByDistance();
+//        
+//        double perfectScore = packageNeedle.getComputedSimilarityScore();
+//        
+//        for(MethodFingerprint methodCandidate : methodHaystack) {
+//            
+//            if (!isItWorthToCheckCandidate(methodNeedle, methodCandidate)) {
+//                continue;
+//            } 
+//
+//            MethodFingerprint packageCandidate = service.getPackageByMethod(methodCandidate);
+//            String packageCandidateName = packageCandidate.getName();
+//
+//            if (isNameInCollection(packageCandidateName, comparedMatches) 
+//                    || isNameInCollection(packageCandidateName, prettySureMatches)) {
+//                continue;
+//            }
+//            
+//            LOGGER.info("*** check against db version of {}", packageCandidateName);
+//            
+//            MethodFingerprint packageHierarchy = service.getPackageHierarchy(packageCandidate);
+//            
+//            double packageScore = computeInclusionScore(packageNeedle, packageHierarchy);
+//            
+//            LOGGER.info("*** check against db version of {} done", packageCandidateName);
+//
+//            packageCandidate.setComputedSimilarityScore(packageScore);
+//            comparedMatches.add(packageCandidate);
+//
+//            if(packageCandidateName.equals(packageNeedle.getName())) {
+//                result.setMatchByName(packageCandidate);
+//            }
+//
+//            double normalizedScore = packageScore / perfectScore;
+//            
+//            logResult(packageNeedle.getName(), packageCandidateName, packageScore, normalizedScore);
+//
+//            if(normalizedScore > settings.getPackageAcceptThreshold(packageScore)) {
+//                prettySureMatches.add(packageCandidate);
+//                return true; 
+//            } 
+//        }
         
         return false;
         
@@ -230,63 +231,63 @@ public class InclusionStrategy extends MatchingStrategy {
     private double computeInclusionScore(Fingerprint packageNeedle, 
             Fingerprint packageCandidate) 
     {
-        List<Fingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
-        List<Fingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildFingerprints());
-
-        return calculator.computeInclusion(classSuperSet, classSubSet);
+//        List<MethodFingerprint> classSubSet   = new LinkedList<>(packageNeedle.getChildFingerprints());
+//        List<MethodFingerprint> classSuperSet = new LinkedList<>(packageCandidate.getChildFingerprints());
+//
+//        return calculator.computeInclusion(classSuperSet, classSubSet);
+        return 0;
     }
 
     private void updateMatchByName(Result result) throws SQLException {
         
-        if(result.getMatchByName() == null) {
-            
-            Fingerprint packageNeedle = result.getNeedle();
-            String packageName = packageNeedle.getName(); 
-            
-            List<Fingerprint> packagesWithSameName = service.findPackagesByName(packageName);
-            
-            if(!packagesWithSameName.isEmpty()) {
-                Fingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));
-                
-                double score = computeInclusionScore(packageNeedle, matchByName);
-                matchByName.setComputedSimilarityScore(score);
-                
-                result.setMatchByName(matchByName);
-            } else {
-                LOGGER.info("{} is not in database.", packageName);
-            }
-        }
-        
+//        if(result.getMatchByName() == null) {
+//            
+//            MethodFingerprint packageNeedle = result.getNeedle();
+//            String packageName = packageNeedle.getName(); 
+//            
+//            List<MethodFingerprint> packagesWithSameName = service.findPackagesByName(packageName);
+//            
+//            if(!packagesWithSameName.isEmpty()) {
+//                MethodFingerprint matchByName = service.getPackageHierarchy(packagesWithSameName.get(0));
+//                
+//                double score = computeInclusionScore(packageNeedle, matchByName);
+//                matchByName.setComputedSimilarityScore(score);
+//                
+//                result.setMatchByName(matchByName);
+//            } else {
+//                LOGGER.info("{} is not in database.", packageName);
+//            }
+//        }
     }
 
     private List<Fingerprint> distillMethodNeedles(Fingerprint packageNeedle) {
         
         List<Fingerprint> methodNeedles = new ArrayList<>();
         
-        for(Fingerprint classNeedle : packageNeedle.getChildFingerprints()) {
-            for(Fingerprint methodNeedle : classNeedle.getChildFingerprints()) {
-                if(methodNeedle.getLength() > settings.getMinimalMethodLengthForNeedleLookup()) {
-                   methodNeedles.add(methodNeedle);
-                }
-            }
-        }
-        
-        Collections.sort(methodNeedles, Fingerprint.sortByLengthDESC);
+//        for(MethodFingerprint classNeedle : packageNeedle.getChildFingerprints()) {
+//            for(MethodFingerprint methodNeedle : classNeedle.getChildFingerprints()) {
+//                if(methodNeedle.getLength() > settings.getMinimalMethodLengthForNeedleLookup()) {
+//                   methodNeedles.add(methodNeedle);
+//                }
+//            }
+//        }
+//        
+//        Collections.sort(methodNeedles, MethodFingerprint.sortByLengthDESC);
        
         return methodNeedles;
         
     }
 
     private void removeRejectedMatches(List<Fingerprint> matches, double perfectScore) {
-        for (Iterator<Fingerprint> iterator = matches.iterator(); iterator.hasNext();) {
-            Fingerprint match = iterator.next();
-            
-            double normalizedScore = match.getComputedSimilarityScore() / perfectScore;
-            
-            if(normalizedScore < settings.getPackageRejectThreshold()) {
-                iterator.remove();
-            }
-        }
+//        for (Iterator<MethodFingerprint> iterator = matches.iterator(); iterator.hasNext();) {
+//            MethodFingerprint match = iterator.next();
+//            
+//            double normalizedScore = match.getComputedSimilarityScore() / perfectScore;
+//            
+//            if(normalizedScore < settings.getPackageRejectThreshold()) {
+//                iterator.remove();
+//            }
+//        }
     }
     
     

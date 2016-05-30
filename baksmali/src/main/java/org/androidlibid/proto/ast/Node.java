@@ -25,7 +25,7 @@ public class Node {
     }
     
     public Node(String signature) {
-        this(NodeType.SIGNATURE, signature);
+        this(NodeType.SGN, signature);
     }
 
     public String getSignature() {

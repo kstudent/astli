@@ -65,7 +65,7 @@ public class ASTBuilder {
     
     public Node buildAST() throws IOException {
         
-        Node root = new Node(NodeType.METHOD);
+        Node root = new Node(NodeType.MTH);
         
         int parameterRegisterCount = 0;
         if (!AccessFlags.STATIC.isSet(getMethod().getAccessFlags())) {
@@ -91,10 +91,10 @@ public class ASTBuilder {
                     
                     switch (ins.getOpcode()) {
                         case INVOKE_DIRECT:
-                            child = new Node(NodeType.DIRECT);
+                            child = new Node(NodeType.DRC);
                             break;
                         case INVOKE_VIRTUAL:
-                            child = new Node(NodeType.VIRTUAL);
+                            child = new Node(NodeType.VRT);
                             break;
                         default:
                             continue;
@@ -144,10 +144,10 @@ public class ASTBuilder {
     private Node createRegisterNode(int register, int registerCount, int parameterRegisterCount) {
         if (!noParameterRegisters) {
             if (register >= registerCount - parameterRegisterCount) {
-                return new Node(NodeType.PARAMETER);
+                return new Node(NodeType.PAR);
             }
         }
-        return new Node(NodeType.LOCAL);
+        return new Node(NodeType.LOC);
     }
 
     private int countParameterRegisters() {

@@ -36,44 +36,45 @@ public class PackageHierarchyGenerator {
     
     public Map<String, Fingerprint> generatePackageHierarchyFromClassBuilders(List<ASTClassBuilder> astClassBuilders) throws IOException {
         
-        Map<String, Fingerprint> packagePrints = new HashMap<>();
-            
-        for(ASTClassBuilder astClassBuilder : astClassBuilders) {
-            String smaliClassName = astClassBuilder.getClassName();
-            
-            String obfClassName = SmaliNameConverter.convertTypeFromSmali(smaliClassName);
-            String className =    translateName(obfClassName);
-            String packageName =  SmaliNameConverter.extractPackageNameFromClassName(className);
-            
-            if(!interestedPackageNames.isEmpty() && !interestedPackageNames.contains(packageName)) {
-                continue;
-            }
-            
-            Fingerprint classFingerprint = transformClassDefToFingerprint(astClassBuilder, obfClassName);
-            
-            if(classFingerprint.getChildFingerprints().isEmpty()) {
-                continue;
-            }
-            
-            classFingerprint.setName(className);
-            Fingerprint packageFingerprint;
-
-            if(packagePrints.containsKey(packageName)) {
-                packageFingerprint = packagePrints.get(packageName);
-            } else {
-                packageFingerprint = new Fingerprint(packageName);
-                packagePrints.put(packageName, packageFingerprint);
-            }
-
-            packageFingerprint.sumFeatures(classFingerprint);
-            packageFingerprint.addChildFingerprint(classFingerprint);
-        }
-        
-        for(Fingerprint pckg : packagePrints.values()) {
-            Collections.sort(pckg.getChildFingerprints(), Fingerprint.sortByLengthDESC);
-        }
-
-        return packagePrints;
+//        PackageHierarchy hierarchy = new PackageHierarchy();
+//            
+//        for(ASTClassBuilder astClassBuilder : astClassBuilders) {
+//            String smaliClassName = astClassBuilder.getClassName();
+//            
+//            String obfClassName = SmaliNameConverter.convertTypeFromSmali(smaliClassName);
+//            String className =    translateName(obfClassName);
+//            String packageName =  SmaliNameConverter.extractPackageNameFromClassName(className);
+//            
+//            if(!interestedPackageNames.isEmpty() && !interestedPackageNames.contains(packageName)) {
+//                continue;
+//            }
+//            
+//            MethodFingerprint classFingerprint = transformClassDefToFingerprint(astClassBuilder, obfClassName);
+//            
+//            if(classFingerprint.getChildFingerprints().isEmpty()) {
+//                continue;
+//            }
+//            
+//            classFingerprint.setName(className);
+//            MethodFingerprint packageFingerprint;
+//
+//            if(packagePrints.containsKey(packageName)) {
+//                packageFingerprint = packagePrints.get(packageName);
+//            } else {
+//                packageFingerprint = new MethodFingerprint(packageName);
+//                packagePrints.put(packageName, packageFingerprint);
+//            }
+//
+//            packageFingerprint.sumFeatures(classFingerprint);
+//            packageFingerprint.addChildFingerprint(classFingerprint);
+//        }
+//        
+//        for(MethodFingerprint pckg : packagePrints.values()) {
+//            Collections.sort(pckg.getChildFingerprints(), MethodFingerprint.sortByLengthDESC);
+//        }
+//
+//        return packagePrints;
+        return null;
     }
     
     private Fingerprint transformClassDefToFingerprint(ASTClassBuilder astClassBuilder, String obfsClassName) throws IOException {
@@ -81,7 +82,6 @@ public class PackageHierarchyGenerator {
         Map<String, Node> ast = astClassBuilder.buildASTs();
         
         List<Fingerprint> methods = new ArrayList<>(); 
-        Fingerprint classFingerprint = new Fingerprint();
 
         for(String obfsMethodSignature : ast.keySet()) {
             Node node = ast.get(obfsMethodSignature);
@@ -100,17 +100,15 @@ public class PackageHierarchyGenerator {
             if(methodFingerprint.getLength() > 1.0f) {
                 methodFingerprint.setName(clearMethodSignature);
                 methods.add(methodFingerprint);
-                classFingerprint.sumFeatures(methodFingerprint);
             }
         }
         
-        Collections.sort(methods, Fingerprint.sortByLengthDESC);
-        
-        for(Fingerprint method : methods) {
-            classFingerprint.addChildFingerprint(method);
-        }
-        
-        return classFingerprint;
+//        for(MethodFingerprint method : methods) {
+//            classFingerprint.addChildFingerprint(method);
+//        }
+//        
+//        return classFingerprint;
+        return null;
     }
 
     private String translateName(String obfuscatedName) {
