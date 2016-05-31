@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
@@ -80,7 +81,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         return true;
     }
 
-    private Map<String, Fingerprint> generatePackagePrints() throws IOException {
+    private Map<String, PackageHierarchy> generatePackagePrints() throws IOException {
         
         LOGGER.info("* Create Package Prints");
         
@@ -98,15 +99,13 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         PackageHierarchyGenerator phGen = new PackageHierarchyGenerator(
                 options, new ASTToFingerprintTransformer(), mappings);
         
-        phGen.setInterestedPackageNames(interestedPackageNames); 
-        
         List<ASTClassBuilder> astClassBuilders = new ArrayList<>(); 
         for(ClassDef classDef: classDefs) {
             ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
             astClassBuilders.add(astClassBuilder);
         }
         
-        return phGen.generatePackageHierarchyFromClassBuilders(astClassBuilders);
+        return phGen.generatePackageHierarchiesFromClassBuilders(astClassBuilders);
         
     }
 

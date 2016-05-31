@@ -1,29 +1,22 @@
 package org.androidlibid.proto.store;
 
-import org.androidlibid.proto.ao.LibraryFingerprintDBUpdater;
+import java.io.IOException;
 import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.SmaliNameConverter;
+import org.androidlibid.proto.PackageHierarchy;
+import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.jf.baksmali.baksmaliOptions;
 import org.jf.dexlib2.iface.ClassDef;
 import org.androidlibid.proto.ast.ASTBuilderFactory;
 import org.androidlibid.proto.ast.ASTClassBuilder;
-import org.androidlibid.proto.ast.Node;
-import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.ao.PackageHierarchyService;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,74 +42,33 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     public boolean run() {   
         try {
             service = EntityServiceFactory.createService();
-            generateClassFingerprints();
-            LibraryFingerprintDBUpdater updater = new LibraryFingerprintDBUpdater(service);
-            updater.update(options.mvnIdentifier);
+            storeFingerprints();
         } catch (SQLException | InterruptedException | ExecutionException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
         return true;
     }
     
-    private void generateClassFingerprints() throws InterruptedException, ExecutionException, SQLException {
-        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
-        
-        CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
+    private void storeFingerprints() throws InterruptedException, ExecutionException, SQLException {
         
         final ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(options);
-        final FingerprintService fpService = new FingerprintService(service);
+//        final FingerprintService fpService = new FingerprintService(service);
+        final PackageHierarchyService phService = new PackageHierarchyService(service);
         final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
-        final ClassFingerprintCreator classFPCreator = new ClassFingerprintCreator(ast2fpt);
+        final PackageHierarchyGenerator phgen = new PackageHierarchyGenerator(options, ast2fpt, new HashMap<String, String>());
         
-        final Set<String> interestingPackages = new HashSet<String>();
-        
-//        interestingPackages.add("org.spongycastle.util.encoders");
+        List<ASTClassBuilder> builders = new ArrayList<>();
         
         for (final ClassDef classDef: classDefs) {
-            
-            Callable<Void> storeFingerprints = new Callable<Void>() {
-                
-                @Override
-                public Void call() throws Exception {
-                    String className = SmaliNameConverter.convertTypeFromSmali(classDef.getType());
-                    String packageName = SmaliNameConverter.extractPackageNameFromClassName(className);
-
-                    if(!interestingPackages.isEmpty() && !interestingPackages.contains(packageName)) {
-                        return null;
-                    }
-                    
-                    ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
-                    
-                    Map<String, Node> methodASTs = astClassBuilder.buildASTs();
-                    
-                    Fingerprint classFingerprint = classFPCreator.createClassFingerprint(methodASTs, classDef.getType(), options.storeOnMethodLevel);
-                    
-                    if(classFingerprint.getLength() > 0.0d) {
-                        fpService.saveClass(classFingerprint, options.mvnIdentifier);
-                    }
-                    
-                    return null;
-                }
-            };
-                    
-            completionService.submit(storeFingerprints);
+            ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
+            builders.add(astClassBuilder);
         }
-        
-        int count = 0;
         
         try {
-            while (count++ < classDefs.size()) {
-                Future<Void> future = completionService.take();
-                
-                if(future.isDone()) future.get();
-                
-                if(count % 20 == 0) {
-                    LOGGER.info("{}%", ((float)(count) / classDefs.size()) * 100); 
-                }
-            }
-        } finally {
-            executor.shutdown();
+            Map<String, PackageHierarchy> packages = phgen.generatePackageHierarchiesFromClassBuilders(builders);
+            phService.saveHierarchies(packages.values());
+        } catch (IOException ex) {
+            LOGGER.error(ex);
         }
     }
-    
 }

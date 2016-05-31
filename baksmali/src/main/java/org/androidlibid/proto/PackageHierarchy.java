@@ -9,9 +9,19 @@ import java.util.Map;
  */
 public class PackageHierarchy {
     
-    Map<String, String> classes = new HashMap<>();
-    Map<String, Fingerprint> methodsOfClass = new HashMap<>();
-    
-    
-    
+    String name;
+    Map<String, Map<String, Fingerprint>> classes = new HashMap<>();
+
+    public PackageHierarchy(String name) {
+        this.name = name;
+    }
+
+    void addMethods(String className, Map<String, Fingerprint> prints) {
+        
+        if(classes.containsKey(className)) {
+            classes.get(className).putAll(prints);
+        }
+        
+        classes.put(className, prints);
+    }
 }
