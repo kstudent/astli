@@ -7,8 +7,7 @@ import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import org.androidlibid.proto.ao.VectorEntity;
+import org.androidlibid.proto.ao.Method;
 import org.apache.commons.lang.NotImplementedException;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
@@ -42,26 +41,22 @@ public class Fingerprint {
         return FEATURES.size();
     }
 
-    public Fingerprint(VectorEntity entity) {
-        byte[] byteVector = entity.getVector();
-        String entityName = entity.getName();
+    public Fingerprint(Method method) {
+        this.signature = method.getSignature();
+        this.name = method.getName();
         
+        byte[] byteVector = method.getVector();
         if(byteVector == null) {
             this.vector = new BasicVector(FEATURES.size());
         } else {
             this.vector = BasicVector.fromBinary(byteVector); 
-        }
-        
-        if(entityName == null) {
-            this.name = "";
-        } else {
-            this.name = entityName;
         }
     }
     
     public Fingerprint(String name) {
         this.vector = new BasicVector(FEATURES.size());
         this.name = name;
+        this.signature = "";
     }
     
     public Fingerprint() {
@@ -71,11 +66,13 @@ public class Fingerprint {
     public Fingerprint(double... array) {
         this.vector = BasicVector.fromArray(array);
         this.name = "";
+        this.signature = ""; 
     }
     
     public Fingerprint(Fingerprint copy) {
         this.vector = copy.vector.copy();
         this.name = copy.name;
+        this.signature = copy.signature;
     }
     
     public void incrementFeature(NodeType... dimension) {
@@ -188,6 +185,7 @@ public class Fingerprint {
     public String toString() {
         StringBuilder string = new StringBuilder();
         string.append(name).append(":\n");
+        string.append("Signature: ").append(signature).append(":\n");
         
         int numEntries = Math.min(FEATURES.size(), vector.length());
         

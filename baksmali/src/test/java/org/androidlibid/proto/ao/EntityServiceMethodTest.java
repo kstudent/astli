@@ -36,47 +36,7 @@ public class EntityServiceMethodTest {
         zeroBytes = new BasicVector(5).toBinary();
         service = new EntityService(em, zeroBytes);
     }
-    
-    @Test
-    public void testFindMethodsByLength() throws SQLException {
         
-        Method m1 = createMethod("method1", 0,  1,  2,  3,  4);
-        Method m2 = createMethod("method2", 0, 10, 20, 30, 40);
-        Method m3 = createMethod("method3", 0,  1,  2,  3,  4);
-        
-        List<Method> methods = service.findMethodsByLength(m1.getLength(), 1);
-        
-        assert( methods.size() == 2);
-        assert( methods.contains(m1));
-        assert(!methods.contains(m2));
-        assert( methods.contains(m3));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testDontFindMethodsWithZeroSize() throws SQLException {
-        service.findMethodsByLength(1, 0);
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void testDontFindMethodsWithZeroLength() throws SQLException {
-        service.findMethodsByLength(0, 1);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testDontFindMethodsWithNegativeLength() throws SQLException {
-        service.findMethodsByLength(-1, 1);
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void testDontFindMethodsWithNegativeSize() throws SQLException {
-        service.findMethodsByLength(1, -1);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testDontFindMethodsWithinNegativeOrbit() throws SQLException {
-        service.findMethodsByLength(1, 2);
-    }
-    
     @Test
     public void testSaveMethod() throws SQLException {
         
@@ -86,10 +46,12 @@ public class EntityServiceMethodTest {
         
         Fingerprint methodFingerprint = new Fingerprint(7, 1, 100, 12 , 0);
         String methodName = "<init>():void";
+        String signature = "V:V";
+        
         Method methodEntity = service.saveMethod(
             methodFingerprint.getFeatureVector().toBinary(),
             methodName,
-            methodFingerprint.getLength(), 
+            signature,
             clazzEntity
         );
         
@@ -119,7 +81,7 @@ public class EntityServiceMethodTest {
         Method entity = em.create(Method.class);
         Fingerprint method = new Fingerprint(values);
         entity.setVector(method.getFeatureVector().toBinary());
-        entity.setLength(method.getLength());
+        entity.setSignature(method.getSignature());
         entity.setName(name);
         entity.save(); 
         return entity;

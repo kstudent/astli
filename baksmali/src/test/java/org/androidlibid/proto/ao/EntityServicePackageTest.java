@@ -45,24 +45,20 @@ public class EntityServicePackageTest {
         
         lib1 = em.create(Library.class);
         lib1.setName("group:artifact:1.0");
-        lib1.setVector(zeroBytes);
         lib1.save();
         
         lib2 = em.create(Library.class);
         lib2.setName("group:artifact:2.0");
-        lib2.setVector(zeroBytes);
         lib2.save();
         
         package1 = em.create(Package.class);
         package1.setName("package1");
         package1.setLibrary(lib1);
-        package1.setVector(zeroBytes);
         package1.save();
         
         package2 = em.create(Package.class);
         package2.setName("package2");
         package2.setLibrary(lib1);
-        package2.setVector(zeroBytes);
         package2.save();
         
         service = new EntityService(em, zeroBytes);
@@ -92,7 +88,6 @@ public class EntityServicePackageTest {
         Package anotherPackage1 = em.create(Package.class);
         anotherPackage1.setName("package1");
         anotherPackage1.setLibrary(lib1);
-        anotherPackage1.setVector(zeroBytes);
         anotherPackage1.save();
 
         exception.expect(SQLException.class);
@@ -130,19 +125,16 @@ public class EntityServicePackageTest {
         Package pckg1 = em.create(Package.class);
         pckg1.setName("org.package.test");
         pckg1.setLibrary(lib1);
-        pckg1.setVector(zeroBytes);
         pckg1.save();
         
         Package pckg2 = em.create(Package.class);
         pckg2.setName("org.package.test.subpackage1");
         pckg2.setLibrary(lib1);
-        pckg2.setVector(zeroBytes);
         pckg2.save();
         
         Package pckg3 = em.create(Package.class);
         pckg3.setName("org.package.test.subpackage2");
         pckg3.setLibrary(lib1);
-        pckg3.setVector(zeroBytes);
         pckg3.save();
         
         List<Package> pckgs;

@@ -139,6 +139,7 @@ public class mainTest {
         main.main(arg);
     }
 
+    @Test
     public void countMethods() throws Exception {
         EntityService service = EntityServiceFactory.createService();
         LOGGER.info("methods: " + service.countMethods());
@@ -158,13 +159,7 @@ public class mainTest {
 
         LOGGER.info("---list-of-class-fingerprints---");
         for (Clazz entity : service.findClasses()) {
-
-            assert (entity != null);
-            assert (entity.getVector() != null);
-
-            Fingerprint print = new Fingerprint(entity);
-            counter++;
-            LOGGER.info("  " + print.getName());
+            LOGGER.info("  " + entity.getName());
         }
 
         LOGGER.info("amount of classes: " + counter);
@@ -177,13 +172,8 @@ public class mainTest {
 
         LOGGER.info("---list-of-package-fingerprints---");
         for (Package entity : service.findPackages()) {
-
-            assert (entity != null);
-            assert (entity.getVector() != null);
-
-            Fingerprint print = new Fingerprint(entity);
             counter++;
-            LOGGER.info("  " + print.getName());
+            LOGGER.info("  " + entity.getName());
         }
 
         LOGGER.info("amount of packages: " + counter);
@@ -194,7 +184,8 @@ public class mainTest {
         new SetupLogger(new baksmaliOptions(), EntityServiceFactory.createService()).logSetup();
     }
 
-    private void printSomeMethods() throws SQLException {
+    @Test
+    public void printSomeMethods() throws SQLException {
 
         EntityService service = EntityServiceFactory.createService();
         List<Clazz> classes = service.findClasses();
@@ -205,20 +196,8 @@ public class mainTest {
             LOGGER.info(clazz.getName());
             for (Method m : clazz.getMethods()) {
                 Fingerprint p = new Fingerprint(m);
+                LOGGER.info(m.getSignature());
                 LOGGER.info(p);
-            }
-        }
-    }
-
-    private void printMethodLengths() throws SQLException {
-
-        EntityService service = EntityServiceFactory.createService();
-        List<Clazz> classes = service.findClasses();
-
-        for (int i = 0; i < classes.size(); i++) {
-            Clazz clazz = classes.get(i);
-            for (Method m : clazz.getMethods()) {
-                LOGGER.info(m.getLength() + ", ");
             }
         }
     }

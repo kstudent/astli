@@ -53,7 +53,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         final ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(options);
 //        final FingerprintService fpService = new FingerprintService(service);
-        final PackageHierarchyService phService = new PackageHierarchyService(service);
+        final PackageHierarchyService phService = new PackageHierarchyService(service, options.mvnIdentifier);
         final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         final PackageHierarchyGenerator phgen = new PackageHierarchyGenerator(options, ast2fpt, new HashMap<String, String>());
         

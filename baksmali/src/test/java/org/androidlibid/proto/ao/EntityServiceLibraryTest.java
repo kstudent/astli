@@ -43,12 +43,10 @@ public class EntityServiceLibraryTest {
         
         lib1 = em.create(Library.class);
         lib1.setName("group:artifact:1.0");
-        lib1.setVector(zeroBytes);
         lib1.save();
         
         lib2 = em.create(Library.class);
         lib2.setName("group:artifact:2.0");
-        lib2.setVector(zeroBytes);
         lib2.save();
         
         service = new EntityService(em, zeroBytes);
@@ -72,7 +70,6 @@ public class EntityServiceLibraryTest {
     public void testThrowExceptionWhenMultipleLibrariesWithSameIdentifierFound() throws Exception {
         Library anotherLib2 = em.create(Library.class);
         anotherLib2.setName("group:artifact:2.0");
-        anotherLib2.setVector(zeroBytes);
         anotherLib2.save();
 
         exception.expect(SQLException.class);

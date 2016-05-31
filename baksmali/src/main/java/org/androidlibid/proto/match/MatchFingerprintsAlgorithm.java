@@ -58,26 +58,26 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     
     @Override
     public boolean run() {
-        try {
-            
-            Date before = new Date();
-            
-            MatchingStrategy strategy = setupStrategy(); 
-            
-            Map<String, Fingerprint> packagePrints = generatePackagePrints();
-            
-            strategy.matchPrints(packagePrints);
-            Map<Position, Integer> positions = strategy.getPositions();
-            Map<Classification, Integer> classifications = strategy.getClassifications();
-            
-            Date after = new Date();
-            long diff = after.getTime() - before.getTime();
-            
-            new StatsLogger().logStats(positions, classifications, diff);
-            
-       } catch (SQLException | IOException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
+//        try {
+//            
+//            Date before = new Date();
+//            
+//            MatchingStrategy strategy = setupStrategy(); 
+//            
+//            Map<String, Fingerprint> packagePrints = generatePackagePrints();
+//            
+//            strategy.matchPrints(packagePrints);
+//            Map<Position, Integer> positions = strategy.getPositions();
+//            Map<Classification, Integer> classifications = strategy.getClassifications();
+//            
+//            Date after = new Date();
+//            long diff = after.getTime() - before.getTime();
+//            
+//            new StatsLogger().logStats(positions, classifications, diff);
+//            
+//       } catch (SQLException | IOException ex) {
+//            LOGGER.error(ex.getMessage(), ex);
+//        }
         return true;
     }
 

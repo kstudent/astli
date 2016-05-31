@@ -19,20 +19,20 @@ public class FingerprintService {
         this.service = service;
     }
     
-    public List<Fingerprint> findPackagesByDepth(int depth) throws SQLException {
-        
-        List<Fingerprint> pckgFingerprints = new ArrayList<>();
-        
-        for(Package pckg : service.findPackagesByDepth(depth)) {
-            pckgFingerprints.add(new Fingerprint(pckg));
-        }
-                
-        return pckgFingerprints;
-    }
+//    public List<Fingerprint> findPackagesByDepth(int depth) throws SQLException {
+//        
+//        List<Fingerprint> pckgFingerprints = new ArrayList<>();
+//        
+//        for(Package pckg : service.findPackagesByDepth(depth)) {
+//            pckgFingerprints.add(new Fingerprint(pckg));
+//        }
+//                
+//        return pckgFingerprints;
+//    }
 
-    public List<Fingerprint> findClassesByPackageDepth(int depth) throws SQLException {
-        
-        List<Fingerprint> haystack = new ArrayList<>();
+//    public List<Fingerprint> findClassesByPackageDepth(int depth) throws SQLException {
+//        
+//        List<Fingerprint> haystack = new ArrayList<>();
         
 //        for (Package pckg : service.findPackagesByDepth(depth)) {
 //            MethodFingerprint pckgFingerprint = new MethodFingerprint(pckg);
@@ -44,12 +44,12 @@ public class FingerprintService {
 //            }
 //        }
         
-        return haystack; 
-    }
+//        return haystack; 
+//    }
     
-    public List<Fingerprint> findMethodsByPackageDepth(int depth) throws SQLException {
+//    public List<Fingerprint> findMethodsByPackageDepth(int depth) throws SQLException {
         
-        List<Fingerprint> haystack = new ArrayList<>();
+//        List<Fingerprint> haystack = new ArrayList<>();
         
 //        for (Package pckg : service.findPackagesByDepth(depth)) {
 //            MethodFingerprint pckgFingerprint = new MethodFingerprint(pckg);
@@ -67,19 +67,19 @@ public class FingerprintService {
 //            }
 //        }
         
-        return haystack; 
-    }
+//        return haystack; 
+//    }
     
-    public List<Fingerprint> findMethodsByLength(double length, double size) throws SQLException {
-        
-        List<Fingerprint> methods = new ArrayList<>();
-        
-        for(Method methodEntity : service.findMethodsByLength(length, size)) {
-            methods.add(new Fingerprint(methodEntity));
-        }
-        
-        return methods;
-    }
+//    public List<Fingerprint> findMethodsByLength(double length, double size) throws SQLException {
+//        
+//        List<Fingerprint> methods = new ArrayList<>();
+//        
+//        for(Method methodEntity : service.findMethodsByLength(length, size)) {
+//            methods.add(new Fingerprint(methodEntity));
+//        }
+//        
+//        return methods;
+//    }
     
     public Fingerprint getPackageByMethod(Fingerprint keyMethod) {
         
@@ -121,49 +121,49 @@ public class FingerprintService {
         return null;
     }
     
-    public List<Fingerprint> findPackagesByName(String name) throws SQLException{
-        List<Fingerprint> pckgFingerprints = new ArrayList<>();
-        
-        for(Package pckg : service.findPackagesByName(name)) {
-            pckgFingerprints.add(new Fingerprint(pckg));
-        }
-                
-        return pckgFingerprints;
-    }
-    
-    public List<Fingerprint> findPackages() throws SQLException {
-        
-        List<Fingerprint> pckgFingerprints = new ArrayList<>();
-        
-        for(Package pckg : service.findPackages()) {
-            pckgFingerprints.add(new Fingerprint(pckg));
-        }
-                
-        return pckgFingerprints;
-    }
-    
-    public void saveClass(Fingerprint classFingerprint, String mvnIdentifier) throws SQLException {
-        
-        String className = classFingerprint.getName();
-        String packageName = SmaliNameConverter.extractPackageNameFromClassName(className);
-        
-        Clazz clazz = service.saveClass(
-                classFingerprint.getFeatureVector().toBinary(), 
-                className, 
-                packageName, 
-                mvnIdentifier
-        );
-
-//        for(MethodFingerprint method : classFingerprint.getChildFingerprints()) {
-//            service.saveMethod(
-//                    method.getFeatureVector().toBinary(), 
-//                    method.getName(), 
-//                    method.getLength(), 
-//                    clazz
-//            );
+//    public List<Fingerprint> findPackagesByName(String name) throws SQLException{
+//        List<Fingerprint> pckgFingerprints = new ArrayList<>();
+//        
+//        for(Package pckg : service.findPackagesByName(name)) {
+//            pckgFingerprints.add(new Fingerprint(pckg));
 //        }
-
-    }
-    
+//                
+//        return pckgFingerprints;
+//    }
+//    
+//    public List<Fingerprint> findPackages() throws SQLException {
+//        
+//        List<Fingerprint> pckgFingerprints = new ArrayList<>();
+//        
+//        for(Package pckg : service.findPackages()) {
+//            pckgFingerprints.add(new Fingerprint(pckg));
+//        }
+//                
+//        return pckgFingerprints;
+//    }
+//    
+//    public void saveClass(Fingerprint classFingerprint, String mvnIdentifier) throws SQLException {
+//        
+//        String className = classFingerprint.getName();
+//        String packageName = SmaliNameConverter.extractPackageNameFromClassName(className);
+//        
+//        Clazz clazz = service.saveClass(
+//                classFingerprint.getFeatureVector().toBinary(), 
+//                className, 
+//                packageName, 
+//                mvnIdentifier
+//        );
+//
+////        for(MethodFingerprint method : classFingerprint.getChildFingerprints()) {
+////            service.saveMethod(
+////                    method.getFeatureVector().toBinary(), 
+////                    method.getName(), 
+////                    method.getLength(), 
+////                    clazz
+////            );
+////        }
+//
+//    }
+//    
     
 }

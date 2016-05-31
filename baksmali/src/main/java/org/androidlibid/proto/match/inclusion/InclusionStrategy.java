@@ -117,25 +117,25 @@ public class InclusionStrategy extends MatchingStrategy {
      */
     private void checkPackageAgainstSimilarMethods(Result result) throws SQLException {
         
-        Fingerprint packageNeedle = result.getNeedle();
-        
-        List<Fingerprint> methodNeedles = distillMethodNeedles(packageNeedle);
-        
-        for(Fingerprint methodNeedle : methodNeedles) {
-
-            double length = methodNeedle.getLength();
-            double size   = length * (1 - settings.getMethodAcceptThreshold());
-                
-            LOGGER.info("** needle: {} ({})", methodNeedle.getName(), frmt.format(length)); 
-
-            List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
-
-            LOGGER.info("{} similar needles to check", methodHaystack.size()); 
-
-            if(tryFindingNeedleInHaystack(result, methodNeedle, methodHaystack)) {
-                return;
-            }
-        }
+//        Fingerprint packageNeedle = result.getNeedle();
+//        
+//        List<Fingerprint> methodNeedles = distillMethodNeedles(packageNeedle);
+//        
+//        for(Fingerprint methodNeedle : methodNeedles) {
+//
+//            double length = methodNeedle.getLength();
+//            double size   = length * (1 - settings.getMethodAcceptThreshold());
+//                
+//            LOGGER.info("** needle: {} ({})", methodNeedle.getName(), frmt.format(length)); 
+//
+//            List<Fingerprint> methodHaystack = service.findMethodsByLength(length, size);                
+//
+//            LOGGER.info("{} similar needles to check", methodHaystack.size()); 
+//
+//            if(tryFindingNeedleInHaystack(result, methodNeedle, methodHaystack)) {
+//                return;
+//            }
+//        }
     }
 
     /**

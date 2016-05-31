@@ -30,34 +30,32 @@ public class EntityService {
         em.deleteWithSQL(Library.class, "1 = 1");
     }
     
-    //@todo: maybe dont synchronize this method? 
-    public synchronized Method saveMethod(byte[] vector, String methodName, double length, Clazz clazz) 
+    public Method saveMethod(byte[] vector, String methodName, String signature, Clazz clazz) 
             throws SQLException
     {
         Method entity = em.create(Method.class);
         
         entity.setVector(vector);
+        entity.setSignature(signature);
         entity.setName(methodName);
         entity.setClazz(clazz);
-        entity.setLength(length);
         
         entity.save();
         return entity;
     }
     
-    public synchronized Clazz saveClass(byte[] vector, String className, 
+    public synchronized Clazz saveClass(String className, 
         String packageName, String mvnIdentifier) throws SQLException {
 
-        Clazz print = em.create(Clazz.class);
+        Clazz clazz = em.create(Clazz.class);
         Library lib  = saveLibrary(mvnIdentifier);
         Package pckg = savePackage(packageName, lib);
         
-        print.setName(className);
-        print.setVector(vector);
-        print.setPackage(pckg);
-        print.save();
+        clazz.setName(className);
+        clazz.setPackage(pckg);
+        clazz.save();
 
-        return print;
+        return clazz;
     }
     
     public Package savePackage(String packageName, Library lib) throws SQLException {
@@ -67,7 +65,6 @@ public class EntityService {
             entity = em.create(Package.class);
             entity.setName(packageName);
             entity.setLibrary(lib);
-            entity.setVector(defaultVector);
             entity.save();
         }
         
@@ -81,7 +78,6 @@ public class EntityService {
         if (entity == null) {
             entity = em.create(Library.class);
             entity.setName(mvnIdentifier);
-            entity.setVector(defaultVector);
             entity.save();
         }
         
@@ -122,19 +118,6 @@ public class EntityService {
         return packages;
     }
     
-    public List<Method> findMethodsByLength(double length, double size) throws SQLException {
-        
-        if(size <= 0 || length <= 0 || length - size <= 0) {
-            throw new IllegalArgumentException("Length or Size are negative");
-        }
-        
-        Method[] found = em.find(Method.class, 
-                "LENGTH > ? AND LENGTH < ? ORDER BY LENGTH DESC", 
-                length - size, length + size); 
-        
-        return Arrays.asList(found);
-    }
-
     public @Nullable Package findPackageByNameAndLib(
             String packageName, Library library) throws SQLException {
         

@@ -2,6 +2,7 @@ package org.androidlibid.proto;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -17,11 +18,24 @@ public class PackageHierarchy {
     }
 
     void addMethods(String className, Map<String, Fingerprint> prints) {
-        
         if(classes.containsKey(className)) {
             classes.get(className).putAll(prints);
         }
-        
         classes.put(className, prints);
     }
+
+    public String getName() {
+        return name;
+    }
+    
+    public Set<String> getClassNames() {
+        return classes.keySet();
+    }
+    
+    public Map<String, Fingerprint> getMethodsByClassName (String className) {
+        Map<String, Fingerprint> methods = classes.get(className);
+        return (methods == null) 
+                ? new HashMap<String, Fingerprint>() : methods; 
+    } 
+    
 }
