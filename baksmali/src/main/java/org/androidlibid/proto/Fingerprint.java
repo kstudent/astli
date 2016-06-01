@@ -7,6 +7,7 @@ import org.androidlibid.proto.ast.FeatureGenerator;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.androidlibid.proto.ao.Method;
 import org.apache.commons.lang.NotImplementedException;
 import org.la4j.Vector;
@@ -17,6 +18,9 @@ public class Fingerprint {
     private String name;
     private Vector vector;
     private String signature;
+    
+    @Nullable
+    private final Method method;
 
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE_LENGTH;
@@ -51,12 +55,16 @@ public class Fingerprint {
         } else {
             this.vector = BasicVector.fromBinary(byteVector); 
         }
+        
+        this.method = method;
+        
     }
     
     public Fingerprint(String name) {
         this.vector = new BasicVector(FEATURES.size());
         this.name = name;
         this.signature = "";
+        this.method = null;
     }
     
     public Fingerprint() {
@@ -64,15 +72,15 @@ public class Fingerprint {
     } 
     
     public Fingerprint(double... array) {
+        this("");
         this.vector = BasicVector.fromArray(array);
-        this.name = "";
-        this.signature = ""; 
     }
     
     public Fingerprint(Fingerprint copy) {
         this.vector = copy.vector.copy();
         this.name = copy.name;
         this.signature = copy.signature;
+        this.method = copy.method;
     }
     
     public void incrementFeature(NodeType... dimension) {
@@ -125,8 +133,12 @@ public class Fingerprint {
         }
     }
     
-    public double getLength() {
-        return this.vector.euclideanNorm();
+    public int getLength() {
+        return new Double(vector.manhattanNorm()).intValue();
+    }
+    
+    public double getEuclideanLength() {
+        return vector.euclideanNorm();
     }
     
     public double getDistanceToFingerprint(Fingerprint that) {
@@ -180,6 +192,15 @@ public class Fingerprint {
     public void setSignature(String signature) {
         this.signature = signature;
     }
+
+    public Method getMethod() {
+        
+        if(method == null) {
+            throw new RuntimeException("Fingerprint does not have Reference to "
+                    + "its entity");
+        }
+        return method;
+    }
     
     @Override
     public String toString() {
@@ -224,10 +245,29 @@ public class Fingerprint {
     public static Comparator<Fingerprint> sortByLengthDESC = new Comparator<Fingerprint>() {
         @Override
         public int compare(Fingerprint that, Fingerprint other) {
-            double thatNeedleLength  = that.getLength();
-            double otherNeedleLength = other.getLength();
+            double thatNeedleLength  = that.getEuclideanLength();
+            double otherNeedleLength = other.getEuclideanLength();
             if (thatNeedleLength > otherNeedleLength) return -1;
             if (thatNeedleLength < otherNeedleLength) return  1;
+            return 0;
+        }
+    };
+    
+    public static Comparator<Fingerprint> sortBySignatureAndLengthDesc = new Comparator<Fingerprint>() {
+        @Override
+        public int compare(Fingerprint that, Fingerprint othr) {
+            
+            int thatSigLength = that.getSignature().length();
+            int othrSigLength = othr.getSignature().length();
+            
+            if(thatSigLength > othrSigLength) return -1;
+            if(thatSigLength < othrSigLength) return  1;
+            
+            int thatLength = that.getLength();
+            int othrLength = othr.getLength();
+            if (thatLength > othrLength) return -1;
+            if (thatLength < othrLength) return  1;
+            
             return 0;
         }
     };

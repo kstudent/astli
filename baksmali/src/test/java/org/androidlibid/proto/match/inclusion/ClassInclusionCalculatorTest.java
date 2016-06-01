@@ -37,11 +37,11 @@ public class ClassInclusionCalculatorTest {
         classA.addAll(methods);
         
         double score = calculator.computeInclusion(classA, classA);
-        double expectedScore = methods.get(0).getLength() 
-                + methods.get(1).getLength()  
-                + methods.get(2).getLength()  
-                + methods.get(3).getLength()  
-                + methods.get(4).getLength(); 
+        double expectedScore = methods.get(0).getEuclideanLength() 
+                + methods.get(1).getEuclideanLength()  
+                + methods.get(2).getEuclideanLength()  
+                + methods.get(3).getEuclideanLength()  
+                + methods.get(4).getEuclideanLength(); 
         
         assert(doubleEquals(score, expectedScore));
     }
@@ -57,9 +57,9 @@ public class ClassInclusionCalculatorTest {
         classB.add(methods.get(4));
         
         double score = calculator.computeInclusion(classA, classB);
-        double expectedScore = methods.get(0).getLength() 
-                + methods.get(2).getLength() 
-                + methods.get(4).getLength();
+        double expectedScore = methods.get(0).getEuclideanLength() 
+                + methods.get(2).getEuclideanLength() 
+                + methods.get(4).getEuclideanLength();
         
         assert(doubleEquals(score, expectedScore));
     }
@@ -106,11 +106,11 @@ public class ClassInclusionCalculatorTest {
 
         double score = calculator.computeInclusion(classB, classA);
 
-        double maxScore = methods.get(0).getLength() 
-                + methods.get(1).getLength()  
-                + methods.get(2).getLength()  
-                + methods.get(3).getLength()  
-                + methods.get(4).getLength(); 
+        double maxScore = methods.get(0).getEuclideanLength() 
+                + methods.get(1).getEuclideanLength()  
+                + methods.get(2).getEuclideanLength()  
+                + methods.get(3).getEuclideanLength()  
+                + methods.get(4).getEuclideanLength(); 
         
         assert(score < maxScore);
         assert(score > maxScore * .8);
@@ -130,11 +130,11 @@ public class ClassInclusionCalculatorTest {
 
         double score = calculator.computeInclusion(classB, classA);
         
-        double maxScore = methods.get(0).getLength() 
-                + methods.get(1).getLength()  
-                + methods.get(2).getLength()  
-                + methods.get(3).getLength()  
-                + methods.get(4).getLength(); 
+        double maxScore = methods.get(0).getEuclideanLength() 
+                + methods.get(1).getEuclideanLength()  
+                + methods.get(2).getEuclideanLength()  
+                + methods.get(3).getEuclideanLength()  
+                + methods.get(4).getEuclideanLength(); 
         
         assert(score < maxScore * .1);
     }

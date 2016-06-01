@@ -17,7 +17,7 @@ public class PackageHierarchy {
         this.name = name;
     }
 
-    void addMethods(String className, Map<String, Fingerprint> prints) {
+    public void addMethods(String className, Map<String, Fingerprint> prints) {
         if(classes.containsKey(className)) {
             classes.get(className).putAll(prints);
         }
@@ -37,5 +37,17 @@ public class PackageHierarchy {
         return (methods == null) 
                 ? new HashMap<String, Fingerprint>() : methods; 
     } 
+    
+    public String getClassNameByMethod(Fingerprint method) {
+        for(String className : classes.keySet()) {
+            Map<String, Fingerprint> methods = classes.get(className);
+            
+            if(methods.containsValue(method)) {
+                return className;
+            }
+        }
+        
+        throw new RuntimeException("Method " + method.getName() + " not in hierarchy");
+    }
     
 }

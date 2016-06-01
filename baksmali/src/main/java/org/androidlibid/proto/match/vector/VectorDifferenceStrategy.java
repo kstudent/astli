@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.androidlibid.proto.match.FingerprintMatcher;
 import org.androidlibid.proto.match.FingerprintMatcher.Result;
@@ -38,25 +39,25 @@ public class VectorDifferenceStrategy extends MatchingStrategy {
     }
 
     @Override
-    public void matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
+    public void matchHierarchies(Map<String, PackageHierarchy> packagePrints) throws SQLException {
         
-        evaluator.printResultRowHeader();
-        
-        int count = 0;
-        
-        for(String packageName : packagePrints.keySet()) {
-            
-            Fingerprint packageNeedle = packagePrints.get(packageName);
-            
-            if(packageName.startsWith("android")) continue;
-            if(packageName.equals("")) continue;
-            
-            LOGGER.info("{} ({}%)", packageName, ((float)(count++) / packagePrints.size()) * 100); 
-         
-            int packageDepth = StringUtils.countMatches(packageName, ".");
-            
-            matchNeedle(packageNeedle, packageDepth);
-        }
+//        evaluator.printResultRowHeader();
+//        
+//        int count = 0;
+//        
+//        for(String packageName : packagePrints.keySet()) {
+//            
+//            Fingerprint packageNeedle = packagePrints.get(packageName);
+//            
+//            if(packageName.startsWith("android")) continue;
+//            if(packageName.equals("")) continue;
+//            
+//            LOGGER.info("{} ({}%)", packageName, ((float)(count++) / packagePrints.size()) * 100); 
+//         
+//            int packageDepth = StringUtils.countMatches(packageName, ".");
+//            
+//            matchNeedle(packageNeedle, packageDepth);
+//        }
     }
 
     private void matchNeedle(Fingerprint packageNeedle, int packageDepth) throws SQLException {

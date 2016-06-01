@@ -115,7 +115,7 @@ public class ResultEvaluator {
 
         for(Fingerprint matchByDistance : matchesByDistance) {
 
-            double maxLength = Math.max(matchByDistance.getLength(), needle.getLength());
+            double maxLength = Math.max(matchByDistance.getEuclideanLength(), needle.getEuclideanLength());
             double eucDiffR  = maxLength - matchByDistance.getDistanceToFingerprint(needle);
 
             if(eucDiffR < 0) eucDiffR = 0;

@@ -22,6 +22,7 @@ import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
+import org.androidlibid.proto.ao.PackageHierarchyService;
 import org.androidlibid.proto.ast.ASTBuilderFactory;
 import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
@@ -45,39 +46,30 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private static final Logger LOGGER = LogManager.getLogger( MatchFingerprintsAlgorithm.class.getName() );
     private final ASTBuilderFactory astBuilderFactory;
        
-    private Set<String> interestedPackageNames = new HashSet<>();
-    
     public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options   = options;
         this.classDefs = classDefs;
         astBuilderFactory = new ASTBuilderFactory(options);
         
-//        interestedPackageNames.add("org.spongycastle.util.encoders");
-        
     }
     
     @Override
     public boolean run() {
-//        try {
-//            
-//            Date before = new Date();
-//            
-//            MatchingStrategy strategy = setupStrategy(); 
-//            
-//            Map<String, Fingerprint> packagePrints = generatePackagePrints();
-//            
-//            strategy.matchPrints(packagePrints);
-//            Map<Position, Integer> positions = strategy.getPositions();
-//            Map<Classification, Integer> classifications = strategy.getClassifications();
-//            
-//            Date after = new Date();
-//            long diff = after.getTime() - before.getTime();
-//            
-//            new StatsLogger().logStats(positions, classifications, diff);
-//            
-//       } catch (SQLException | IOException ex) {
-//            LOGGER.error(ex.getMessage(), ex);
-//        }
+        try {
+            Date before = new Date();
+            MatchingStrategy strategy = setupStrategy(); 
+            Map<String, PackageHierarchy> hierarchies = generatePackagePrints();
+            strategy.matchHierarchies(hierarchies);
+            Map<Position, Integer> positions = strategy.getPositions();
+            Map<Classification, Integer> classifications = strategy.getClassifications();
+            
+            Date after = new Date();
+            long diff = after.getTime() - before.getTime();
+            new StatsLogger().logStats(positions, classifications, diff);
+            
+        } catch (SQLException | IOException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
         return true;
     }
 
@@ -112,44 +104,44 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private MatchingStrategy setupStrategy() throws SQLException {
         
         EntityService service = EntityServiceFactory.createService();
-        FingerprintService fingerprintService = new FingerprintService(service);
+        FingerprintService fpService = new FingerprintService(service);
         ResultEvaluator evaluator = new ResultEvaluator();
         
         new SetupLogger(options, service).logSetup();
         
-        if(options.strategy.equals(InclusionStrategy.class)) {
-            FingerprintMatcher matcher = new FingerprintMatcher();
-            
-            ClassInclusionCalculator classInclusionCalculator = new ClassInclusionCalculator(
-                                    matcher, 
-                                    options.allowRepeatedMatching
-                            );
-            
-            classInclusionCalculator.setInterestedPackageNames(interestedPackageNames);
-            
-            PackageInclusionCalculator packageInclusionCalculator = 
-                    new PackageInclusionCalculator(
-                            classInclusionCalculator,
-                            options.allowRepeatedMatching
-                    );
-
-            InclusionStrategy strategy = new InclusionStrategy(
-                fingerprintService, packageInclusionCalculator, 
-                    evaluator, options.inclusionSettings);
-            return strategy;
-            
-        } else if(options.strategy.equals(QuickInclusionCalculator.class)) {
-            InclusionStrategy strategy = new InclusionStrategy(
-                fingerprintService, new QuickInclusionCalculator(), 
-                    evaluator, options.inclusionSettings);
-            return strategy;
-            
-        } else if(options.strategy.equals(DebugObfuscationInvarianceStrategy.class)) {
-            return new DebugObfuscationInvarianceStrategy(fingerprintService);
-
-        } else {
-            FingerprintMatcher matcher = new FingerprintMatcher(options.similarityThreshold);
-            return new VectorDifferenceStrategy(fingerprintService, evaluator, matcher, options.vectorDiffLevel);
-        }
+        return new HybridStrategy(fpService);
+        
+//        if(options.strategy.equals(InclusionStrategy.class)) {
+//            FingerprintMatcher matcher = new FingerprintMatcher();
+//            
+//            ClassInclusionCalculator classInclusionCalculator = new ClassInclusionCalculator(
+//                                    matcher, 
+//                                    options.allowRepeatedMatching
+//                            );
+//            
+//            PackageInclusionCalculator packageInclusionCalculator = 
+//                    new PackageInclusionCalculator(
+//                            classInclusionCalculator,
+//                            options.allowRepeatedMatching
+//                    );
+//
+//            InclusionStrategy strategy = new InclusionStrategy(
+//                fingerprintService, packageInclusionCalculator, 
+//                    evaluator, options.inclusionSettings);
+//            return strategy;
+//            
+//        } else if(options.strategy.equals(QuickInclusionCalculator.class)) {
+//            InclusionStrategy strategy = new InclusionStrategy(
+//                fingerprintService, new QuickInclusionCalculator(), 
+//                    evaluator, options.inclusionSettings);
+//            return strategy;
+//            
+//        } else if(options.strategy.equals(DebugObfuscationInvarianceStrategy.class)) {
+//            return new DebugObfuscationInvarianceStrategy(fingerprintService);
+//
+//        } else {
+//            FingerprintMatcher matcher = new FingerprintMatcher(options.similarityThreshold);
+//            return new VectorDifferenceStrategy(fingerprintService, evaluator, matcher, options.vectorDiffLevel);
+//        }
     }
 }

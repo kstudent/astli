@@ -1,6 +1,7 @@
 package org.androidlibid.proto;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,13 @@ public class PackageHierarchyGenerator {
     private final ASTToFingerprintTransformer ast2fpt;
     private final Map<String, String> mappings;
     
+    private static List<String> BLACKLISTED_PACKAGES; 
+    
+    static {
+        BLACKLISTED_PACKAGES = new ArrayList<>();
+        BLACKLISTED_PACKAGES.add("android.support");
+    }
+    
     private static final Logger LOGGER = LogManager.getLogger(PackageHierarchyGenerator.class);
 
     public PackageHierarchyGenerator(baksmaliOptions options, 
@@ -42,6 +50,8 @@ public class PackageHierarchyGenerator {
             String obfClassName = SmaliNameConverter.convertTypeFromSmali(smaliClassName);
             String className    = translateName(obfClassName);
             String packageName  = SmaliNameConverter.extractPackageNameFromClassName(className);
+            
+            if(isBlacklisted(packageName)) continue;
             
             PackageHierarchy hierarchy; 
             
@@ -99,5 +109,16 @@ public class PackageHierarchyGenerator {
         String clearSignature = clearIdentifier.substring(identifierInit);
         
         return clearSignature;
+    }
+    
+    private boolean isBlacklisted(String packageName) {
+        
+        for(String blackListedPackage : BLACKLISTED_PACKAGES) {
+            if(packageName.startsWith(blackListedPackage)) 
+                return true;
+        }
+        
+        return false;
+        
     }
 }

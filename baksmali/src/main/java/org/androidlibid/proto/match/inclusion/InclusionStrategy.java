@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.match.Evaluation;
 import org.androidlibid.proto.match.MatchingStrategy;
 import org.androidlibid.proto.match.ResultEvaluator;
@@ -54,31 +55,31 @@ public class InclusionStrategy extends MatchingStrategy {
     
 
     @Override
-    public void matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
+    public void matchHierarchies(Map<String, PackageHierarchy> packagePrints) throws SQLException {
         
-        LOGGER.info("* Match Prints");
-
-        evaluator.printResultRowHeader();
-        
-        int count = 0;
-        
-        List<Fingerprint> packageNeedles = new ArrayList<>(packagePrints.values());
-        Collections.sort(packageNeedles, Fingerprint.sortByLengthDESC);
-        
-        for(Fingerprint packageNeedle : packageNeedles) {
-            
-            LOGGER.info("{}%", ((float)(count++) / packagePrints.size()) * 100); 
-            
-            if(packageNeedle.getName().startsWith("android")) continue;
-            if(packageNeedle.getName().equals("")) continue;
-            
-            Result result = findMatchForPackage(packageNeedle);
-
-            Evaluation evaluation = evaluator.evaluateResult(result);
-            
-            incrementStats(evaluation);
-            
-        }
+//        LOGGER.info("* Match Prints");
+//
+//        evaluator.printResultRowHeader();
+//        
+//        int count = 0;
+//        
+//        List<Fingerprint> packageNeedles = new ArrayList<>(packagePrints.values());
+//        Collections.sort(packageNeedles, Fingerprint.sortByLengthDESC);
+//        
+//        for(Fingerprint packageNeedle : packageNeedles) {
+//            
+//            LOGGER.info("{}%", ((float)(count++) / packagePrints.size()) * 100); 
+//            
+//            if(packageNeedle.getName().startsWith("android")) continue;
+//            if(packageNeedle.getName().equals("")) continue;
+//            
+//            Result result = findMatchForPackage(packageNeedle);
+//
+//            Evaluation evaluation = evaluator.evaluateResult(result);
+//            
+//            incrementStats(evaluation);
+//            
+//        }
     }
     
     private @Nullable Result findMatchForPackage(Fingerprint packageNeedle) throws SQLException {
@@ -212,7 +213,7 @@ public class InclusionStrategy extends MatchingStrategy {
         
         double methodSimilarityScore = methodCandidate.getSimilarityScoreToFingerprint(methodNeedle);
         
-        double maxLength = Math.max(methodNeedle.getLength(), methodCandidate.getLength());
+        double maxLength = Math.max(methodNeedle.getEuclideanLength(), methodCandidate.getEuclideanLength());
 
         return (methodSimilarityScore / maxLength > settings.getMethodAcceptThreshold());
     }

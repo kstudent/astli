@@ -54,6 +54,8 @@
         </Logger>
         
         <Logger name="org.androidlibid.proto.match.MatchFingerprintsAlgorithm" level="info"/>
+        
+        <Logger name="org.androidlibid.proto.match.ASTV2InclusionStrategy" level="info"/>
 
         <Logger name="org.androidlibid.proto.match.inclusion.InclusionStrategy" level="info"/>
         <!--<Logger name="org.androidlibid.proto.match.InclusionStrategy" level="debug"/>-->

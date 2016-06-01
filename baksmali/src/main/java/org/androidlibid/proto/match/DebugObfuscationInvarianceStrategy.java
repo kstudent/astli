@@ -3,6 +3,7 @@ package org.androidlibid.proto.match;
 import java.sql.SQLException;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.androidlibid.proto.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +26,7 @@ public class DebugObfuscationInvarianceStrategy extends MatchingStrategy {
     }
     
     @Override
-    public void matchPrints(Map<String, Fingerprint> packagePrints) throws SQLException {
+    public void matchHierarchies(Map<String, PackageHierarchy> packagePrints) throws SQLException {
         
 //        for(MethodFingerprint packageNeedle : packagePrints.values()) {
 //            

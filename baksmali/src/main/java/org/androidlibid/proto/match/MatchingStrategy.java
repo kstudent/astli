@@ -3,7 +3,7 @@ package org.androidlibid.proto.match;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.PackageHierarchy;
 
 /**
  *
@@ -39,7 +39,7 @@ public abstract class MatchingStrategy {
         classifications.put(evaluation.getClassification(), classifications.get(evaluation.getClassification()) + 1);
     } 
     
-    abstract public void matchPrints(Map<String, Fingerprint> packagePrints) 
+    abstract public void matchHierarchies(Map<String, PackageHierarchy> hierarchies) 
             throws SQLException;
 
 }

@@ -2,8 +2,6 @@ package org.androidlibid.proto.match.inclusion;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
 import org.apache.logging.log4j.LogManager;

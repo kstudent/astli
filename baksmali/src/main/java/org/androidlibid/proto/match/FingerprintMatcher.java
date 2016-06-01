@@ -43,7 +43,7 @@ public class FingerprintMatcher {
         List<Fingerprint> matches = new ArrayList<>();
         Result result = new Result();
         
-        double maxSimScore = needle.getLength();
+        double maxSimScore = needle.getEuclideanLength();
 //        needle.setComputedSimilarityScore(maxSimScore);
         
         for(Fingerprint candidate : haystack) {

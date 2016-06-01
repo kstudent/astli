@@ -68,7 +68,7 @@ public class ClassInclusionCalculator implements InclusionCalculator {
             String elementName = element.getName();
             
             double score = 0;
-            double maxScore = element.getLength();
+            double maxScore = element.getEuclideanLength();
             
             if(result.getMatchesByDistance().size() > 0) {
                 Fingerprint closestElmentInBiggerSet = result.getMatchesByDistance().iterator().next();

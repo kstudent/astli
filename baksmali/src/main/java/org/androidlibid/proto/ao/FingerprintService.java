@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.SmaliNameConverter;
 
 /**
  * Convenient Facade of EntityService to hide AO layer
@@ -19,6 +18,25 @@ public class FingerprintService {
         this.service = service;
     }
     
+    public List<Fingerprint> findMethodsBySignature(String signature) throws SQLException {
+        List<Fingerprint> methods = new ArrayList<>();
+        
+        for(Method methodEntity : service.findMethodsBySignature(signature)) {
+            methods.add(new Fingerprint(methodEntity));
+        }
+        
+        return methods;
+    }
+    
+    public String getClassNameByFingerprint(Fingerprint print) {
+        
+        Method keyMethodEntity = print.getMethod();
+
+        Clazz clazzEntity = keyMethodEntity.getClazz(); 
+        
+        return clazzEntity.getName();
+        
+    }
 //    public List<Fingerprint> findPackagesByDepth(int depth) throws SQLException {
 //        
 //        List<Fingerprint> pckgFingerprints = new ArrayList<>();
@@ -80,9 +98,9 @@ public class FingerprintService {
 //        
 //        return methods;
 //    }
-    
-    public Fingerprint getPackageByMethod(Fingerprint keyMethod) {
-        
+
+//    public Fingerprint getPackageByMethod(Fingerprint keyMethod) {
+
 //        Method keyMethodEntity = (Method) keyMethod.getEntity();
 //        if(keyMethodEntity == null) {
 //            throw new RuntimeException("Method.getEntity() was null."); 
@@ -91,10 +109,10 @@ public class FingerprintService {
 //        Package packageEntity = keyMethodEntity.getClazz().getPackage();
         
 //        return new MethodFingerprint(packageEntity);
-        return new Fingerprint();
-    }
+//        return new Fingerprint();
+//    }
     
-    public Fingerprint getPackageHierarchy(Fingerprint pckg) {
+//    public Fingerprint getPackageHierarchy(Fingerprint pckg) {
         
 //        Package packageEntity = (Package) pckg.getEntity();
 //        if(packageEntity == null) {
@@ -118,8 +136,8 @@ public class FingerprintService {
 //        }
         
 //        return packageHierarchy;
-        return null;
-    }
+//        return null;
+//    }
     
 //    public List<Fingerprint> findPackagesByName(String name) throws SQLException{
 //        List<Fingerprint> pckgFingerprints = new ArrayList<>();
@@ -165,5 +183,5 @@ public class FingerprintService {
 //
 //    }
 //    
-    
+
 }
