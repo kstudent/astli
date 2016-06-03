@@ -39,7 +39,7 @@ public class PackageHierarchyService {
                 
                 Fingerprint methodPrint = methods.get(methodName);
                 
-                service.saveMethod(methodPrint.getFeatureVector().toBinary(), 
+                service.saveMethod(methodPrint.getBinaryFeatureVector(), 
                         methodName, methodPrint.getSignature(), clazz);
                 
             }

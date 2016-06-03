@@ -8,10 +8,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.androidlibid.proto.ao.Method;
 import org.apache.commons.lang.NotImplementedException;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
+import org.androidlibid.proto.ao.FingerprintEntity;
 
 public class Fingerprint {
 
@@ -20,7 +20,7 @@ public class Fingerprint {
     private String signature;
     
     @Nullable
-    private final Method method;
+    private final FingerprintEntity method;
 
     private static final List<List<NodeType>> FEATURES;
     private static final int LONGEST_FEATURE_LENGTH;
@@ -28,24 +28,14 @@ public class Fingerprint {
     
     static {
         FEATURES = new FeatureGenerator().generateFeatures();
-        int longestFeatureslength = 0; 
-        for(List<NodeType> feature : FEATURES) {
-            int featureLength = 0;
-            for(NodeType type : feature) {
-                featureLength += type.getName().length() + 2;
-            }
-            if(featureLength > longestFeatureslength) {
-                longestFeatureslength = featureLength;
-            }
-        }
-        LONGEST_FEATURE_LENGTH = longestFeatureslength;
+        LONGEST_FEATURE_LENGTH = 12;
     }
     
     public static int getFeaturesSize() {
         return FEATURES.size();
     }
 
-    public Fingerprint(Method method) {
+    public Fingerprint(FingerprintEntity method) {
         this.signature = method.getSignature();
         this.name = method.getName();
         
@@ -53,7 +43,7 @@ public class Fingerprint {
         if(byteVector == null) {
             this.vector = new BasicVector(FEATURES.size());
         } else {
-            this.vector = BasicVector.fromBinary(byteVector); 
+            this.vector = BasicVector.fromBinary(byteVector);
         }
         
         this.method = method;
@@ -142,19 +132,19 @@ public class Fingerprint {
     }
     
     public double getDistanceToFingerprint(Fingerprint that) {
-        return vector.subtract(that.vector).euclideanNorm();
+        return vector.subtract(that.vector).manhattanNorm();
     }
     
     public double getNonCommutativeSimilarityScoreToFingerprint(Fingerprint that) {
-        double diff = vector.subtract(that.vector).euclideanNorm();
-        double length = this.vector.euclideanNorm(); 
+        double diff = vector.subtract(that.vector).manhattanNorm();
+        double length = this.vector.manhattanNorm(); 
         double similarityScore = length - diff; 
         return (similarityScore > 0)? similarityScore : 0;
     }
     
     public double getSimilarityScoreToFingerprint(Fingerprint that) {
-        double diff = vector.subtract(that.vector).euclideanNorm();
-        double length = Math.max(this.vector.euclideanNorm(), that.vector.euclideanNorm()); 
+        double diff = vector.subtract(that.vector).manhattanNorm();
+        double length = Math.max(this.vector.manhattanNorm(), that.vector.manhattanNorm()); 
         double similarityScore = length - diff; 
         return (similarityScore > 0)? similarityScore : 0;
     }
@@ -167,8 +157,8 @@ public class Fingerprint {
         this.name = name;
     }
 
-    public Vector getFeatureVector() {
-        return vector;
+    public byte[] getBinaryFeatureVector() {
+        return vector.toBinary();
     }
 
     public void setFeatureVector(Vector vector) {
@@ -192,8 +182,12 @@ public class Fingerprint {
     public void setSignature(String signature) {
         this.signature = signature;
     }
+    
+    public int getEntropy() {
+        return (this.signature.length() - 1) * 3 + this.getLength();
+    }
 
-    public Method getMethod() {
+    public FingerprintEntity getMethod() {
         
         if(method == null) {
             throw new RuntimeException("Fingerprint does not have Reference to "
@@ -242,46 +236,21 @@ public class Fingerprint {
 //        return true;
 //    }
     
-    public static Comparator<Fingerprint> sortByLengthDESC = new Comparator<Fingerprint>() {
-        @Override
-        public int compare(Fingerprint that, Fingerprint other) {
-            double thatNeedleLength  = that.getEuclideanLength();
-            double otherNeedleLength = other.getEuclideanLength();
-            if (thatNeedleLength > otherNeedleLength) return -1;
-            if (thatNeedleLength < otherNeedleLength) return  1;
-            return 0;
-        }
+    public static Comparator<Fingerprint> sortByLengthDESC = (Fingerprint that, Fingerprint other) -> {
+        double thatNeedleLength  = that.getEuclideanLength();
+        double otherNeedleLength = other.getEuclideanLength();
+        if (thatNeedleLength > otherNeedleLength) return -1;
+        if (thatNeedleLength < otherNeedleLength) return  1;
+        return 0;
     };
     
-    public static Comparator<Fingerprint> sortBySignatureAndLengthDesc = new Comparator<Fingerprint>() {
-        @Override
-        public int compare(Fingerprint that, Fingerprint othr) {
-            
-            int thatSigLength = that.getSignature().length();
-            int othrSigLength = othr.getSignature().length();
-            
-            if(thatSigLength > othrSigLength) return -1;
-            if(thatSigLength < othrSigLength) return  1;
-            
-            int thatLength = that.getLength();
-            int othrLength = othr.getLength();
-            if (thatLength > othrLength) return -1;
-            if (thatLength < othrLength) return  1;
-            
-            return 0;
-        }
-    };
-    
-    public static Comparator<Fingerprint> sortBySimScoreDESC = new Comparator<Fingerprint>() {
-        @Override
-        public int compare(Fingerprint that, Fingerprint other) {
-            throw new NotImplementedException();
+    public static Comparator<Fingerprint> sortBySimScoreDESC = (Fingerprint that, Fingerprint other) -> {
+        throw new NotImplementedException();
 //            double scoreNeedleThat  = that.getComputedSimilarityScore();
 //            double scoreNeedleOther = other.getComputedSimilarityScore();
 //            if (scoreNeedleThat > scoreNeedleOther) return -1;
 //            if (scoreNeedleThat < scoreNeedleOther) return  1;
 //            return 0;
-        }
     };
     
 }

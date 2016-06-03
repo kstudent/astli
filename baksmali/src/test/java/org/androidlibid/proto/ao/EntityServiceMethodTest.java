@@ -48,18 +48,18 @@ public class EntityServiceMethodTest {
         String methodName = "<init>():void";
         String signature = "V:V";
         
-        Method methodEntity = service.saveMethod(
-            methodFingerprint.getFeatureVector().toBinary(),
+        FingerprintEntity methodEntity = service.saveMethod(
+            methodFingerprint.getBinaryFeatureVector(),
             methodName,
             signature,
             clazzEntity
         );
         
-        Method[] foundMethods = em.find(Method.class, "ID = ?", methodEntity.getID());
+        FingerprintEntity[] foundMethods = em.find(FingerprintEntity.class, "ID = ?", methodEntity.getID());
         
         assert(foundMethods.length == 1);
         
-        Method foundMethod = foundMethods[0];
+        FingerprintEntity foundMethod = foundMethods[0];
         
         assert(foundMethod.equals(methodEntity));
         assert(foundMethod.getClazz().equals(clazzEntity));
@@ -77,10 +77,10 @@ public class EntityServiceMethodTest {
         assert(service.countMethods() == 3);
     }
 
-    private Method createMethod(String name, double... values) throws SQLException {
-        Method entity = em.create(Method.class);
+    private FingerprintEntity createMethod(String name, double... values) throws SQLException {
+        FingerprintEntity entity = em.create(FingerprintEntity.class);
         Fingerprint method = new Fingerprint(values);
-        entity.setVector(method.getFeatureVector().toBinary());
+        entity.setVector(method.getBinaryFeatureVector());
         entity.setSignature(method.getSignature());
         entity.setName(name);
         entity.save(); 
@@ -93,7 +93,7 @@ public class EntityServiceMethodTest {
         @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
+            entityManager.migrate(FingerprintEntity.class, Clazz.class, Package.class, Library.class);
         }
     }
 }

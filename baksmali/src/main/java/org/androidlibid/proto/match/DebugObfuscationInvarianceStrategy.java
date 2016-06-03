@@ -5,10 +5,8 @@ import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.ao.FingerprintService;
-import org.androidlibid.proto.utils.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.la4j.vector.dense.BasicVector;
 
 /**
  *
@@ -74,7 +72,7 @@ public class DebugObfuscationInvarianceStrategy extends MatchingStrategy {
         diff.subtractFeatures(needle);
         diff.abs();
         
-        double errorAbs = diff.getFeatureVector().manhattanNorm();
+        double errorAbs = diff.getLength();
         
         if(errorAbs > 0) {
             LOGGER.info("*** Diff (by errorAbs) : {}", needle.getName());
@@ -99,12 +97,12 @@ public class DebugObfuscationInvarianceStrategy extends MatchingStrategy {
 //        LOGGER.info("euclid norm: {}",     diff.getFeatureVector().euclideanNorm() / candidate.getFeatureVector().euclideanNorm());
     }
 
-    private String toPythonArray(Fingerprint diff) {
-        StringBuilder builder = new StringBuilder("[");
-        BasicVector diffV = (BasicVector) diff.getFeatureVector();   
-        builder.append(StringUtils.implode(diffV.toArray(), ","));
-        builder.append("] ");
-        return builder.toString();
-    }
+//    private String toPythonArray(Fingerprint diff) {
+//        StringBuilder builder = new StringBuilder("[");
+//        BasicVector diffV = (BasicVector) diff.getFeatureVector();   
+//        builder.append(StringUtils.implode(diffV.toArray(), ","));
+//        builder.append("] ");
+//        return builder.toString();
+//    }
     
 }

@@ -24,16 +24,16 @@ public class EntityService {
     }
     
     public void truncateTables() throws SQLException {
-        em.deleteWithSQL(Method.class,  "1 = 1");
+        em.deleteWithSQL(FingerprintEntity.class,  "1 = 1");
         em.deleteWithSQL(Clazz.class,   "1 = 1");
         em.deleteWithSQL(Package.class, "1 = 1");
         em.deleteWithSQL(Library.class, "1 = 1");
     }
     
-    public Method saveMethod(byte[] vector, String methodName, String signature, Clazz clazz) 
+    public FingerprintEntity saveMethod(byte[] vector, String methodName, String signature, Clazz clazz) 
             throws SQLException
     {
-        Method entity = em.create(Method.class);
+        FingerprintEntity entity = em.create(FingerprintEntity.class);
         
         entity.setVector(vector);
         entity.setSignature(signature);
@@ -97,7 +97,7 @@ public class EntityService {
     }    
 
     public int countMethods() throws SQLException {
-        return em.count(Method.class); 
+        return em.count(FingerprintEntity.class); 
     }
     
     public List<Clazz> findClasses() throws SQLException {
@@ -165,7 +165,11 @@ public class EntityService {
         return Arrays.asList(em.find(Package.class, "NAME = ?", name ));
     }
 
-    public List<Method> findMethodsBySignature(String signature) throws SQLException {
-        return Arrays.asList(em.find(Method.class, "SIGNATURE = ?", signature));
+    public List<FingerprintEntity> findMethodsBySignature(String signature) throws SQLException {
+        return Arrays.asList(em.find(FingerprintEntity.class, "SIGNATURE = ?", signature));
+    }
+    
+    public List<FingerprintEntity> findMethodsBySignatureAndVector(String signature, byte[] vector) throws SQLException {
+        return Arrays.asList(em.find(FingerprintEntity.class, "SIGNATURE = ? AND VECTOR = ?", signature, vector));
     }
 }

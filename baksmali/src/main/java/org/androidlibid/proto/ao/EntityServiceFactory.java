@@ -2,9 +2,12 @@ package org.androidlibid.proto.ao;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import net.java.ao.EntityManager;
+import net.java.ao.Query;
 import net.java.ao.builder.EntityManagerBuilder;
 import org.androidlibid.proto.Fingerprint;
 import org.la4j.vector.dense.BasicVector;
@@ -25,15 +28,17 @@ public class EntityServiceFactory {
     public static EntityService createService() throws SQLException {
 
         JdbcProperties jdbcProperties = jdbcProperties();
-
+        
+//        connectToDBAndCreateIndex(jdbcProperties);
+        
         EntityManager entityManager = EntityManagerBuilder
                 .url(jdbcProperties.url)
                 .username(jdbcProperties.username)
-                .password(jdbcProperties.passord)
+                .password(jdbcProperties.password)
                 .auto().build();
 
-        entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
-
+        entityManager.migrate(FingerprintEntity.class, Clazz.class, Package.class, Library.class);
+       
         return new EntityService(entityManager, ZERO_BYTES);
     }
     
@@ -60,5 +65,11 @@ public class EntityServiceFactory {
                 // ignore
             }
         }
+    }
+
+    private static void connectToDBAndCreateIndex(JdbcProperties jdbcProperties) throws SQLException {
+        
+//        Connection connection = DriverManager.getConnection(jdbcProperties.url, jdbcProperties.username, jdbcProperties.password);
+        
     }
 }

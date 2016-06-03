@@ -193,7 +193,7 @@ public class ASTBuilder {
         }
         
         if(SmaliNameConverter.isPrimitiveSmaliType(typeWithoutBrackets)) {
-            return smaliType;
+            return (typeWithoutBrackets.equals("V")) ? "" : smaliType ; 
         }
             
         String classOfType   = SmaliNameConverter.convertTypeFromSmali(typeWithoutBrackets);

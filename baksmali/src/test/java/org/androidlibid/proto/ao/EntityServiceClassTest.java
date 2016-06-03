@@ -174,7 +174,7 @@ public class EntityServiceClassTest {
         @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
+            entityManager.migrate(FingerprintEntity.class, Clazz.class, Package.class, Library.class);
         }
     }
 }

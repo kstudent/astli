@@ -8,12 +8,12 @@ public class JdbcProperties {
     
     public final String url;
     public final String username;
-    public final String passord;
+    public final String password;
 
-    public JdbcProperties(String url, String username, String passord)
+    public JdbcProperties(String url, String username, String password)
     {
         this.url      = url;
         this.username = username;
-        this.passord  = passord;
+        this.password  = password;
     }
 }

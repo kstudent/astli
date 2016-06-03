@@ -11,11 +11,11 @@ import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
 import org.androidlibid.proto.ao.Package;
 import org.androidlibid.proto.ao.Clazz;
-import org.androidlibid.proto.ao.Method;
 import org.androidlibid.proto.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
+import org.androidlibid.proto.ao.FingerprintEntity;
 
 /**
  *
@@ -91,7 +91,7 @@ public class mainTest {
         for (Package pckg : packages) {
             for (Clazz clazz : pckg.getClazzes()) {
                 LOGGER.info("* " + clazz.getName());
-                for (Method m : clazz.getMethods()) {
+                for (FingerprintEntity m : clazz.getMethods()) {
                     LOGGER.info("** " + m.getName());
                     Fingerprint p = new Fingerprint(m);
                     LOGGER.info(p);
@@ -194,7 +194,7 @@ public class mainTest {
         for (int i = 0; i < upper_bound; i++) {
             Clazz clazz = classes.get(i);
             LOGGER.info(clazz.getName());
-            for (Method m : clazz.getMethods()) {
+            for (FingerprintEntity m : clazz.getMethods()) {
                 Fingerprint p = new Fingerprint(m);
                 LOGGER.info(m.getSignature());
                 LOGGER.info(p);

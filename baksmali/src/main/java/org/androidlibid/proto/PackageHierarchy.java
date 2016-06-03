@@ -1,8 +1,12 @@
 package org.androidlibid.proto;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -10,17 +14,23 @@ import java.util.Set;
  */
 public class PackageHierarchy {
     
-    String name;
-    Map<String, Map<String, Fingerprint>> classes = new HashMap<>();
+    private final String name;
+    private final Map<String, Map<String, Fingerprint>> classes = new HashMap<>();
 
     public PackageHierarchy(String name) {
         this.name = name;
     }
 
     public void addMethods(String className, Map<String, Fingerprint> prints) {
+        
+        if(prints.isEmpty()) {
+            return;
+        }
+        
         if(classes.containsKey(className)) {
             classes.get(className).putAll(prints);
         }
+        
         classes.put(className, prints);
     }
 
@@ -49,5 +59,23 @@ public class PackageHierarchy {
         
         throw new RuntimeException("Method " + method.getName() + " not in hierarchy");
     }
+    
+    public int getClassesSize() {
+        return classes.size();
+    }
+    
+    public List<List<String>> getSignatureTable() {
+        List<List<String>> table = new ArrayList<>();
+        
+        classes.values().stream().forEach((methods) -> {
+            table.add(methods.values().stream()
+                    .map(print -> print.getSignature())
+                    .collect(Collectors.toList()));
+        });
+        
+        return table;
+    } 
+    
+    
     
 }
