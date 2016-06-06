@@ -26,8 +26,17 @@ public class PackageSignatureMatcher {
      */
     public boolean checkSignatureInclusion(PackageHierarchy a, PackageHierarchy b) {
         
+        if(a.getClassesSize() > b.getClassesSize() || a.getClassesSize() == 0) {
+            return false; 
+        }
+        
         this.a = a.getSignatureTable();
         this.b = b.getSignatureTable();
+        
+        if(this.a.size() > this.b.size() || this.a.isEmpty()) {
+            return false;
+        } 
+        
         this.cost = new double[this.a.size()][this.b.size()];
         
         int[] solution = new int[this.a.size()];
@@ -95,7 +104,9 @@ public class PackageSignatureMatcher {
 
             for(int j = 0; j < cost[0].length; j++) {
                 boolean selected = solution[i] == j; 
-                char state = (cost[i][j] == 0.0d) ? (selected ? 'X' : '-') : (selected ? '~' : ' '); 
+                char state = (cost[i][j] == 0.0d) 
+                        ? (selected ? 'X' : '-') 
+                        : (selected ? '~' : ' '); 
                 row.append(state).append(" |");
             }
 

@@ -73,7 +73,7 @@ public class FingerprintService {
     }
     
     public Stream<PackageHierarchy> getPackageHierarchies() throws SQLException {
-        return service.findPackages().stream()
+        return service.findPackages().parallelStream()
                 .map(pckg -> createHierarchyFromPackage(pckg));
     }    
 
