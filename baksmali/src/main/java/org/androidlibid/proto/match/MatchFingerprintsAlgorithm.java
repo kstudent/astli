@@ -109,7 +109,8 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
         new SetupLogger(options, service).logSetup();
         
-        return new HybridStrategy(fpService, 12);
+//        return new HybridStrategy(fpService, 12);
+        return new PackageSignatureMatcherConfusionMatrixStrategy(fpService);
         
 //        if(options.strategy.equals(InclusionStrategy.class)) {
 //            FingerprintMatcher matcher = new FingerprintMatcher();

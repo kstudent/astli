@@ -1,6 +1,7 @@
 package org.androidlibid.proto.match;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.androidlibid.proto.PackageHierarchy;
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 public class PackageSignatureMatcher {
     
     private List<List<String>> a, b;
-    private byte[][] inc;
+    private double[][] cost;
     
     private static final Logger LOGGER = LogManager.getLogger(PackageSignatureMatcher.class);
     
@@ -27,19 +28,27 @@ public class PackageSignatureMatcher {
         
         this.a = a.getSignatureTable();
         this.b = b.getSignatureTable();
-        this.inc = new byte[this.a.size()][this.b.size()];
+        this.cost = new double[this.a.size()][this.b.size()];
         
-        boolean matchingIsPossible = initInclusionMatrix();
+        int[] solution = new int[this.a.size()];
+        Arrays.fill(solution, -1);
+
+        boolean matchingIsPossible = initCosts();
         
-        printMatrix();
+        if(matchingIsPossible) {
+            HungarianAlgorithm hg = new HungarianAlgorithm(cost);
+            solution = hg.execute();
+        }
         
-            return matchingIsPossible;
+        printMatrix(solution);
+        
+        return isSolutionFeasible(solution);
     }
 
-    private boolean initInclusionMatrix() {
+    private boolean initCosts() {
         for(int i = 0; i < a.size(); i++) {
             for(int j = 0; j < b.size(); j++) {
-                inc[i][j] = Byte.MAX_VALUE;
+                cost[i][j] = Double.POSITIVE_INFINITY;
             }
         }
         
@@ -50,7 +59,7 @@ public class PackageSignatureMatcher {
             for(int j = 0; j < b.size(); j++) {
                 boolean matched = checkInclusion(i, j);
                 matchForAExists = matched || matchForAExists;
-                inc[i][j] = (byte) (matched ? 0 : 1); 
+                cost[i][j] = (matched ? 0 : 1); 
             }
             
             if (!matchForAExists) return false;
@@ -58,8 +67,6 @@ public class PackageSignatureMatcher {
         
         return true;
     }
-    
-    
 
     private boolean checkInclusion(int i, int j) {
         List<String> methodsA = a.get(i);
@@ -78,19 +85,30 @@ public class PackageSignatureMatcher {
         return true;
     }
 
-    private void printMatrix() {
-        for(int i = 0; i < a.size(); i++) {
-            
+    private void printMatrix(int[] solution) {
+        
+        if (!LOGGER.isInfoEnabled()) return;
+        
+        for(int i = 0; i < cost.length; i++) {
+
             StringBuilder row = new StringBuilder("|");
-            
-            for(int j = 0; j < b.size(); j++) {
-                
-                char state = (inc[i][j] == 0) ? 'X' : (inc[i][j] == 1) ? ' ' : '?'; 
+
+            for(int j = 0; j < cost[0].length; j++) {
+                boolean selected = solution[i] == j; 
+                char state = (cost[i][j] == 0.0d) ? (selected ? 'X' : '-') : (selected ? '~' : ' '); 
                 row.append(state).append(" |");
             }
-            
+
             LOGGER.info(row);
         }
+    }
+    
+    private boolean isSolutionFeasible(int[] solution) {
+        for(int j = 0; j < solution.length; j++) {
+            if (solution[j] < 0 || cost[j][solution[j]] > 0) 
+                return false;  
+        }
+        return true;
     }
 
     
