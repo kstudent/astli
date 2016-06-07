@@ -15,8 +15,13 @@ public class PackageSignatureMatcher {
     
     private List<List<String>> a, b;
     private double[][] cost;
+    private final HungarianAlgorithm hg;
     
     private static final Logger LOGGER = LogManager.getLogger(PackageSignatureMatcher.class);
+
+    public PackageSignatureMatcher(HungarianAlgorithm hg) {
+        this.hg = hg;
+    }
     
     /**
      * Checks if a's signatures are in b
@@ -45,8 +50,7 @@ public class PackageSignatureMatcher {
         boolean matchingIsPossible = initCosts();
         
         if(matchingIsPossible) {
-            HungarianAlgorithm hg = new HungarianAlgorithm(cost);
-            solution = hg.execute();
+            solution = hg.execute(cost);
         }
         
         printMatrix(solution);
@@ -66,7 +70,7 @@ public class PackageSignatureMatcher {
             boolean matchForAExists = false; 
             
             for(int j = 0; j < b.size(); j++) {
-                boolean matched = checkInclusion(i, j);
+                boolean matched = checkClassInclusion(i, j);
                 matchForAExists = matched || matchForAExists;
                 cost[i][j] = (matched ? 0 : 1); 
             }
@@ -77,7 +81,7 @@ public class PackageSignatureMatcher {
         return true;
     }
 
-    private boolean checkInclusion(int i, int j) {
+    private boolean checkClassInclusion(int i, int j) {
         List<String> methodsA = a.get(i);
         List<String> methodsB = new ArrayList(b.get(j));
         
@@ -122,5 +126,8 @@ public class PackageSignatureMatcher {
         return true;
     }
 
+    public double[][] getCost() {
+        return cost;
+    } 
     
 }

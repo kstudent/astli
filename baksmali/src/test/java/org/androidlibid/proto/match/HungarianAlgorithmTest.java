@@ -23,9 +23,9 @@ public class HungarianAlgorithmTest {
             {i, i, i, i, 0}
         };
         
-        HungarianAlgorithm ha = new HungarianAlgorithm(costMatrix);
+        HungarianAlgorithm ha = new HungarianAlgorithm();
         
-        int[] solution = ha.execute();
+        int[] solution = ha.execute(costMatrix);
         
         printSolution(costMatrix, solution);
     }
@@ -41,9 +41,9 @@ public class HungarianAlgorithmTest {
             {i, i, i, i, 0}
         };
         
-        HungarianAlgorithm ha = new HungarianAlgorithm(costMatrix);
+        HungarianAlgorithm ha = new HungarianAlgorithm();
 
-        int[] solution = ha.execute();
+        int[] solution = ha.execute(costMatrix);
         
         printSolution(costMatrix, solution);
         
@@ -60,9 +60,9 @@ public class HungarianAlgorithmTest {
             {i, i, 0, i, i}
         };
         
-        HungarianAlgorithm ha = new HungarianAlgorithm(costMatrix);
+        HungarianAlgorithm ha = new HungarianAlgorithm();
 
-        int[] solution = ha.execute();
+        int[] solution = ha.execute(costMatrix);
         
         printSolution(costMatrix, solution);
         
@@ -79,9 +79,9 @@ public class HungarianAlgorithmTest {
             {i, i, i, i, 0, i, i, i, i}
         };
         
-        HungarianAlgorithm ha = new HungarianAlgorithm(costMatrix);
+        HungarianAlgorithm ha = new HungarianAlgorithm();
 
-        int[] solution = ha.execute();
+        int[] solution = ha.execute(costMatrix);
         
         printSolution(costMatrix, solution);
         

@@ -1,0 +1,101 @@
+package org.androidlibid.proto.match;
+
+import java.util.List;
+import java.util.stream.IntStream;
+import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.PackageHierarchy;
+
+/**
+ *
+ * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
+ */
+class PackageScoreMatcher {
+
+    private final HungarianAlgorithm hg;
+    private List<List<Fingerprint>> bPrints;
+    private List<List<Fingerprint>> aPrints;
+    private List<List<String>> aSigs;
+    private List<List<String>> bSigs;
+    
+    private final double SIGNATURES_MATCH = 0.0d;
+
+    public PackageScoreMatcher(HungarianAlgorithm hg) {
+        this.hg = hg;
+    }
+    
+    public double getScore(PackageHierarchy a, PackageHierarchy b, double[][] sigM) {
+        
+        double[][] scores  = new double[sigM.length][sigM[0].length];
+        
+        aPrints = a.getPrintTable();
+        bPrints = b.getPrintTable();
+        aSigs = a.getSignatureTable();
+        bSigs = b.getSignatureTable();
+        
+        double max = 0;
+        
+        for(int i = 0; i < sigM.length; i++) {
+            for(int j = 0; j < sigM[0].length; j++) {
+                if(sigM[i][j] == SIGNATURES_MATCH) {
+                    double classScore = getClassInclusionScore(i, j);
+                    scores[i][j] = classScore;
+                    if(classScore > max) max = classScore;
+                } else {
+                    scores[i][j] = 0.0d;
+                }
+            }
+        }
+        
+        double[][] scoresInverted = new double[sigM.length][sigM[0].length];
+        invertMatrix(scores, scoresInverted, max);
+        int[] solution = hg.execute(scoresInverted);
+        return IntStream.range(0, solution.length)
+                .mapToDouble(index -> scores[index][solution[index]])
+                .sum();
+        
+        
+    }
+
+    private double getClassInclusionScore(int i, int j) {
+        
+        List<Fingerprint> printsA = aPrints.get(i);
+        List<Fingerprint> printsB = bPrints.get(j);
+        List<String> sigsA = aSigs.get(i);
+        List<String> sigsB = bSigs.get(j);
+        
+        double[][] costMatrix = new double[printsA.size()][printsB.size()];
+        
+        double max = 0;
+        
+        for(int k = 0; k < printsA.size(); k++) {
+            for(int l = 0; l < printsB.size(); l++) {
+                if(sigsA.get(k).equals(sigsB.get(l))) {
+                    double score = printsA.get(k).getNonCommutativeSimilarityScoreToFingerprint(printsB.get(l));
+                    if(score > max) {
+                        max = score;
+                    }
+                    costMatrix[k][l] = score;
+                } else {
+                    costMatrix[k][l] = 0.0d;
+                }
+            }
+        }
+        
+        double[][] invMatrix = new double[printsA.size()][printsB.size()];
+        invertMatrix(costMatrix, invMatrix, max);
+        int[] solution = hg.execute(invMatrix);
+        
+        return IntStream.range(0, solution.length)
+                .mapToDouble(index -> costMatrix[index][solution[index]])
+                .sum();
+    }
+
+    private void invertMatrix(double[][] matrix, double[][] invertedMatrix, double offset) {
+        for(int k = 0; k < matrix.length; k++) {
+            for(int l = 0; l < matrix[0].length; l++) {
+                invertedMatrix[k][l] = -1 * matrix[k][l] + offset; 
+            }
+        }
+    }
+    
+}

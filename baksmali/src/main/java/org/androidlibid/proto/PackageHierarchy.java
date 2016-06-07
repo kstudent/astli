@@ -17,6 +17,9 @@ public class PackageHierarchy {
     
     private final String name;
     private final Map<String, Map<String, Fingerprint>> classes = new HashMap<>();
+    private List<List<String>> signatureTable;
+    private List<List<Fingerprint>> printTable;
+    
     private int computedEntropy = -1;
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -36,6 +39,7 @@ public class PackageHierarchy {
         }
         
         classes.put(className, prints);
+        resetMembers();
     }
 
     public String getName() {
@@ -68,16 +72,31 @@ public class PackageHierarchy {
         return classes.size();
     }
     
-    public List<List<String>> getSignatureTable() {
-        List<List<String>> table = new ArrayList<>();
+    private void fillSignatureAndPrintTable() {
+        signatureTable = new ArrayList<>();
+        printTable = new ArrayList<>();
         
-        classes.values().stream().forEach((methods) -> {
-            table.add(methods.values().stream()
+        classes.values().stream().forEachOrdered((methods) -> {
+            ArrayList<Fingerprint> printsOfClass = new ArrayList<>(methods.values()); 
+            printTable.add(printsOfClass);
+            signatureTable.add(printsOfClass.stream()
                     .map(print -> print.getSignature())
                     .collect(Collectors.toList()));
         });
-        
-        return table;
+    }
+    
+    public List<List<String>> getSignatureTable() {
+        if(signatureTable == null) {
+            fillSignatureAndPrintTable();
+        }
+        return signatureTable;
+    } 
+    
+    public List<List<Fingerprint>> getPrintTable() {
+        if(printTable == null) {
+            fillSignatureAndPrintTable();
+        }
+        return printTable;
     } 
     
     public int getEntropy() {
@@ -94,6 +113,12 @@ public class PackageHierarchy {
                 .flatMap(prints -> prints.values().stream())
                 .mapToInt(method -> method.getEntropy())
                 .sum();
-        
     }
+    
+    private void resetMembers() {
+        this.signatureTable = null;
+        this.printTable = null;
+        this.computedEntropy = -1;
+    }
+    
 }

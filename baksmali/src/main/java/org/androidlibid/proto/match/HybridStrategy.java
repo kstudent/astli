@@ -28,7 +28,7 @@ public class HybridStrategy extends MatchingStrategy {
     public HybridStrategy(FingerprintService fpService, int minimalNeedleLength) {
         this.fpService = fpService;
         this.minimalNeedleEntropy = minimalNeedleLength;
-        this.matcher = new PackageSignatureMatcher();
+        this.matcher = new PackageSignatureMatcher(new HungarianAlgorithm());
     }
     
     @Override

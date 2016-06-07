@@ -48,24 +48,17 @@ import java.util.Arrays;
  * @author Kevin L. Stern
  */
 public class HungarianAlgorithm {
-  private final double[][] costMatrix;
-  private final int rows, cols, dim;
-  private final double[] labelByWorker, labelByJob;
-  private final int[] minSlackWorkerByJob;
-  private final double[] minSlackValueByJob;
-  private final int[] matchJobByWorker, matchWorkerByJob;
-  private final int[] parentWorkerByCommittedJob;
-  private final boolean[] committedWorkers;
+  private double[][] costMatrix;
+  private int rows, cols, dim;
+  private double[] labelByWorker, labelByJob;
+  private int[] minSlackWorkerByJob;
+  private double[] minSlackValueByJob;
+  private int[] matchJobByWorker, matchWorkerByJob;
+  private int[] parentWorkerByCommittedJob;
+  private boolean[] committedWorkers;
 
-  /**
-   * Construct an instance of the algorithm.
-   * 
-   * @param costMatrix
-   *          the cost matrix, where matrix[i][j] holds the cost of assigning
-   *          worker i to job j, for all i, j. The cost matrix must not be
-   *          irregular in the sense that all rows must be the same length.
-   */
-  public HungarianAlgorithm(double[][] costMatrix) {
+  
+  private void init(double[][] costMatrix) {
     this.dim = Math.max(costMatrix.length, costMatrix[0].length);
     this.rows = costMatrix.length;
     this.cols = costMatrix[0].length;
@@ -91,7 +84,7 @@ public class HungarianAlgorithm {
     matchWorkerByJob = new int[this.dim];
     Arrays.fill(matchWorkerByJob, -1);
   }
-
+  
   /**
    * Compute an initial feasible solution by assigning zero labels to the
    * workers and by assigning to each job a label equal to the minimum cost
@@ -109,15 +102,19 @@ public class HungarianAlgorithm {
       }
     }
   }
-
+  
   /**
    * Execute the algorithm.
    * 
+   * @param costMatrix
    * @return the minimum cost matching of workers to jobs based upon the
    *         provided cost matrix. A matching value of -1 indicates that the
    *         corresponding worker is unassigned.
    */
-  public int[] execute() {
+  public int[] execute(double[][] costMatrix) {
+     
+    init(costMatrix);
+      
     /*
      * Heuristics to improve performance: Reduce rows and columns by their
      * smallest element, compute an initial non-zero dual feasible solution and

@@ -19,11 +19,14 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
     private static final Logger LOGGER = LogManager.getLogger(PackageSignatureMatcherConfusionMatrixStrategy.class);
     
     private final FingerprintService fpService; 
-    private final PackageSignatureMatcher matcher;
+    private final PackageSignatureMatcher sigMatcher;
+    private final PackageScoreMatcher scoreMatcher;
     
     public PackageSignatureMatcherConfusionMatrixStrategy(FingerprintService fpService) {
         this.fpService = fpService;
-        this.matcher = new PackageSignatureMatcher();
+        HungarianAlgorithm hg = new HungarianAlgorithm();
+        this.sigMatcher = new PackageSignatureMatcher(hg);
+        this.scoreMatcher = new PackageScoreMatcher(hg);
     }
     
     @Override
@@ -46,16 +49,21 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
                 apkHierarchies.stream().map(h -> "" + h.getEntropy()));
         printLabels("lib_labels", 
                 libHierarchies.stream().map(h -> "" + h.getEntropy()));
+        printLabels("apk_labels_names", 
+                apkHierarchies.stream().map(h -> h.getName()));
+        printLabels("lib_labels_names", 
+                libHierarchies.stream().map(h -> h.getName()));
   
         LOGGER.info("cm = np.array([");
         
         apkHierarchies.stream().forEachOrdered(apkh -> {
             
+            double maxScore = calculateScore(apkh, apkh);
             StringBuilder row = new StringBuilder("[");
             
             libHierarchies.stream().forEachOrdered(libh -> {
-                boolean matched = matcher.checkSignatureInclusion(apkh, libh);
-                row.append(matched ? "1" : "0").append(",");
+                double score = calculateScore(apkh, libh);
+                row.append(score / maxScore).append(",");
             });
             
             row.append("], ");
@@ -93,5 +101,16 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
             }
         } catch(IndexOutOfBoundsException ex) {
         }
+    }
+
+    private double calculateScore(PackageHierarchy apkh, PackageHierarchy libh) {
+        
+        boolean matched = sigMatcher.checkSignatureInclusion(apkh, libh);
+        double[][] costMatrix = sigMatcher.getCost();
+        double score = 0.0d;
+        if(matched) {
+            score = scoreMatcher.getScore(apkh, libh, costMatrix);
+        }
+        return score;
     }
 }
