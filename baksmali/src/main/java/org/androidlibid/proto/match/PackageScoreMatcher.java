@@ -39,8 +39,8 @@ class PackageScoreMatcher {
         
         aPrints = a.getPrintTable();
         bPrints = b.getPrintTable();
-        aSigs = a.getSignatureTable(); //TODO
-        bSigs = b.getSignatureTable(); //TODO
+        aSigs = a.getSignatureTable();
+        bSigs = b.getSignatureTable();
         
         double max = 0;
         
@@ -72,8 +72,8 @@ class PackageScoreMatcher {
         
         List<Fingerprint> printsA = aPrints.get(i);
         List<Fingerprint> printsB = bPrints.get(j);
-        List<String> sigsA = aSigs.get(i); //TODO
-        List<String> sigsB = bSigs.get(j); //TODO
+        List<String> sigsA = aSigs.get(i);
+        List<String> sigsB = bSigs.get(j);
         
         double[][] costMatrix = new double[printsA.size()][printsB.size()];
         
@@ -81,15 +81,15 @@ class PackageScoreMatcher {
         
         for(int k = 0; k < printsA.size(); k++) {
             for(int l = 0; l < printsB.size(); l++) {
-                if(sigsA.get(k).equals(sigsB.get(l))) { //TODO
+                if(sigsA.get(k).equals(sigsB.get(l))) {
                     double score = printsA.get(k).getNonCommutativeSimilarityScoreToFingerprint(printsB.get(l));
                     if(score > max) {
                         max = score;
                     }
                     costMatrix[k][l] = score;
-                } else { //TODO
-                    costMatrix[k][l] = 0.0d; //TODO
-                } //TODO
+                } else { 
+                    costMatrix[k][l] = 0.0d; 
+                } 
             }
         }
         

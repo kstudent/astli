@@ -59,12 +59,10 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
         apkHierarchies.stream().forEachOrdered(apkh -> {
             
             double maxScore = calculateHybridScore(apkh, apkh);
-//            double maxScore = calculatePrintScore(apkh, apkh); //TODO
             StringBuilder row = new StringBuilder("[");
             
             libHierarchies.stream().forEachOrdered(libh -> {
                 double score = calculateHybridScore(apkh, libh);
-//                double score = calculatePrintScore(apkh, libh); //TODO
                 row.append(score / maxScore).append(",");
             });
             
@@ -103,11 +101,6 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
             }
         } catch(IndexOutOfBoundsException ex) {
         }
-    }
-
-    private double calculatePrintScore(PackageHierarchy apkh, PackageHierarchy libh) {
-        double[][] costMatrix = new double[apkh.getClassesSize()][libh.getClassesSize()];
-        return scoreMatcher.getScore(apkh, libh, costMatrix);
     }
     
     private double calculateHybridScore(PackageHierarchy apkh, PackageHierarchy libh) {
