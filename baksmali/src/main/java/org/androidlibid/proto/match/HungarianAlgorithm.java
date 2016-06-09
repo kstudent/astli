@@ -111,7 +111,7 @@ public class HungarianAlgorithm {
    *         provided cost matrix. A matching value of -1 indicates that the
    *         corresponding worker is unassigned.
    */
-  public int[] execute(double[][] costMatrix) {
+  public synchronized int[] execute(double[][] costMatrix) {
      
     init(costMatrix);
       

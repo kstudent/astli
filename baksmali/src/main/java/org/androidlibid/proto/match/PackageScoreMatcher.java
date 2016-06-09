@@ -29,7 +29,7 @@ class PackageScoreMatcher {
         this.hg = hg;
     }
     
-    public double getScore(PackageHierarchy a, PackageHierarchy b, double[][] sigM) {
+    public synchronized double getScore(PackageHierarchy a, PackageHierarchy b, double[][] sigM) {
         
         if(a.getClassesSize() == 0 || b.getClassesSize() == 0 ) {
             return 0.0d; 

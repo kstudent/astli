@@ -42,10 +42,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.androidlibid.proto.match.MatchingStrategy;
-import org.androidlibid.proto.match.inclusion.InclusionStrategySettings;
-import org.androidlibid.proto.match.vector.VectorDifferenceStrategy;
-import org.androidlibid.proto.match.vector.VectorDifferenceStrategy.Level;
+import org.androidlibid.proto.match.HybridStrategy;
 
 public class baksmaliOptions {
     // register info values
@@ -97,16 +94,8 @@ public class baksmaliOptions {
     public boolean isObfuscated = false;
     public String mappingFile = "";
     
-    //vectorDiff strategy settings
-    public Class<? extends Object> strategy = VectorDifferenceStrategy.class;
-    public Level vectorDiffLevel = Level.PACKAGE;
-    public double similarityThreshold = .5;
-    
-    //inclusion strategy settings
-    public boolean allowRepeatedMatching = true;
-    public InclusionStrategySettings inclusionSettings = 
-            new InclusionStrategySettings();
-    
+    //strategy settings
+    public Class<? extends Object> strategy = HybridStrategy.class;
     
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;

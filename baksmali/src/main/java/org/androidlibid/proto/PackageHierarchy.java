@@ -28,7 +28,7 @@ public class PackageHierarchy {
         this.name = name;
     }
 
-    public void addMethods(String className, Map<String, Fingerprint> prints) {
+    public synchronized void addMethods(String className, Map<String, Fingerprint> prints) {
         
         if(prints.isEmpty()) {
             return;
@@ -85,21 +85,21 @@ public class PackageHierarchy {
         });
     }
     
-    public List<List<String>> getSignatureTable() {
+    public synchronized List<List<String>> getSignatureTable() {
         if(signatureTable == null) {
             fillSignatureAndPrintTable();
         }
         return signatureTable;
     } 
     
-    public List<List<Fingerprint>> getPrintTable() {
+    public synchronized List<List<Fingerprint>> getPrintTable() {
         if(printTable == null) {
             fillSignatureAndPrintTable();
         }
         return printTable;
     } 
     
-    public int getEntropy() {
+    public synchronized int getEntropy() {
         
         if(computedEntropy < 0) {
             computedEntropy = computeEntropy();

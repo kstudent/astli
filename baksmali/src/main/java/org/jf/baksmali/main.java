@@ -46,13 +46,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import org.androidlibid.proto.match.DebugObfuscationInvarianceStrategy;
-import org.androidlibid.proto.match.inclusion.InclusionStrategy;
-import org.androidlibid.proto.match.inclusion.QuickInclusionCalculator;
-import org.androidlibid.proto.match.vector.VectorDifferenceStrategy;
+import org.androidlibid.proto.match.HybridStrategy;
+import org.androidlibid.proto.match.PackageSignatureMatcherConfusionMatrixStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.androidlibid.proto.match.vector.VectorDifferenceStrategy.Level;
 
 public class main {
 
@@ -155,21 +152,13 @@ public class main {
                     
                     switch(algId) {
                         case 2 : 
-                            options.strategy = InclusionStrategy.class;
-                            break;
-                        case 3 : 
-                            options.strategy = QuickInclusionCalculator.class;
-                            break;
-                        case 4 : 
-                            options.strategy = DebugObfuscationInvarianceStrategy.class;
+                            options.strategy = PackageSignatureMatcherConfusionMatrixStrategy.class;
                             break;
                         default : 
-                            options.strategy = VectorDifferenceStrategy.class;
+                            options.strategy = HybridStrategy.class;
                             break;
                     } 
                     
-                    options.allowRepeatedMatching = false;
-                    options.vectorDiffLevel = Level.PACKAGE;
                     break;
                     
                 case 'j':
@@ -321,8 +310,8 @@ public class main {
                 .withArgName("algorithm-ID")
                 .withDescription("choose matching algorithm (can only be "
                         + "used together with --ali-apk option):\n"
-                        + "1: vector-difference on package level\n"
-                        + "2: inclusion-strategy with method needle, repeated matching (of classes and methods) disabled\n")
+                        + "1: hybrid on package level\n"
+                        + "2: hybrid, each package with each package\n")
                 .create("a");
         
         Option jobsOption = OptionBuilder.withLongOpt("jobs")

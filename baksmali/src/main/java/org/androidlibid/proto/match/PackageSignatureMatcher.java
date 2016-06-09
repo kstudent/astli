@@ -29,17 +29,17 @@ public class PackageSignatureMatcher {
      * @param b
      * @return 
      */
-    public boolean checkSignatureInclusion(PackageHierarchy a, PackageHierarchy b) {
+    public synchronized Result checkSignatureInclusion(PackageHierarchy a, PackageHierarchy b) {
         
         if(a.getClassesSize() > b.getClassesSize() || a.getClassesSize() == 0) {
-            return false; 
+            return new Result(false); 
         }
         
         this.a = a.getSignatureTable();
         this.b = b.getSignatureTable();
         
         if(this.a.size() > this.b.size() || this.a.isEmpty()) {
-            return false;
+            return new Result(false);
         } 
         
         this.cost = new double[this.a.size()][this.b.size()];
@@ -118,16 +118,34 @@ public class PackageSignatureMatcher {
         }
     }
     
-    private boolean isSolutionFeasible(int[] solution) {
+    private Result isSolutionFeasible(int[] solution) {
         for(int j = 0; j < solution.length; j++) {
             if (solution[j] < 0 || cost[j][solution[j]] > 0) 
-                return false;  
+                return new Result(false);  
         }
-        return true;
+        return new Result(true, cost);
     }
 
-    public double[][] getCost() {
-        return cost;
-    } 
-    
+    public static class Result {
+        
+        private final boolean packagesMatch; 
+        private final double[][] costMatrix;
+
+        public Result(boolean packagesMatch, double[][] costMatrix) {
+            this.packagesMatch = packagesMatch;
+            this.costMatrix = costMatrix;
+        }
+
+        public Result(boolean packagesMatch) {
+            this(packagesMatch, new double[0][0]);
+        }
+
+        public boolean packageAIsIncludedInB() {
+            return packagesMatch;
+        }
+
+        public double[][] getCostMatrix() {
+            return costMatrix;
+        }
+    }
 }

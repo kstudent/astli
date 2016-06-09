@@ -83,7 +83,15 @@ public class FingerprintService {
     public Stream<PackageHierarchy> getPackageHierarchies() throws SQLException {
         return service.findPackages().parallelStream()
                 .map(pckg -> createHierarchyFromPackage(pckg));
-    }    
+    }
+    
+    public boolean isPackageInDB(String packageName) {
+        try {
+            return !service.findPackagesByName(packageName).isEmpty();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     private PackageHierarchy createHierarchyFromPackage(Package pckg) {
         PackageHierarchy hierarchy = new PackageHierarchy(pckg.getName());

@@ -16,14 +16,16 @@ import org.mockito.Mockito;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class HybridStrageyTest {
+public class HybridStrategyTest {
 
     private FingerprintService fpService;
     private PackageHierarchy hierarchy; 
+    private ResultEvaluator eval;
     
     @Before 
     public void setUp() {
         fpService = Mockito.mock(FingerprintService.class);
+        eval = Mockito.mock(ResultEvaluator.class);
         hierarchy = new PackageHierarchy("pckg");
         
         Map<String, Fingerprint> classAPrints = new HashMap<>();
@@ -41,7 +43,7 @@ public class HybridStrageyTest {
     
     @Test
     public void testMethodDestillation() {
-        HybridStrategy strategy = new HybridStrategy(fpService, 0);
+        HybridStrategy strategy = new HybridStrategy(fpService, 0, eval);
         
         List<Fingerprint> methods = strategy.distillMethodsWithHighEntropy(hierarchy)
                 .collect(Collectors.toList());

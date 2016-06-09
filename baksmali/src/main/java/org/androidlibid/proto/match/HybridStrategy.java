@@ -32,28 +32,28 @@ public class HybridStrategy extends MatchingStrategy {
     public HybridStrategy(FingerprintService fpService, int minimalNeedleLength, ResultEvaluator evaluator) {
         this.fpService = fpService;
         this.minimalNeedleEntropy = minimalNeedleLength;
-        HungarianAlgorithm hg = new HungarianAlgorithm();
-        this.sigMatcher = new PackageSignatureMatcher(hg);
-        this.scoreMatcher = new PackageScoreMatcher(hg);
+        this.sigMatcher = new PackageSignatureMatcher(new HungarianAlgorithm());
+        this.scoreMatcher = new PackageScoreMatcher(new HungarianAlgorithm());
         this.evaluator = evaluator;
     }
     
     @Override
     public void matchHierarchies(Map<String, PackageHierarchy> hierarchies) throws SQLException {
-        LOGGER.info("* matching hierarchies!"   );
+        LOGGER.info("* matching hierarchies"   );
         
-        hierarchies.values().stream().forEach(apkH -> {
-            
-            List<ResultItem> matches = matchHierarchy(apkH);
-            
-        });
+        hierarchies.values().stream()
+                .map(apkH -> {
+                    List<ResultItem> matches = matchHierarchy(apkH);
+                    return new Result(matches, apkH, fpService.isPackageInDB(apkH.getName()));
+                })
+                .map(result -> evaluator.evaluateResult(result))
+                .forEach(eval -> incrementStats(eval));
         
     }
     
     private List<ResultItem> matchHierarchy(PackageHierarchy apkH) {
-        LOGGER.info("** {}", apkH.getName());
        
-        double maxScore = calculateHybridScore(apkH, apkH);
+        final double maxScore = calculateHybridScore(apkH, apkH);
         
         return distillMethodsWithHighEntropy(apkH)
                 .limit(10)
@@ -92,31 +92,12 @@ public class HybridStrategy extends MatchingStrategy {
     }
 
     private double calculateHybridScore(PackageHierarchy apkh, PackageHierarchy libh) {
-        boolean matched = sigMatcher.checkSignatureInclusion(apkh, libh);
-        double[][] costMatrix = sigMatcher.getCost();
+        PackageSignatureMatcher.Result result = sigMatcher.checkSignatureInclusion(apkh, libh);
+        
         double score = 0.0d;
-        if(matched) {
-            score = scoreMatcher.getScore(apkh, libh, costMatrix);
+        if(result.packageAIsIncludedInB()) {
+            score = scoreMatcher.getScore(apkh, libh, result.getCostMatrix());
         }
         return score;
-    }
-    
-    public static class ResultItem {
-        
-        private final double score; 
-        private final String packageName;
-
-        public ResultItem(double score, String packageName) {
-            this.score = score;
-            this.packageName = packageName;
-        }
-        
-        public String getPackage() {
-            return packageName;
-        }
-
-        public double getScore() {
-            return score;
-        }
     }
 }

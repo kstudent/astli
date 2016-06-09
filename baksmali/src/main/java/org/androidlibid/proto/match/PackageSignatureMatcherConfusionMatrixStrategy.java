@@ -104,10 +104,11 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
     }
     
     private double calculateHybridScore(PackageHierarchy apkh, PackageHierarchy libh) {
-        boolean matched = sigMatcher.checkSignatureInclusion(apkh, libh);
-        double[][] costMatrix = sigMatcher.getCost();
+        PackageSignatureMatcher.Result result = sigMatcher.checkSignatureInclusion(apkh, libh);
+        
         double score = 0.0d;
-        if(matched) {
+        if(result.packageAIsIncludedInB()) {
+            double[][] costMatrix = result.getCostMatrix();
             score = scoreMatcher.getScore(apkh, libh, costMatrix);
         }
         return score;
