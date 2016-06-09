@@ -2,12 +2,9 @@ package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchy;
@@ -35,15 +32,17 @@ public class FingerprintService {
         return methods;
     }
     
-    public List<Fingerprint> findSameMethods(Fingerprint needle) throws SQLException {
-        return service
-                .findMethodsBySignatureAndVector(needle.getSignature(), needle.getBinaryFeatureVector())
-                .stream()
-                .map(e -> new Fingerprint(e))
-                .collect(Collectors.toList());
+    public Stream<Fingerprint> findSameMethods(Fingerprint needle) {
+        try {
+            return service
+                    .findMethodsBySignatureAndVector(needle.getSignature(), needle.getBinaryFeatureVector())
+                    .parallelStream()
+                    .map(e -> new Fingerprint(e));
+            } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
-    
-    
+
     public String getClassNameByFingerprint(Fingerprint print) {
         
         FingerprintEntity keyMethodEntity = print.getMethod();
@@ -61,6 +60,15 @@ public class FingerprintService {
         Package pckg = keyMethodEntity.getClazz().getPackage(); 
         
         return pckg.getName();
+    }
+    
+    public Stream<PackageHierarchy> getPackageHierarchiesByName(String packageName) {
+        try {
+            return service.findPackagesByName(packageName).parallelStream()
+                    .map(pckg -> createHierarchyFromPackage(pckg));
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     public PackageHierarchy getPackageHierarchyByFingerprint(Fingerprint print) {

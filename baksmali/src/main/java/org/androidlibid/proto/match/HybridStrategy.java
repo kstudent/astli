@@ -1,6 +1,8 @@
 package org.androidlibid.proto.match;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,73 +20,57 @@ import org.apache.logging.log4j.Logger;
 public class HybridStrategy extends MatchingStrategy {
 
     private static final Logger LOGGER = LogManager.getLogger(HybridStrategy.class);
-    
+    private static final NumberFormat FRMT = new DecimalFormat("#0.00");
+        
     private final FingerprintService fpService; 
-    private final PackageSignatureMatcher matcher; 
-    
-    private final float methodNeedleSimThreshold = 0.99f;
+    private final PackageSignatureMatcher sigMatcher; 
+    private final PackageScoreMatcher scoreMatcher; 
+    private final ResultEvaluator evaluator;
+
     private final int minimalNeedleEntropy;
     
-    public HybridStrategy(FingerprintService fpService, int minimalNeedleLength) {
+    public HybridStrategy(FingerprintService fpService, int minimalNeedleLength, ResultEvaluator evaluator) {
         this.fpService = fpService;
         this.minimalNeedleEntropy = minimalNeedleLength;
-        this.matcher = new PackageSignatureMatcher(new HungarianAlgorithm());
+        HungarianAlgorithm hg = new HungarianAlgorithm();
+        this.sigMatcher = new PackageSignatureMatcher(hg);
+        this.scoreMatcher = new PackageScoreMatcher(hg);
+        this.evaluator = evaluator;
     }
     
     @Override
     public void matchHierarchies(Map<String, PackageHierarchy> hierarchies) throws SQLException {
         LOGGER.info("* matching hierarchies!"   );
-        for (PackageHierarchy hierarchy : hierarchies.values()) {
-            matchHierarchy(hierarchy);
-        }
+        
+        hierarchies.values().stream().forEach(apkH -> {
+            
+            List<ResultItem> matches = matchHierarchy(apkH);
+            
+        });
+        
     }
     
-    private void matchHierarchy(PackageHierarchy hierarchy) throws SQLException {
-
-        boolean packageMatched = false;
+    private List<ResultItem> matchHierarchy(PackageHierarchy apkH) {
+        LOGGER.info("** {}", apkH.getName());
+       
+        double maxScore = calculateHybridScore(apkH, apkH);
         
-        List<Fingerprint> needles =  distillMethodsWithHighEntropy(hierarchy)
+        return distillMethodsWithHighEntropy(apkH)
                 .limit(10)
+                .flatMap(needle -> fpService.findSameMethods(needle))
+                .map(candidate -> fpService.getPackageNameByFingerprint(candidate))
+                .distinct()
+                .flatMap(name -> fpService.getPackageHierarchiesByName(name))
+                .map(libH -> {
+                    double score = calculateHybridScore(apkH, libH) / maxScore;
+                    return new ResultItem(score, libH.getName());
+                })
+                .sorted((that, other) -> Double.compare(other.getScore(), that.getScore()))
                 .collect(Collectors.toList());
-        
-        LOGGER.info("** {} has {} needles...", hierarchy.getName(), needles.size());
-        
-        int i = 0; 
-        
-        for(Fingerprint needle : needles) {
-            
-            List<Fingerprint> candidates = fpService.findSameMethods(needle);
-            
-            LOGGER.info("needle {} (e: {}) has {} candidates", 
-                    needle.getSignature(), needle.getEntropy(), candidates.size());
-           
-            for(Fingerprint candidate : candidates) {
-                
-                i++;
-                
-                boolean signatureInclusiveCandidate = checkSignatureInclusion(candidate, needle, hierarchy);
-
-                LOGGER.info("candiate {} with size {}... {}", 
-                        candidate.getSignature(),
-                        candidate.getLength(),
-                        signatureInclusiveCandidate ? "CHECK" : ""
-                );
-                
-                if(signatureInclusiveCandidate) {
-                    packageMatched = true;
-                    break;
-                }
-            }
-            
-            if(packageMatched) break;
-        }
-        
-        LOGGER.info("** {} {}", (packageMatched) ? "DONE" : "NEXT", i);
-            
     }
 
     public Stream<Fingerprint> distillMethodsWithHighEntropy(PackageHierarchy hierarchy) {
-        return hierarchy.getClassNames().stream()
+        return hierarchy.getClassNames().parallelStream()
             .map(name -> hierarchy.getMethodsByClassName(name))
             .flatMap(methods -> methods.values().stream())
             .filter(method -> method.getLength() > minimalNeedleEntropy)
@@ -105,9 +91,32 @@ public class HybridStrategy extends MatchingStrategy {
         
     }
 
-    private boolean checkSignatureInclusion(Fingerprint candidate, Fingerprint needle, PackageHierarchy hierarchy) {
-        PackageHierarchy candidateHierarchy = fpService.getPackageHierarchyByFingerprint(candidate);
-        return matcher.checkSignatureInclusion(hierarchy, candidateHierarchy);
+    private double calculateHybridScore(PackageHierarchy apkh, PackageHierarchy libh) {
+        boolean matched = sigMatcher.checkSignatureInclusion(apkh, libh);
+        double[][] costMatrix = sigMatcher.getCost();
+        double score = 0.0d;
+        if(matched) {
+            score = scoreMatcher.getScore(apkh, libh, costMatrix);
+        }
+        return score;
     }
     
+    public static class ResultItem {
+        
+        private final double score; 
+        private final String packageName;
+
+        public ResultItem(double score, String packageName) {
+            this.score = score;
+            this.packageName = packageName;
+        }
+        
+        public String getPackage() {
+            return packageName;
+        }
+
+        public double getScore() {
+            return score;
+        }
+    }
 }
