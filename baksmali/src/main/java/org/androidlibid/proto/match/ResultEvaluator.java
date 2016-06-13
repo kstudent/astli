@@ -45,7 +45,8 @@ public class ResultEvaluator {
         }
         
         IntStream.range(0, position).forEach(index -> 
-            LOGGER.info("- {} ({})", 
+            LOGGER.info("- {}. : {} ({})", 
+                index,
                 items.get(index).getPackage(), 
                 FRMT.format(items.get(index).getScore()))
         );

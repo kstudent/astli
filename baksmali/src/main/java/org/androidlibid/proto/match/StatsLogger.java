@@ -57,7 +57,8 @@ class StatsLogger {
         LOGGER.info("| P(FP)   | {}% |", frmt.format(fp));
         LOGGER.info("| P(FN)   | {}% |", frmt.format(fn));
         
-        LOGGER.info("**   #comparisons : {}", comparisons);
-        LOGGER.info("**   Runtime: {} seconds", diff / 1000);
+        LOGGER.info("** #comparisons : {}", comparisons);
+        LOGGER.info("** #db lookups: {}", stats.getDbLookups());
+        LOGGER.info("** Runtime: {} seconds", diff / 1000);
     }
 }

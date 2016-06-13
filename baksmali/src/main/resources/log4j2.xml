@@ -78,6 +78,12 @@
         
         <Logger name="org.androidlibid.proto.store.ClassFingerprintCreator" level="debug" />
         
+<!--        <Logger name="net.java.ao.sql" level="debug">
+            <AppenderRef ref="RESULT"/>
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="DEBUG"/>
+            <AppenderRef ref="INFO"/>
+        </Logger>-->
         
         <!--<Logger name="org.androidlibid.proto.StoreMethodFingerprint" level="debug"/>-->
         

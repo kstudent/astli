@@ -15,6 +15,7 @@ public abstract class MatchingStrategy {
     private final Map<ResultEvaluator.Classification, Integer> classifications;
     private final Map<Integer, Integer> positions;
     private int comparisonCounter = 0;
+    private int dbLookups = 0;
     
     public MatchingStrategy() {
         classifications = new HashMap<>();
@@ -37,7 +38,11 @@ public abstract class MatchingStrategy {
     } 
     
     public Stats getStats() {
-        return new Stats(classifications, positions, comparisonCounter);
+        return new Stats(classifications, positions, comparisonCounter, dbLookups);
+    }
+    
+    protected void incDbLookup(){
+        dbLookups++;
     }
     
     abstract public void matchHierarchies(Map<String, PackageHierarchy> hierarchies) 
@@ -91,7 +96,9 @@ public abstract class MatchingStrategy {
         private final Map<ResultEvaluator.Classification, Integer> classifications;
         private final Map<Integer, Integer> positions;
         private final int comparisonCounter;
+        private final int dbLookups;
 
+        
         public Map<ResultEvaluator.Classification, Integer> getClassifications() {
             return classifications;
         }
@@ -104,10 +111,17 @@ public abstract class MatchingStrategy {
             return comparisonCounter;
         }
 
-        public Stats(Map<ResultEvaluator.Classification, Integer> classifications, Map<Integer, Integer> positions, int comparisonCounter) {
+        public int getDbLookups() {
+            return dbLookups;
+        }
+        
+        public Stats(Map<ResultEvaluator.Classification, Integer> classifications, 
+                Map<Integer, Integer> positions, int comparisonCounter,
+                int dbLookups) {
             this.classifications = classifications;
             this.positions = positions;
             this.comparisonCounter = comparisonCounter;
+            this.dbLookups = dbLookups;
         }
     }
 

@@ -2,6 +2,7 @@ package org.androidlibid.proto.ao;
 
 import net.java.ao.Entity;
 import net.java.ao.OneToMany;
+import net.java.ao.schema.Indexed;
 import net.java.ao.schema.StringLength;
 
 /**
@@ -14,6 +15,7 @@ public interface Package extends Entity {
     Library getLibrary();
     void setLibrary(Library library);
     
+    @Indexed
     @StringLength(StringLength.UNLIMITED)
     public void setName(String name);
     public String getName();

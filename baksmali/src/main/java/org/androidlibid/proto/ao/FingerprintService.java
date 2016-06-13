@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Convenient Facade of EntityService to hide AO layer
@@ -17,6 +19,8 @@ import org.androidlibid.proto.PackageHierarchy;
 public class FingerprintService {
 
     private final EntityService service; 
+    
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public FingerprintService(EntityService service) {
         this.service = service;
@@ -36,6 +40,7 @@ public class FingerprintService {
         try {
             return service
                     .findMethodsBySignatureAndVector(needle.getSignature(), needle.getBinaryFeatureVector())
+//                    .findMethodsBySignature(needle.getSignature())
                     .parallelStream()
                     .map(e -> new Fingerprint(e));
             } catch (SQLException ex) {

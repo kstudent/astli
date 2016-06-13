@@ -21,12 +21,14 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
     private final FingerprintService fpService; 
     private final PackageSignatureMatcher sigMatcher;
     private final PackageScoreMatcher scoreMatcher;
+    private final ResultEvaluator evaluator;
     
     public PackageSignatureMatcherConfusionMatrixStrategy(FingerprintService fpService) {
         this.fpService = fpService;
         HungarianAlgorithm hg = new HungarianAlgorithm();
         this.sigMatcher = new PackageSignatureMatcher(hg);
         this.scoreMatcher = new PackageScoreMatcher(hg);
+        this.evaluator = new ResultEvaluator();
     }
     
     @Override
@@ -42,7 +44,7 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
         List<PackageHierarchy> libHierarchies = fpService.getPackageHierarchies()
                 .sorted((that, other) -> Integer.compare(that.getEntropy(), other.getEntropy()))
                 .collect(Collectors.toList());
-       
+        
         killMissingHierarchies(apkHierarchies, libHierarchies);
         
         printLabels("apk_labels", 
@@ -56,20 +58,20 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
   
         LOGGER.info("cm = np.array([");
         
-        apkHierarchies.stream().forEachOrdered(apkh -> {
+        apkHierarchies.stream().map(apkh -> {
             
-            double maxScore = calculateHybridScore(apkh, apkh);
             StringBuilder row = new StringBuilder("[");
             
-            libHierarchies.stream().forEachOrdered(libh -> {
-                double score = calculateHybridScore(apkh, libh);
-                row.append(score / maxScore).append(",");
-            });
+            List<ResultItem> items = matchHierarchy(apkh, libHierarchies, row)
+                    .sorted((that, other) -> Double.compare(other.getScore(), that.getScore()))
+                    .collect(Collectors.toList());
             
             row.append("], ");
             LOGGER.info(row.toString());
             
-        });
+            return new Result(items, apkh, true);
+        }).map(result -> evaluator.evaluateResult(result))
+          .forEach(eval -> incrementStats(eval));
         
         LOGGER.info("])");
     }
@@ -112,5 +114,20 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
             score = scoreMatcher.getScore(apkh, libh, costMatrix);
         }
         return score;
+    }
+
+    private Stream<ResultItem> matchHierarchy(PackageHierarchy apkh, List<PackageHierarchy> libHierarchies, StringBuilder row) {
+        double maxScore = calculateHybridScore(apkh, apkh);
+        
+        return libHierarchies.stream()
+            .map(libh -> {
+                double score = calculateHybridScore(apkh, libh);
+                row.append(score / maxScore).append(",");
+                return new ResultItem(score / maxScore, libh.getName());
+            });
+    }
+    
+    private void pt(String what, long t1) {
+        LOGGER.info("{} took {}ms", what, (System.currentTimeMillis() - t1));
     }
 }
