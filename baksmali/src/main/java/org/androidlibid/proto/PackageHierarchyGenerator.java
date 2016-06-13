@@ -25,10 +25,12 @@ public class PackageHierarchyGenerator {
     private final Map<String, String> mappings;
     
     private static List<String> BLACKLISTED_PACKAGES; 
+    private static List<String> WHITELISTED_PACKAGES; 
     
     static {
         BLACKLISTED_PACKAGES = new ArrayList<>();
         BLACKLISTED_PACKAGES.add("android.support");
+        WHITELISTED_PACKAGES = new ArrayList<>();
     }
     
     private static final Logger LOGGER = LogManager.getLogger(PackageHierarchyGenerator.class);
@@ -113,12 +115,13 @@ public class PackageHierarchyGenerator {
     
     private boolean isBlacklisted(String packageName) {
         
-        for(String blackListedPackage : BLACKLISTED_PACKAGES) {
-            if(packageName.startsWith(blackListedPackage)) 
-                return true;
+        if(WHITELISTED_PACKAGES.isEmpty()) {
+            return BLACKLISTED_PACKAGES.stream()
+                    .anyMatch(pckg -> packageName.startsWith(pckg));
+        } else {
+            return !WHITELISTED_PACKAGES.stream()
+                    .anyMatch(pckg -> packageName.startsWith(pckg));
         }
-        
-        return false;
         
     }
 }

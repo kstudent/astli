@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.java.ao.EntityManager;
+import net.java.ao.Query;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -171,5 +172,15 @@ public class EntityService {
     
     public List<FingerprintEntity> findMethodsBySignatureAndVector(String signature, byte[] vector) throws SQLException {
         return Arrays.asList(em.find(FingerprintEntity.class, "SIGNATURE = ? AND VECTOR = ?", signature, vector));
+    }
+    
+    public List<Package> findPackageCandidateBySignatureAndVector(String signature, byte[] vector) throws SQLException {
+        return Arrays.asList(em.find(Package.class, "ID", Query.select().where(
+                "ID IN( "
+                +    "SELECT PACKAGEID FROM CLAZZ WHERE ID IN ( "
+                +       "SELECT CLAZZID FROM FINGERPRINTENTITY "
+                +       "WHERE SIGNATURE = ? and VECTOR = ? "
+                +    ") "
+                + ") ", signature, vector)));
     }
 }

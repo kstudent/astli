@@ -47,7 +47,17 @@ public class FingerprintService {
             throw new RuntimeException(ex);
         }
     }
-
+    
+    public Stream<Package> findPackagesWithSameMethods(Fingerprint needle) {
+        try {
+            return service
+                    .findPackageCandidateBySignatureAndVector(needle.getSignature(), needle.getBinaryFeatureVector())
+                    .stream();
+            } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     public String getClassNameByFingerprint(Fingerprint print) {
         
         FingerprintEntity keyMethodEntity = print.getMethod();
@@ -98,7 +108,7 @@ public class FingerprintService {
         }
     }
 
-    private PackageHierarchy createHierarchyFromPackage(Package pckg) {
+    public PackageHierarchy createHierarchyFromPackage(Package pckg) {
         PackageHierarchy hierarchy = new PackageHierarchy(pckg.getName());
         
         for(Clazz clazz : pckg.getClazzes()) {

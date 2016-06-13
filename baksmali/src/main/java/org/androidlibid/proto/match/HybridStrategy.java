@@ -1,6 +1,5 @@
 package org.androidlibid.proto.match;
 
-import com.google.common.collect.MapMaker;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -14,6 +13,7 @@ import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.androidlibid.proto.ao.Package;
 
 /**
  *
@@ -29,7 +29,7 @@ public class HybridStrategy extends MatchingStrategy {
     private final PackageScoreMatcher scoreMatcher;
     private final ResultEvaluator evaluator;
     
-    private final Map<String, List<PackageHierarchy>> hierarchyCache;
+    private final Map<Package, PackageHierarchy> hierarchyCache;
 
     private final int minimalNeedleEntropy;
 
@@ -63,10 +63,9 @@ public class HybridStrategy extends MatchingStrategy {
 
         return distillMethodsWithHighEntropy(apkH)
                 .limit(10)
-                .flatMap(needle -> fpService.findSameMethods(needle))
-                .map(candidate -> fpService.getPackageNameByFingerprint(candidate))
+                .flatMap(needle -> fpService.findPackagesWithSameMethods(needle))
                 .distinct()
-                .flatMap(name -> getPackageHierarchyCandidates(name))
+                .map(pckg -> getPackageHierarchyCandidate(pckg))
                 .map(libH -> {
                     double score = calculateHybridScore(apkH, libH) / maxScore;
                     return new ResultItem(score, libH.getName());
@@ -75,26 +74,12 @@ public class HybridStrategy extends MatchingStrategy {
                 .collect(Collectors.toList());
     }
 
-    public Stream<Fingerprint> distillMethodsWithHighEntropy(PackageHierarchy hierarchy) {
+    Stream<Fingerprint> distillMethodsWithHighEntropy(PackageHierarchy hierarchy) {
         return hierarchy.getClassNames().parallelStream()
                 .map(name -> hierarchy.getMethodsByClassName(name))
                 .flatMap(methods -> methods.values().stream())
                 .filter(method -> method.getLength() > minimalNeedleEntropy)
                 .sorted((that, othr) -> (-1) * Integer.compare(that.getEntropy(), othr.getEntropy()));
-    }
-
-    private boolean doFingerprintsRepresentSameMethods(Fingerprint candidate,
-            Fingerprint needle, PackageHierarchy hierarchy) {
-
-        if (!candidate.getName().equals(needle.getName())) {
-            return false;
-        }
-
-        String candidateClass = fpService.getClassNameByFingerprint(candidate);
-        String needleClass = hierarchy.getClassNameByMethod(needle);
-
-        return candidateClass.equals(needleClass);
-
     }
 
     private double calculateHybridScore(PackageHierarchy apkh, PackageHierarchy libh) {
@@ -107,13 +92,27 @@ public class HybridStrategy extends MatchingStrategy {
         return score;
     }
 
-    private synchronized Stream<PackageHierarchy> getPackageHierarchyCandidates(String name) {
-        if (!hierarchyCache.containsKey(name)) {
-            List hierarchies = fpService.getPackageHierarchiesByName(name).collect(Collectors.toList());
-            hierarchyCache.put(name, hierarchies);
+    private synchronized PackageHierarchy getPackageHierarchyCandidate(Package pckg) {
+        if (!hierarchyCache.containsKey(pckg)) {
+            PackageHierarchy hierarchy = fpService.createHierarchyFromPackage(pckg);
+            hierarchyCache.put(pckg, hierarchy);
             incDbLookup();
         }
         
-        return hierarchyCache.get(name).stream();
+        return hierarchyCache.get(pckg);
+    }
+    
+    boolean doFingerprintsRepresentSameMethods(Fingerprint candidate,
+            Fingerprint needle, PackageHierarchy hierarchy) {
+
+        if (!candidate.getName().equals(needle.getName())) {
+            return false;
+        }
+
+        String candidateClass = fpService.getClassNameByFingerprint(candidate);
+        String needleClass = hierarchy.getClassNameByMethod(needle);
+
+        return candidateClass.equals(needleClass);
+
     }
 }
