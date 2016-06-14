@@ -26,22 +26,29 @@ public class PackageHierarchyService {
         } 
     }
     
-    public void saveHierarchy(PackageHierarchy hierarchy) throws SQLException {
+    /** 
+     * @throws unchecked SQLException
+     * @param hierarchy 
+     */
+    public void saveHierarchy(PackageHierarchy hierarchy) {
         String packageName = hierarchy.getName();
         
         for (String className : hierarchy.getClassNames()) {
-            
-            Clazz clazz = service.saveClass(className, packageName, libName);
-            
-            Map<String, Fingerprint> methods = hierarchy.getMethodsByClassName(className);
-            
-            for (String methodName : methods.keySet()) {
+            try {
+                Clazz clazz = service.saveClass(className, packageName, libName);
                 
-                Fingerprint methodPrint = methods.get(methodName);
+                Map<String, Fingerprint> methods = hierarchy.getMethodsByClassName(className);
                 
-                service.saveMethod(methodPrint.getBinaryFeatureVector(), 
-                        methodName, methodPrint.getSignature(), clazz);
-                
+                for (String methodName : methods.keySet()) {
+                    
+                    Fingerprint methodPrint = methods.get(methodName);
+                    
+                    service.saveMethod(methodPrint.getBinaryFeatureVector(),
+                            methodName, methodPrint.getSignature(), clazz);
+                    
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
         }
     }

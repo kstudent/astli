@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
@@ -30,7 +31,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     private final List<? extends ClassDef> classDefs;
     private final baksmaliOptions options;
     
-    private static final Logger LOGGER = LogManager.getLogger(StoreFingerprintsAlgorithm.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     private EntityService service;
 
     public StoreFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
@@ -51,23 +52,34 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     
     private void storeFingerprints() throws InterruptedException, ExecutionException, SQLException {
         
+        long t1 = System.currentTimeMillis();
+        
         final ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(options);
         final PackageHierarchyService phService = new PackageHierarchyService(service, options.mvnIdentifier);
         final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         final PackageHierarchyGenerator phgen = new PackageHierarchyGenerator(options, ast2fpt, new HashMap<String, String>());
         
-        List<ASTClassBuilder> builders = new ArrayList<>();
+        //Newer way
+        Stream<ASTClassBuilder> builderStream = classDefs.parallelStream()
+                .map(classDef -> new ASTClassBuilder(classDef, astBuilderFactory));
         
-        for (final ClassDef classDef: classDefs) {
-            ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
-            builders.add(astClassBuilder);
-        }
+        phgen.generatePackageHierarchiesFromClassBuilders(builderStream)
+                .forEach(hierarchy -> phService.saveHierarchy(hierarchy));
         
-        try {
-            Map<String, PackageHierarchy> packages = phgen.generatePackageHierarchiesFromClassBuilders(builders);
-            phService.saveHierarchies(packages.values());
-        } catch (IOException ex) {
-            LOGGER.error(ex);
-        }
+        //Old Way
+//        List<ASTClassBuilder> builders = new ArrayList<>();
+//        
+//        for (final ClassDef classDef: classDefs) {
+//            ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
+//            builders.add(astClassBuilder);
+//        }
+//        
+//        try {
+//            Map<String, PackageHierarchy> packages = phgen.generatePackageHierarchiesFromClassBuilders(builders);
+//            phService.saveHierarchies(packages.values());
+//        } catch (IOException ex) {
+//            LOGGER.error(ex);
+//        }
+        LOGGER.info("Time Diff for {} : {}", options.mvnIdentifier, System.currentTimeMillis() - t1);
     }
 }
