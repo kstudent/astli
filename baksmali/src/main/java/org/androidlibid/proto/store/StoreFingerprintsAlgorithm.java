@@ -1,15 +1,11 @@
 package org.androidlibid.proto.store;
 
-import java.io.IOException;
 import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
-import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
@@ -59,27 +55,12 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         final ASTToFingerprintTransformer ast2fpt = new ASTToFingerprintTransformer();
         final PackageHierarchyGenerator phgen = new PackageHierarchyGenerator(options, ast2fpt, new HashMap<String, String>());
         
-        //Newer way
         Stream<ASTClassBuilder> builderStream = classDefs.parallelStream()
                 .map(classDef -> new ASTClassBuilder(classDef, astBuilderFactory));
         
         phgen.generatePackageHierarchiesFromClassBuilders(builderStream)
                 .forEach(hierarchy -> phService.saveHierarchy(hierarchy));
         
-        //Old Way
-//        List<ASTClassBuilder> builders = new ArrayList<>();
-//        
-//        for (final ClassDef classDef: classDefs) {
-//            ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
-//            builders.add(astClassBuilder);
-//        }
-//        
-//        try {
-//            Map<String, PackageHierarchy> packages = phgen.generatePackageHierarchiesFromClassBuilders(builders);
-//            phService.saveHierarchies(packages.values());
-//        } catch (IOException ex) {
-//            LOGGER.error(ex);
-//        }
         LOGGER.info("Time Diff for {} : {}", options.mvnIdentifier, System.currentTimeMillis() - t1);
     }
 }

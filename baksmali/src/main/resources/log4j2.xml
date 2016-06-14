@@ -76,6 +76,8 @@
         
         <!--<Logger name="org.androidlibid.proto.PackageHierarchyGenerator"     level="info"/>-->
         
+        <!--<Logger name="org.androidlibid.proto.ao.EntityService" level="info" />-->
+        
         <Logger name="org.androidlibid.proto.store.StoreFingerprintsAlgorithm" level="info" />
         
 <!--        <Logger name="net.java.ao.sql" level="debug">

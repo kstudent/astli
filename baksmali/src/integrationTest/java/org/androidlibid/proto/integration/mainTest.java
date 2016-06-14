@@ -32,7 +32,7 @@ public class mainTest {
         clearDB();
         testStoreFingerprintLibSpongyCore();
         testStoreFingerprintLibSpongyProv();
-        countMethods();
+        countStuff();
     }
 
     @Test
@@ -140,16 +140,22 @@ public class mainTest {
     }
 
     @Test
-    public void countMethods() throws Exception {
+    public void countStuff() throws Exception {
         EntityService service = EntityServiceFactory.createService();
-        LOGGER.info("methods: " + service.countMethods());
+        LOGGER.info("methods: {}", service.countMethods());
+        LOGGER.info("classes: {}", service.countClasses());
+        LOGGER.info("package: {}", service.countPackages());
+        LOGGER.info("libs   : {}", service.countLibraries());
     }
 
+    @Test
     public void clearDB() throws Exception {
         EntityService service = EntityServiceFactory.createService();
         LOGGER.info("Fingerprint.count(): " + service.countClasses());
+        countStuff();
         service.truncateTables();
-        LOGGER.info("... after deleting : " + service.countClasses());
+        LOGGER.info("... after deleting : ");
+        countStuff();
     }
 
     public void testListClassFingerprintsFromDB() throws Exception {

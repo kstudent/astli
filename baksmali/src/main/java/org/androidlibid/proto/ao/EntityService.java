@@ -17,11 +17,9 @@ import org.apache.commons.lang.StringUtils;
 public class EntityService {
 
     private final EntityManager em;
-    private final byte[] defaultVector;
     
     public EntityService(EntityManager em, byte[] defaultVector) {
         this.em = em;
-        this.defaultVector = defaultVector;
     }
     
     public void truncateTables() throws SQLException {

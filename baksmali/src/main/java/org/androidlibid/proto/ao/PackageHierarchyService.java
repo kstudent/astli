@@ -20,21 +20,15 @@ public class PackageHierarchyService {
         this.libName = libName;
     }
     
-    public void saveHierarchies(Collection<PackageHierarchy> hierarchies) throws SQLException {
-        for (PackageHierarchy hierarchy : hierarchies) {
-            saveHierarchy(hierarchy);
-        } 
-    }
-    
     /** 
      * @throws unchecked SQLException
      * @param hierarchy 
      */
     public void saveHierarchy(PackageHierarchy hierarchy) {
-        String packageName = hierarchy.getName();
-        
-        for (String className : hierarchy.getClassNames()) {
-            try {
+        try {
+            String packageName = hierarchy.getName();
+            
+            for (String className : hierarchy.getClassNames()) {
                 Clazz clazz = service.saveClass(className, packageName, libName);
                 
                 Map<String, Fingerprint> methods = hierarchy.getMethodsByClassName(className);
@@ -47,9 +41,9 @@ public class PackageHierarchyService {
                             methodName, methodPrint.getSignature(), clazz);
                     
                 }
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
             }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 }

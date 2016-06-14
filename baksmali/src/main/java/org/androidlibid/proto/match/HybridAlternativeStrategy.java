@@ -41,9 +41,9 @@ public class HybridAlternativeStrategy extends MatchingStrategy {
     }
 
     @Override
-    public void matchHierarchies(Map<String, PackageHierarchy> hierarchies) throws SQLException {
+    public void matchHierarchies(Stream<PackageHierarchy> hierarchies) throws SQLException {
         
-        List<Package> libHierachies = hierarchies.values().parallelStream()
+        List<Package> libHierachies = hierarchies
             .flatMap(apkH -> distillMethodsWithHighEntropy(apkH))
             .flatMap(needle -> fpService.findSameMethods(needle))
             .map(candidate -> candidate.getMethod().getClazz().getPackage())

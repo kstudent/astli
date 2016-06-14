@@ -44,11 +44,10 @@ public class HybridStrategy extends MatchingStrategy {
     }
 
     @Override
-    public void matchHierarchies(Map<String, PackageHierarchy> hierarchies) throws SQLException {
+    public void matchHierarchies(Stream<PackageHierarchy> hierarchies) throws SQLException {
         LOGGER.info("* matching hierarchies"   );
         
-        hierarchies.values().stream()
-                .map(apkH -> {
+        hierarchies.map(apkH -> {
                     List<ResultItem> matches = matchHierarchy(apkH);
                     return new Result(matches, apkH, fpService.isPackageInDB(apkH.getName()));
                 })

@@ -6,11 +6,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.PackageHierarchyGenerator;
 import org.androidlibid.proto.ao.EntityService;
@@ -47,7 +47,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         try {
             Date before = new Date();
             MatchingStrategy strategy = setupStrategy(); 
-            Map<String, PackageHierarchy> hierarchies = generatePackagePrints();
+            Stream<PackageHierarchy> hierarchies = generatePackagePrintStream();
             strategy.matchHierarchies(hierarchies);
             
             Date after = new Date();
@@ -61,7 +61,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         return true;
     }
 
-    private Map<String, PackageHierarchy> generatePackagePrints() throws IOException {
+    private Stream<PackageHierarchy> generatePackagePrintStream() throws IOException {
         
         LOGGER.info("* Create Package Prints");
         
@@ -79,13 +79,10 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         PackageHierarchyGenerator phGen = new PackageHierarchyGenerator(
                 options, new ASTToFingerprintTransformer(), mappings);
         
-        List<ASTClassBuilder> astClassBuilders = new ArrayList<>(); 
-        for(ClassDef classDef: classDefs) {
-            ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, astBuilderFactory);
-            astClassBuilders.add(astClassBuilder);
-        }
+        Stream<ASTClassBuilder> builderStream = classDefs.parallelStream()
+                .map(classDef -> new ASTClassBuilder(classDef, astBuilderFactory));
         
-        return phGen.generatePackageHierarchiesFromClassBuilders(astClassBuilders);
+        return phGen.generatePackageHierarchiesFromClassBuilders(builderStream);
         
     }
 
@@ -102,7 +99,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
 //            return new HybridAlternativeStrategy(fpService, 12, evaluator);
         }
         
-        return new PackageSignatureMatcherConfusionMatrixStrategy(fpService);
+        return new ConfusionMatrixStrategy(fpService);
         
     }
 }

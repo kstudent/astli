@@ -14,16 +14,16 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStrategy {
+public class ConfusionMatrixStrategy extends MatchingStrategy {
 
-    private static final Logger LOGGER = LogManager.getLogger(PackageSignatureMatcherConfusionMatrixStrategy.class);
+    private static final Logger LOGGER = LogManager.getLogger(ConfusionMatrixStrategy.class);
     
     private final FingerprintService fpService; 
     private final PackageSignatureMatcher sigMatcher;
     private final PackageScoreMatcher scoreMatcher;
     private final ResultEvaluator evaluator;
     
-    public PackageSignatureMatcherConfusionMatrixStrategy(FingerprintService fpService) {
+    public ConfusionMatrixStrategy(FingerprintService fpService) {
         this.fpService = fpService;
         HungarianAlgorithm hg = new HungarianAlgorithm();
         this.sigMatcher = new PackageSignatureMatcher(hg);
@@ -32,12 +32,12 @@ public class PackageSignatureMatcherConfusionMatrixStrategy extends MatchingStra
     }
     
     @Override
-    public void matchHierarchies(Map<String, PackageHierarchy> hierarchies) throws SQLException {
+    public void matchHierarchies(Stream<PackageHierarchy> hierarchies) throws SQLException {
         LOGGER.info("* confusion matrix ");
         
         LOGGER.info("import numpy as np");
         
-        List<PackageHierarchy> apkHierarchies = hierarchies.values().stream()
+        List<PackageHierarchy> apkHierarchies = hierarchies
                 .sorted((that, other) -> Integer.compare(that.getEntropy(), other.getEntropy()))
                 .collect(Collectors.toList());
         

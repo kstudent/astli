@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.androidlibid.proto.PackageHierarchy;
 
 /**
@@ -45,7 +46,7 @@ public abstract class MatchingStrategy {
         dbLookups++;
     }
     
-    abstract public void matchHierarchies(Map<String, PackageHierarchy> hierarchies) 
+    abstract public void matchHierarchies(Stream<PackageHierarchy> hierarchies) 
             throws SQLException;
     
     public static class ResultItem {

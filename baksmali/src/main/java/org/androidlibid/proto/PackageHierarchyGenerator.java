@@ -43,7 +43,7 @@ public class PackageHierarchyGenerator {
         this.mappings = mappings;
     }
     
-     public Stream<PackageHierarchy> generatePackageHierarchiesFromClassBuilders(
+    public Stream<PackageHierarchy> generatePackageHierarchiesFromClassBuilders(
             Stream<ASTClassBuilder> astClassBuilderStream) {
         
         Map<String, PackageHierarchy> hierarchies = new HashMap<>();
@@ -96,46 +96,14 @@ public class PackageHierarchyGenerator {
         }
         
     }
-    
-    public Map<String, PackageHierarchy> generatePackageHierarchiesFromClassBuilders(
-            Collection<ASTClassBuilder> astClassBuilders) throws IOException {
-        
-        Map<String, PackageHierarchy> hierarchies = new HashMap<>();
-        
-        for(ASTClassBuilder astClassBuilder : astClassBuilders) {
-            String smaliClassName = astClassBuilder.getClassName();
-            String obfClassName = SmaliNameConverter.convertTypeFromSmali(smaliClassName);
-            String className    = translateName(obfClassName);
-            String packageName  = SmaliNameConverter.extractPackageNameFromClassName(className);
-            
-            if(isBlacklisted(packageName)) continue;
-            
-            PackageHierarchy hierarchy; 
-            
-            if(hierarchies.containsKey(packageName)) {
-                hierarchy = hierarchies.get(packageName);
-            } else {
-                hierarchy = new PackageHierarchy(packageName);
-                hierarchies.put(packageName, hierarchy);
-            }
-            
-            Map<String, Fingerprint> prints = createFingerprintsFromASTBuilder(astClassBuilder);
-            
-            if(!prints.isEmpty()) {
-                hierarchy.addMethods(className, prints);
-            }
-        }
-        
-        return hierarchies;
-    }
-    
+       
     /**
      * 
      * @throws unchecked IOException
      * @param astClassBuilder
      * @return 
      */
-    public Map<String, Fingerprint> createFingerprintsFromASTBuilder(
+    private Map<String, Fingerprint> createFingerprintsFromASTBuilder(
             ASTClassBuilder astClassBuilder) {
         
         try
@@ -197,7 +165,7 @@ public class PackageHierarchyGenerator {
         
     }
 
-    public static class Record {
+    private static class Record {
         private final Map<String, Fingerprint> methods;
         private final String className;
 
