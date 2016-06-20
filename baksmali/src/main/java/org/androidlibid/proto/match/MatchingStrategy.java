@@ -52,11 +52,17 @@ public abstract class MatchingStrategy {
     public static class ResultItem {
         
         private final double score; 
+        private final int entropy;
         private final String packageName;
 
-        public ResultItem(double score, String packageName) {
+        public ResultItem(double score, String packageName, int entropy) {
             this.score = score;
             this.packageName = packageName;
+            this.entropy = entropy;
+        }
+
+        public int getEntropy() {
+            return entropy;
         }
         
         public String getPackage() {

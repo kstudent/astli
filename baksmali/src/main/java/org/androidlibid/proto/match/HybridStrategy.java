@@ -29,6 +29,9 @@ public class HybridStrategy extends MatchingStrategy {
     private final PackageScoreMatcher scoreMatcher;
     private final ResultEvaluator evaluator;
     
+    private final double minScoreThreshold = .5;
+    private final double minEntropyThreshold = 10;
+    
     private final Map<Package, PackageHierarchy> hierarchyCache;
 
     private final int minimalNeedleEntropy;
@@ -45,12 +48,14 @@ public class HybridStrategy extends MatchingStrategy {
 
     @Override
     public void matchHierarchies(Stream<PackageHierarchy> hierarchies) throws SQLException {
-        LOGGER.info("* matching hierarchies"   );
+        LOGGER.info("** matching hierarchies"   );
         
-        hierarchies.map(apkH -> {
+        hierarchies.sequential().map(apkH -> {
+                LOGGER.debug("*** {} (E:{})", apkH.getName(), apkH.getEntropy());
                     List<ResultItem> matches = matchHierarchy(apkH);
                     return new Result(matches, apkH, fpService.isPackageInDB(apkH.getName()));
                 })
+                .peek(result -> debugResult(result))
                 .map(result -> evaluator.evaluateResult(result))
                 .forEach(eval -> incrementStats(eval));
 
@@ -60,15 +65,22 @@ public class HybridStrategy extends MatchingStrategy {
 
         final double maxScore = calculateHybridScore(apkH, apkH);
 
-        return distillMethodsWithHighEntropy(apkH)
+        List<Package> candidates = distillMethodsWithHighEntropy(apkH)
                 .limit(10)
                 .flatMap(needle -> fpService.findPackagesWithSameMethods(needle))
                 .distinct()
+                .collect(Collectors.toList());
+        
+        LOGGER.debug("{} has {} package candidates(s)", apkH.getName(), candidates.size());
+        
+        return candidates.stream()
                 .map(pckg -> getPackageHierarchyCandidate(pckg))
                 .map(libH -> {
                     double score = calculateHybridScore(apkH, libH) / maxScore;
-                    return new ResultItem(score, libH.getName());
+                    return new ResultItem(score, libH.getName(), libH.getEntropy());
                 })
+                .peek(item -> LOGGER.debug("{} -> {}: {}", apkH.getName(), item.getPackage(), FRMT.format(item.getScore())))
+                .filter(item -> meetsMinimalMatchingRequirements(item))
                 .sorted((that, other) -> Double.compare(other.getScore(), that.getScore()))
                 .collect(Collectors.toList());
     }
@@ -87,7 +99,7 @@ public class HybridStrategy extends MatchingStrategy {
         double score = 0.0d;
         if(result.packageAIsIncludedInB()) {
             score = scoreMatcher.getScore(apkh, libh, result.getCostMatrix());
-        }
+        } 
         return score;
     }
 
@@ -113,5 +125,34 @@ public class HybridStrategy extends MatchingStrategy {
 
         return candidateClass.equals(needleClass);
 
+    }
+    
+    private boolean meetsMinimalMatchingRequirements(ResultItem item) {
+        return item.getScore() > minScoreThreshold && item.getEntropy() > minEntropyThreshold;
+    }
+
+    private void debugResult(Result result) {
+        
+        if(LOGGER.isDebugEnabled()) {
+            
+            PackageHierarchy apkH = result.getApkH();
+            boolean inDB = result.isPackageInDB();
+            
+            LOGGER.debug("self apk check: {}", apkH.getName());
+            
+            double maxScore = calculateHybridScore(apkH, apkH);
+            LOGGER.debug("{} -> {} : {}", apkH.getName(), apkH.getName(), FRMT.format(maxScore));
+            
+            if(inDB) {
+                LOGGER.debug("self db check: {}", apkH.getName());
+                fpService.getPackageHierarchiesByName(apkH.getName())
+                    .forEach(libH -> {
+                        double score = calculateHybridScore(apkH, libH);
+                        LOGGER.debug("{} -> {} : {}", apkH.getName(), libH.getName(), FRMT.format(score));
+                        if(score == 0.0d) 
+                            LOGGER.warn("* NEXT {}: self db match is 0.0!!", apkH.getName());
+                    });
+            }
+        }
     }
 }

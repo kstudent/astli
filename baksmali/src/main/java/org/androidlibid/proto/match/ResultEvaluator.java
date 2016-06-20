@@ -27,31 +27,58 @@ public class ResultEvaluator {
                 .findFirst()
                 .orElse(-1);
         
-        boolean isFirst         = (position == 0); 
-        boolean candidatesExist = !items.isEmpty();
-        boolean packageInDB     = result.isPackageInDB();
-        
-        Classification clss = isFirst ? Classification.TP
-                    : candidatesExist ? Classification.FP
-                    : packageInDB ?     Classification.FN 
-                    :                   Classification.TN;
+        boolean matchInList = (position != -1);
         
         double score = (position >= 0) ? items.get(position).getScore() : 0; 
         
-        if(clss == Classification.FP) {
-            LOGGER.info("{} (E:{}) is a false positive", apkName, result.getApkH().getEntropy());
-        } else if (clss == Classification.FN) {
-            LOGGER.info("{} (E:{}) is a false negative", apkName, result.getApkH().getEntropy());
+        boolean candidatesExist = !items.isEmpty();
+        
+        boolean isUniqueLeader = false;
+        
+        if(candidatesExist) {
+            double maxScore = items.get(0).getScore();
+            isUniqueLeader = (items.size() == 1 || items.get(1).getScore() < maxScore);
         }
         
-        IntStream.range(0, position).forEach(index -> 
-            LOGGER.info("- {}. : {} ({})", 
-                index,
-                items.get(index).getPackage(), 
-                FRMT.format(items.get(index).getScore()))
-        );
-
+        boolean isOnTop = matchInList && thereIsNoBetterMatchBeforePosition(items, position, score);
+        
+        boolean packageInDB     = result.isPackageInDB();
+        
+        Classification clss = isOnTop ? 
+                       ( isUniqueLeader ?   Classification.TPU : Classification.TPN )
+                        : candidatesExist ? Classification.FP
+                        : packageInDB ?     Classification.FN 
+                        :                   Classification.TN;
+        
+        if(clss == Classification.FP) {
+            LOGGER.info("*** {} (E:{}) is a false positive", apkName, result.getApkH().getEntropy());
+        } else if (clss == Classification.FN) {
+            LOGGER.info("*** {} (E:{}) is a false negative", apkName, result.getApkH().getEntropy());
+        }
+        
+        if(candidatesExist) {
+            LOGGER.debug("{}' Plato : ", apkName);
+            LOGGER.debug("| Name | Entropy | Score |"); 
+            items.stream()
+                .filter(item -> item.getScore() >= score)
+                .forEach(item -> {
+                    LOGGER.debug("| {} | {} | {} |", 
+                        item.getPackage(), 
+                        item.getEntropy(),
+                        FRMT.format(item.getScore())
+                    );
+                });
+        }
+        
         return new Evaluation(position, clss, score, items.size());
+    }
+
+    private boolean thereIsNoBetterMatchBeforePosition(List<MatchingStrategy.ResultItem> items, 
+            int position, double score) {
+        return !IntStream.range(0, position)
+                .boxed()
+                .map(items::get)
+                .anyMatch(item -> item.getScore() > score);
     }
     
     public static class Evaluation {
@@ -87,6 +114,10 @@ public class ResultEvaluator {
     }
     
     public static enum Classification {
-        TP, TN, FP, FN;
+        TPU, //True Positive and Unique (the only label) 
+        TPN, //True Positive, but also other labels with the same score
+        TN, 
+        FP, 
+        FN;
     }
 }

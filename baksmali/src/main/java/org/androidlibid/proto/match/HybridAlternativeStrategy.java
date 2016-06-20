@@ -69,7 +69,7 @@ public class HybridAlternativeStrategy extends MatchingStrategy {
         List<ResultItem> items = libHierachies.parallelStream()
             .map(libH -> {
                     double score = calculateHybridScore(apkH, libH);
-                    return new ResultItem(score / maxScore, libH.getName());
+                    return new ResultItem(score / maxScore, libH.getName(), libH.getEntropy());
                 })
             .sorted((that, other) -> Double.compare(other.getScore(), that.getScore()))
             .collect(Collectors.toList());

@@ -195,10 +195,30 @@ def apkFilter = new FilenameFilter() {
 def resources = sourceSets.integrationTest.getResources().getSrcDirs()?.find{true}; 
 def apksFolderPath = "$resources/fossEvaluation/apks"
 
+def libsFolderPath = "$resources/fossEvaluation/libs"
+
+task fossStore {}
+
+FileTree libFiles = fileTree(dir: libsFolderPath).include("*.jar")
+
+libFiles.each{
+
+	def lib = it
+	def libname = lib.getName()
+
+	task "fossStore-$libname" (type: JavaExec, dependsOn: assemble) {
+        classpath sourceSets.main.runtimeClasspath
+		args = ["-z", libname, lib] 
+        main = "org.jf.baksmali.main"
+    }
+
+	fossStore.dependsOn("fossStore-$libname")
+}
+
 def getLatestFolderName() {
     def fileNames = new ArrayList()
     
-    for(file in new File("fossEvaluation").listFiles()) {
+    for(file in new File("$projectDir/fossEvaluation").listFiles()) {
         try {
             fileNames.add(Integer.parseInt(file.getName()))
         } catch (NumberFormatException ex) {}
@@ -213,7 +233,7 @@ def getLatestFolderName() {
     return "1"
 }
 
-def algIDs = [1,2,3,4];
+def algIDs = [1];
 
 task fossEvaluate {}
 
@@ -237,7 +257,7 @@ new File(apksFolderPath).listFiles().each{
             def algID = it
             def taskID = "$apkFolderName-$apkFileName-$algID"
             
-            task "match-$taskID" (type: JavaExec, dependsOn: build) {
+            task "match-$taskID" (type: JavaExec, dependsOn: assemble) {
                 classpath sourceSets.main.runtimeClasspath
                 args = (mappingFile.exists()) ? 
                     ["-y", apkFile, "-a", algID, "-Z", mappingFile ] 
@@ -246,7 +266,6 @@ new File(apksFolderPath).listFiles().each{
             }
 
             task "saveResultOf-$taskID" (type: Copy, dependsOn: "match-$taskID") {
-
                 def rootFolder = getLatestFolderName()
                 into("fossEvaluation/$rootFolder/$apkFolderName/$apkFileName/$algID") 
                 from ("log/") {
