@@ -20,6 +20,7 @@ class PackageScoreMatcher {
     private List<List<Fingerprint>> aPrints;
     private List<List<String>> aSigs; //TODO
     private List<List<String>> bSigs; //TODO
+    private List<String> aClasses, bClasses;
     
     private static final double SIGNATURES_MATCH = 0.0d;
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
@@ -41,6 +42,8 @@ class PackageScoreMatcher {
         bPrints = b.getPrintTable();
         aSigs = a.getSignatureTable();
         bSigs = b.getSignatureTable();
+        aClasses = a.getClassTable();
+        bClasses = b.getClassTable();
         
         double max = 0;
         
@@ -62,8 +65,9 @@ class PackageScoreMatcher {
         
         double finalScore = computeScore(scores, solution);
         
-        LOGGER.info("** matrix of {} -> {} (score: {})", a.getName(), b.getName(), FRMT.format(finalScore));
-        printMatrix(scores, solution);
+//        LOGGER.info("*** class scores of {} -> {} (final score: {})", a.getName(), b.getName(), FRMT.format(finalScore));
+//        printClassSolution(scores, solution);
+//        printMatrix(scores, solution);
         
         return finalScore;
     }
@@ -97,7 +101,14 @@ class PackageScoreMatcher {
         invertMatrix(costMatrix, invMatrix, max);
         int[] solution = hg.execute(invMatrix);
         
-        return computeScore(costMatrix, solution);
+        double score = computeScore(costMatrix, solution);
+        
+//        if(score > 0.0d && aClasses.get(i).equals(bClasses.get(j))) {
+//            LOGGER.info("*** method scores of {} -> {} (final score: {})", aClasses.get(i), bClasses.get(j), FRMT.format(score));
+//            printMethodSolution(costMatrix, solution, printsA, printsB);
+//        }
+        
+        return score;
         
     }
 
@@ -137,6 +148,50 @@ class PackageScoreMatcher {
                     : 0.0d
             )
             .sum();
+    }
+    
+        
+    private void printMethodSolution(double[][] matrix, int[] solution, List<Fingerprint> printsA, List<Fingerprint> printsB) {
+        
+        if (!LOGGER.isInfoEnabled()) return;
+        
+        LOGGER.info("Scores: ");
+        LOGGER.info("| M | apk | lib | score | a.E | b.E |"); 
+        
+        IntStream.range(0, solution.length)
+            .forEach(index -> {
+                if (solution[index] >= 0 && solution[index] < matrix[0].length) {
+                    Fingerprint aPrint = printsA.get(index); 
+                    Fingerprint bPrint = printsB.get(solution[index]);
+                    LOGGER.info("| {} | {} | {} | {} | {} | {} |", 
+                            aPrint.getName().equals(bPrint.getName()) ? " " : "X",
+                            aPrint.getName(), 
+                            bPrint.getName(),
+                            FRMT.format(matrix[index][solution[index]]), 
+                            aPrint.getEntropy(), 
+                            bPrint.getEntropy()
+                            
+                    );
+                }
+            });
+    }
+    
+    private void printClassSolution(double[][] matrix, int[] solution) {
+        
+        if (!LOGGER.isInfoEnabled()) return;
+
+        LOGGER.info("Scores: ");
+        
+        IntStream.range(0, solution.length)
+            .forEach(index -> {
+                if (solution[index] >= 0 && solution[index] < matrix[0].length) {
+                    LOGGER.info("- {} -> {}: {}", 
+                            aClasses.get(index), 
+                            bClasses.get(solution[index]),
+                            FRMT.format(matrix[index][solution[index]])
+                    );
+                }
+            });
     }
     
 }

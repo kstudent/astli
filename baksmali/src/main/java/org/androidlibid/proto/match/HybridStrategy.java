@@ -29,7 +29,7 @@ public class HybridStrategy extends MatchingStrategy {
     private final PackageScoreMatcher scoreMatcher;
     private final ResultEvaluator evaluator;
     
-    private final double minScoreThreshold = .5;
+    private final double minScoreThreshold   = .5;
     private final double minEntropyThreshold = 10;
     
     private final Map<Package, PackageHierarchy> hierarchyCache;
@@ -50,7 +50,7 @@ public class HybridStrategy extends MatchingStrategy {
     public void matchHierarchies(Stream<PackageHierarchy> hierarchies) throws SQLException {
         LOGGER.info("** matching hierarchies"   );
         
-        hierarchies.sequential().map(apkH -> {
+        hierarchies.map(apkH -> {
                 LOGGER.debug("*** {} (E:{})", apkH.getName(), apkH.getEntropy());
                     List<ResultItem> matches = matchHierarchy(apkH);
                     return new Result(matches, apkH, fpService.isPackageInDB(apkH.getName()));
@@ -67,6 +67,7 @@ public class HybridStrategy extends MatchingStrategy {
 
         List<Package> candidates = distillMethodsWithHighEntropy(apkH)
                 .limit(10)
+                .peek(needle -> LOGGER.debug("needle: {} ({})", needle.getName(), needle.getEntropy()))
                 .flatMap(needle -> fpService.findPackagesWithSameMethods(needle))
                 .distinct()
                 .collect(Collectors.toList());
@@ -89,7 +90,7 @@ public class HybridStrategy extends MatchingStrategy {
         return hierarchy.getClassNames().parallelStream()
                 .map(name -> hierarchy.getMethodsByClassName(name))
                 .flatMap(methods -> methods.values().stream())
-                .filter(method -> method.getLength() > minimalNeedleEntropy)
+                .filter(method -> method.getEntropy() > minimalNeedleEntropy)
                 .sorted((that, othr) -> (-1) * Integer.compare(that.getEntropy(), othr.getEntropy()));
     }
 
@@ -99,7 +100,7 @@ public class HybridStrategy extends MatchingStrategy {
         double score = 0.0d;
         if(result.packageAIsIncludedInB()) {
             score = scoreMatcher.getScore(apkh, libh, result.getCostMatrix());
-        } 
+        }
         return score;
     }
 
@@ -138,19 +139,22 @@ public class HybridStrategy extends MatchingStrategy {
             PackageHierarchy apkH = result.getApkH();
             boolean inDB = result.isPackageInDB();
             
-            LOGGER.debug("self apk check: {}", apkH.getName());
+            LOGGER.debug("*** self apk check: {}", apkH.getName());
             
             double maxScore = calculateHybridScore(apkH, apkH);
             LOGGER.debug("{} -> {} : {}", apkH.getName(), apkH.getName(), FRMT.format(maxScore));
             
             if(inDB) {
-                LOGGER.debug("self db check: {}", apkH.getName());
+                LOGGER.debug("*** self db check: {}", apkH.getName());
                 fpService.getPackageHierarchiesByName(apkH.getName())
                     .forEach(libH -> {
                         double score = calculateHybridScore(apkH, libH);
                         LOGGER.debug("{} -> {} : {}", apkH.getName(), libH.getName(), FRMT.format(score));
-                        if(score == 0.0d) 
-                            LOGGER.warn("* NEXT {}: self db match is 0.0!!", apkH.getName());
+                        if(score == 0.0d) {
+                            LOGGER.warn("*** NEXT {}: self db match is 0.0!!", apkH.getName());
+                            LOGGER.debug(apkH.toString());
+                            LOGGER.debug(libH.toString());
+                        }
                     });
             }
         }
