@@ -1,7 +1,6 @@
 package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchy;
@@ -18,6 +17,7 @@ public class PackageHierarchyService {
     public PackageHierarchyService(EntityService service, String libName) {
         this.service = service;
         this.libName = libName;
+        checkLibName();
     }
     
     /** 
@@ -45,5 +45,16 @@ public class PackageHierarchyService {
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private void checkLibName() {
+        try {
+            if(service.findLibraryByMvnIdentifier(libName) != null) {
+                throw new RuntimeException(libName + " already stored in database!");
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        
     }
 }
