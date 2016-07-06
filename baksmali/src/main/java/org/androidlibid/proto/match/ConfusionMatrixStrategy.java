@@ -123,7 +123,7 @@ public class ConfusionMatrixStrategy extends MatchingStrategy {
             .map(libh -> {
                 double score = calculateHybridScore(apkh, libh);
                 row.append(score / maxScore).append(",");
-                return new ResultItem(score / maxScore, libh.getName());
+                return new ResultItem(score / maxScore, libh.getName(), libh.getEntropy());
             });
     }
     

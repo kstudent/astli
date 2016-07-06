@@ -19,6 +19,7 @@ public class PackageHierarchy {
     private final Map<String, Map<String, Fingerprint>> classes = new HashMap<>();
     private List<List<String>> signatureTable;
     private List<List<Fingerprint>> printTable;
+    private List<String> classTable;
     
     private int computedEntropy = -1;
 
@@ -72,32 +73,44 @@ public class PackageHierarchy {
         return classes.size();
     }
     
-    private void fillSignatureAndPrintTable() {
+    private void fillTables() {
         signatureTable = new ArrayList<>();
         printTable = new ArrayList<>();
+        classTable = new ArrayList<>();
         
-        classes.values().stream().forEachOrdered((methods) -> {
-            ArrayList<Fingerprint> printsOfClass = new ArrayList<>(methods.values()); 
-            printTable.add(printsOfClass);
-            signatureTable.add(printsOfClass.stream()
-                    .map(print -> print.getSignature())
-                    .collect(Collectors.toList()));
+        classes.keySet().stream()
+                .peek(clssName -> classTable.add(clssName))
+                .map(clssName -> classes.get(clssName))
+                .forEachOrdered(methods -> {
+                    ArrayList<Fingerprint> printsOfClass = new ArrayList<>(methods.values()); 
+                    printTable.add(printsOfClass);
+                    signatureTable.add(printsOfClass.stream()
+                            .map(print -> print.getSignature())
+                            .collect(Collectors.toList()));
+            
         });
     }
     
     public synchronized List<List<String>> getSignatureTable() {
         if(signatureTable == null) {
-            fillSignatureAndPrintTable();
+            fillTables();
         }
         return signatureTable;
     } 
     
     public synchronized List<List<Fingerprint>> getPrintTable() {
         if(printTable == null) {
-            fillSignatureAndPrintTable();
+            fillTables();
         }
         return printTable;
     } 
+    
+    public synchronized List<String> getClassTable() {
+        if(classTable == null) {
+            fillTables();
+        }
+        return classTable;
+    }
     
     public synchronized int getEntropy() {
         
@@ -119,6 +132,19 @@ public class PackageHierarchy {
         this.signatureTable = null;
         this.printTable = null;
         this.computedEntropy = -1;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder(); 
+        
+        builder.append(name).append(":").append("\n");
+        
+        classes.keySet().stream()
+            .forEach(clss -> builder.append("- ").append(clss).append("\n"))
+        ;
+        
+        return builder.toString();
     }
     
 }

@@ -40,7 +40,7 @@ public class StoreFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         try {
             service = EntityServiceFactory.createService();
             storeFingerprints();
-        } catch (SQLException | InterruptedException | ExecutionException ex) {
+        } catch (SQLException | InterruptedException | ExecutionException | RuntimeException ex ) {
             LOGGER.error(ex.getMessage(), ex);
         }
         return true;

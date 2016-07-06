@@ -52,7 +52,6 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
             Date after = new Date();
             long diff = after.getTime() - before.getTime();
-            LOGGER.info("* Stats : ");
             new StatsLogger().logStats(strategy.getStats(), diff);
             
         } catch (SQLException | IOException ex) {
@@ -63,7 +62,7 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
 
     private Stream<PackageHierarchy> generatePackagePrintStream() throws IOException {
         
-        LOGGER.info("* Create Package Prints");
+        LOGGER.info("** Create Package Prints");
         
         Map<String, String> mappings = new HashMap<>();
 

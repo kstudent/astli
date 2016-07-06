@@ -55,7 +55,10 @@
         
         <Logger name="org.androidlibid.proto.match.MatchFingerprintsAlgorithm" level="info"/>
         
-        <Logger name="org.androidlibid.proto.match.HybridStrategy" level="info"/>
+        <!--<Logger name="org.androidlibid.proto.match.HybridStrategy" level="info"/>-->
+        <Logger name="org.androidlibid.proto.match.HybridStrategy" level="DEBUG"/>
+        <Logger name="org.androidlibid.proto.match.ResultEvaluator" level="DEBUG"/>
+        
         <Logger name="org.androidlibid.proto.match.PackageSignatureMatcherConfusionMatrixStrategy" level="info"/>
         <!--<Logger name="org.androidlibid.proto.match.PackageSignatureMatcher" level="info"/>-->
         <!--<Logger name="org.androidlibid.proto.match.PackageScoreMatcher" level="info"/>-->

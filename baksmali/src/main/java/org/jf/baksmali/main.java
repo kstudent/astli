@@ -192,11 +192,17 @@ public class main {
         }
         
         if (options.aliFingerprintJAR) {
-            String[] dxArgs = {"--dex", "--output=" + inputDexFileName + ".dex", inputDexFileName};
-            com.android.dx.command.Main.main(dxArgs);
-            dexFileFile = new File(inputDexFileName + ".dex");
+            String outputDexFileName = inputDexFileName + ".dex";
+            dexFileFile = new File(outputDexFileName);
+            
+            if(dexFileFile.exists()) {
+                LOGGER.warn(inputDexFileName + " has been dexed already.");
+            } else {
+                String[] dxArgs = {"--dex", "--core-library", "--output=" + outputDexFileName, inputDexFileName};
+                com.android.dx.command.Main.main(dxArgs);
+            }
         }
-
+        
         //Read in and parse the dex file
         DexBackedDexFile dexFile = null;
         try {

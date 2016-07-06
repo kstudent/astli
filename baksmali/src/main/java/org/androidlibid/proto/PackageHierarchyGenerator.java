@@ -25,8 +25,8 @@ public class PackageHierarchyGenerator {
     private final ASTToFingerprintTransformer ast2fpt;
     private final Map<String, String> mappings;
     
-    private static List<String> BLACKLISTED_PACKAGES; 
-    private static List<String> WHITELISTED_PACKAGES; 
+    private static final List<String> BLACKLISTED_PACKAGES; 
+    private static final List<String> WHITELISTED_PACKAGES; 
     
     static {
         BLACKLISTED_PACKAGES = new ArrayList<>();
@@ -50,6 +50,7 @@ public class PackageHierarchyGenerator {
         
         astClassBuilderStream
                 .map(builder -> createRecordFromASTBuilder(builder))
+                .filter(record -> !record.getMethods().isEmpty())
                 .forEach(record  -> insertRecordIntoHierarchies(record, hierarchies));
         
         return hierarchies.values().parallelStream();
