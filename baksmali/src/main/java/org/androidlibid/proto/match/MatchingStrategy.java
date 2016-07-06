@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.androidlibid.proto.PackageHierarchy;
+import org.jf.baksmali.baksmaliOptions;
 
 /**
  *
@@ -104,7 +105,11 @@ public abstract class MatchingStrategy {
         private final Map<Integer, Integer> positions;
         private final int comparisonCounter;
         private final int dbLookups;
-
+        
+        private String obfLvl = "";
+        private String apkName = "";
+        private String algorithm = "";
+        private long diff;
         
         public Map<ResultEvaluator.Classification, Integer> getClassifications() {
             return classifications;
@@ -121,6 +126,33 @@ public abstract class MatchingStrategy {
         public int getDbLookups() {
             return dbLookups;
         }
+
+        public String getObfLvl() {
+            return obfLvl;
+        }
+
+        public String getApkName() {
+            return apkName;
+        }
+
+        public String getAlgorithm() {
+            return algorithm;
+        }
+
+        public long getDiff() {
+            return diff;
+        }
+        
+        public void setOptions(baksmaliOptions options) {
+            algorithm = options.strategy.getSimpleName(); 
+            String[] pieces = options.inputFileName.split("/");
+            obfLvl    = pieces[pieces.length - 1];
+            apkName   = (pieces.length > 1) ? pieces[pieces.length - 2] : "<unknown>";
+        }
+        
+        void setDiff(long diff) {
+            this.diff = diff;
+        }
         
         public Stats(Map<ResultEvaluator.Classification, Integer> classifications, 
                 Map<Integer, Integer> positions, int comparisonCounter,
@@ -130,6 +162,7 @@ public abstract class MatchingStrategy {
             this.comparisonCounter = comparisonCounter;
             this.dbLookups = dbLookups;
         }
+
     }
 
 }

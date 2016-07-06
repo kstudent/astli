@@ -14,6 +14,10 @@
         <File name="RESULT" fileName="log/result.org" append="false">
           <PatternLayout pattern="%m%n" />
         </File>
+        <File name="JSON" fileName="log/results.json" append="true">
+          <PatternLayout pattern="%m%n" />
+        </File>
+        
      </Appenders>
     
     <Loggers>
@@ -40,12 +44,17 @@
             <AppenderRef ref="RESULT"/>
         </Logger>
         
-        <Logger name="org.androidlibid.proto.match.StatsLogger" level="info" additivity="false">
+        <Logger name="org.androidlibid.proto.match.StatsToOrgLogger" level="info" additivity="false">
             <AppenderRef ref="RESULT"/>
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="DEBUG"/>
             <AppenderRef ref="INFO"/>
         </Logger>
+        
+        <Logger name="org.androidlibid.proto.match.StatsToJsonLogger" level="info" additivity="false">
+            <AppenderRef ref="JSON"/>
+        </Logger>
+        
         
         <Logger name="org.androidlibid.proto.integration.mainTest" level="info" additivity="false">
             <AppenderRef ref="RESULT"/>

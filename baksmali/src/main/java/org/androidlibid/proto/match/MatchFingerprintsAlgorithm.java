@@ -52,7 +52,15 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
             
             Date after = new Date();
             long diff = after.getTime() - before.getTime();
-            new StatsLogger().logStats(strategy.getStats(), diff);
+            
+            
+            MatchingStrategy.Stats stats = strategy.getStats();
+            
+            stats.setDiff(diff);
+            stats.setOptions(options);
+            
+            new StatsToJsonLogger().logStats(stats);
+            new StatsToOrgLogger().logStats(stats);
             
         } catch (SQLException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
