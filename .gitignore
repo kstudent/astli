@@ -15,3 +15,6 @@
 /nbproject
 /dist/
 /SmaliHack/.nb-gradle/
+.nb-gradle-properties
+.nb-gradle/
+
