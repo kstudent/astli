@@ -159,7 +159,6 @@ public class baksmali {
             if(options.aliFingerprintJAR) {
                 alg = new StoreFingerprintsAlgorithm(options, classDefs);
             } else {
-//                alg = new MatchFingerprintsAlgorithm(options, classDefs);
                 alg = new MatchFingerprintsAlgorithm(options, classDefs);
             }
             
@@ -247,15 +246,6 @@ public class baksmali {
             BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(smaliFile), "UTF8"));
 
-//            BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(new OutputStream() {
-//                @Override
-//                public void write(int i) throws IOException {
-//                    synchronized(System.out) {
-//                        System.out.write(i);
-//                    }
-//                }
-//            }));
-            
             writer = new IndentingWriter(bufWriter);
             classDefinition.writeTo((IndentingWriter)writer);
         } catch (Exception ex) {

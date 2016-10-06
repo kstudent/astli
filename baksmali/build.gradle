@@ -71,9 +71,8 @@ dependencies {
     
     testCompile 'net.java.dev.activeobjects:activeobjects-test:1.1.5'
     
-    //runtime 'org.slf4j:slf4j-simple:1.7.14'
     compile 'org.slf4j:slf4j-simple:1.7.14'
-    runtime 'org.hsqldb:hsqldb:2.3.3'
+    compile 'org.hsqldb:hsqldb:2.3.3'
     
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.5'
@@ -168,7 +167,7 @@ test {
     //-> uncomment line "exclude ..."
     //side effect: when you run unit tests, integration tests will be included 
     //(takes long!)
-//    exclude 'org/androidlibid/proto/integration/**'
+    exclude 'org/androidlibid/proto/integration/**'
     testLogging{ showStandardStreams = true }
 }
 

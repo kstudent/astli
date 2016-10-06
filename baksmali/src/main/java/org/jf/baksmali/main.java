@@ -43,11 +43,14 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.match.HybridStrategy;
 import org.androidlibid.proto.match.ConfusionMatrixStrategy;
+import org.androidlibid.proto.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -160,7 +163,9 @@ public class main {
                     } 
                     
                     break;
-                    
+                case 's': 
+                    options.aliPrintSetup = true;
+                    break;
                 case 'j':
                     options.jobs = Integer.parseInt(commandLine.getOptionValue("j"));
                     break;
@@ -169,7 +174,14 @@ public class main {
             }
         }
                     
-        if (remainingArgs.length != 1) {
+        if (remainingArgs.length == 0 && options.aliPrintSetup) {
+            try {
+                new SetupLogger(new baksmaliOptions(), EntityServiceFactory.createService()).logSetup();
+            } catch (SQLException ex) {
+                LOGGER.error(ex);
+            }
+            return;
+        } else if (remainingArgs.length != 1) {
             usage();
             return;
         }
@@ -296,6 +308,10 @@ public class main {
         Option aliFingerprintAPK = OptionBuilder.withLongOpt("ali-apk")
                 .withDescription("try to identify libraries in an android app (.apk)")
                 .create("y");
+        
+        Option aliPrintSetup = OptionBuilder.withLongOpt("ali-print-setup")
+                .withDescription("print setup in libraries")
+                .create("s");
 
         Option aliFingerprintJAR = OptionBuilder.withLongOpt("ali-jar")
                 .hasArg()
@@ -331,6 +347,7 @@ public class main {
         basicOptions.addOption(helpOption);
         basicOptions.addOption(aliFingerprintAPK);
         basicOptions.addOption(aliFingerprintJAR);
+        basicOptions.addOption(aliPrintSetup);
         basicOptions.addOption(verifyObfuscationWithMapping);
         basicOptions.addOption(algorithmOption);
         basicOptions.addOption(jobsOption);

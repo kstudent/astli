@@ -84,6 +84,9 @@ public class baksmaliOptions {
 //    public int jobs = -1;
     public int jobs = 1;
     
+    //print setup settings
+    public boolean aliPrintSetup = false;
+    
     //storing settings
     public boolean aliFingerprintJAR = false;
     public boolean storeOnMethodLevel = true;
