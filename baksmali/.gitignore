@@ -3,3 +3,4 @@ log/
 *.dex
 *.jar
 *.org
+nbproject/private/
