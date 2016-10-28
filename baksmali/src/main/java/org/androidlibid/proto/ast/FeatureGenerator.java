@@ -21,7 +21,6 @@ public class FeatureGenerator {
         features.add(createFeature(NodeType.DRC, NodeType.PAR));
         features.add(createFeature(NodeType.DRC, NodeType.LOC));
         features.add(createFeature(NodeType.LOC, NodeType.LOC));
-        features.add(createFeature(NodeType.LOC, NodeType.PAR));
         features.add(createFeature(NodeType.PAR, NodeType.PAR));
         return features;
     }

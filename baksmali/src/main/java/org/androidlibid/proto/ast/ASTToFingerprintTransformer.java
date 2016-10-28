@@ -47,10 +47,8 @@ public class ASTToFingerprintTransformer {
             
             int llPairs = fromNChoose2(locals); 
             int ppPairs = fromNChoose2(params); 
-            int lpPairs = fromNChoose2(locals + params) - llPairs - ppPairs; 
             
             print.incrementFeatureBy(llPairs, NodeType.LOC, NodeType.LOC);
-            print.incrementFeatureBy(lpPairs, NodeType.LOC, NodeType.PAR);
             print.incrementFeatureBy(ppPairs, NodeType.PAR, NodeType.PAR);
             
         }
