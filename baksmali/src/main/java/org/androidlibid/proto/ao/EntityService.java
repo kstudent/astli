@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.java.ao.DBParam;
 import net.java.ao.EntityManager;
 import net.java.ao.EntityStreamCallback;
 import net.java.ao.Query;
@@ -34,27 +35,25 @@ public class EntityService {
     public FingerprintEntity saveMethod(byte[] vector, String methodName, String signature, Clazz clazz) 
             throws SQLException
     {
-        FingerprintEntity entity = em.create(FingerprintEntity.class);
         
-        entity.setVector(vector);
-        entity.setSignature(signature);
-        entity.setName(methodName);
-        entity.setClazz(clazz);
+        DBParam sigP = new DBParam("signature", signature);
+        DBParam metP = new DBParam("name", methodName);
+        DBParam claP = new DBParam("clazzID", clazz);
+        DBParam vecP = new DBParam("vector", vector);
         
-        entity.save();
+        FingerprintEntity entity = em.create(FingerprintEntity.class, vecP, sigP, metP, claP);
         return entity;
     }
     
     public synchronized Clazz saveClass(String className, 
         String packageName, String mvnIdentifier) throws SQLException {
 
-        Clazz clazz = em.create(Clazz.class);
         Library lib  = saveLibrary(mvnIdentifier);
         Package pckg = savePackage(packageName, lib);
         
-        clazz.setName(className);
-        clazz.setPackage(pckg);
-        clazz.save();
+        Clazz clazz = em.create(Clazz.class, 
+                new DBParam("name", className), 
+                new DBParam("packageID", pckg));
 
         return clazz;
     }
@@ -63,10 +62,9 @@ public class EntityService {
         Package entity = findPackageByNameAndLib(packageName, lib);
         
         if (entity == null) {
-            entity = em.create(Package.class);
-            entity.setName(packageName);
-            entity.setLibrary(lib);
-            entity.save();
+            entity = em.create(Package.class, 
+                    new DBParam("name", packageName), 
+                    new DBParam("libraryID", lib));
         }
         
         return entity;
@@ -77,9 +75,7 @@ public class EntityService {
         Library entity = findLibraryByMvnIdentifier(mvnIdentifier);
         
         if (entity == null) {
-            entity = em.create(Library.class);
-            entity.setName(mvnIdentifier);
-            entity.save();
+            entity = em.create(Library.class, new DBParam("name", mvnIdentifier));
         }
         
         return entity;
