@@ -1,9 +1,12 @@
 package org.androidlibid.proto.integration;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.Consumer;
 import org.jf.baksmali.main;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
@@ -206,5 +209,26 @@ public class mainTest {
                 LOGGER.info(p);
             }
         }
+    }
+    
+    @Test
+    public void printVectorLength() throws SQLException {
+        
+        EntityService service = EntityServiceFactory.createService();
+        
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        
+        service.findFingerprints((FingerprintEntity t) -> {
+            Fingerprint p = new Fingerprint(t);
+            synchronized(builder) {
+                builder.append(p.getLength() + ",");
+            }
+        });
+        
+        builder.append("]");
+        
+        LOGGER.info(builder.toString());
+        
     }
 }

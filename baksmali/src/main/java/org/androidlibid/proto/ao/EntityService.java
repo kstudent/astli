@@ -5,9 +5,14 @@ import java.sql.SQLWarning;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.java.ao.EntityManager;
+import net.java.ao.EntityStreamCallback;
 import net.java.ao.Query;
+import net.java.ao.RawEntity;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -181,4 +186,16 @@ public class EntityService {
                 +    ") "
                 + ") ", signature, vector)));
     }
+    
+    public void findFingerprints(Consumer<FingerprintEntity> consumer) throws SQLException {
+          
+        em.stream(
+                FingerprintEntity.class, 
+                (EntityStreamCallback<FingerprintEntity, Integer>) (FingerprintEntity p) -> {
+                   consumer.accept(p);
+                }
+        );
+    }
 }
+
+
