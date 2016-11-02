@@ -146,16 +146,20 @@ public class HybridStrategy extends MatchingStrategy {
             
             if(inDB) {
                 LOGGER.debug("*** self db check: {}", apkH.getName());
-                fpService.getPackageHierarchiesByName(apkH.getName())
-                    .forEach(libH -> {
+                
+                boolean foundPackageWithScoreGreaterZero = fpService
+                    .getPackageHierarchiesByName(apkH.getName())
+                    .anyMatch(libH -> {
                         double score = calculateHybridScore(apkH, libH);
                         LOGGER.debug("{} -> {} : {}", apkH.getName(), libH.getName(), FRMT.format(score));
-                        if(score == 0.0d) {
-                            LOGGER.warn("*** NEXT {}: self db match is 0.0!!", apkH.getName());
-                            LOGGER.debug(apkH.toString());
-                            LOGGER.debug(libH.toString());
-                        }
+                        return score > 0;
                     });
+                
+                if(!foundPackageWithScoreGreaterZero) {
+                    LOGGER.warn("*** NEXT {}: there are no packages with score > 0 in the database... self db match failed !!", apkH.getName());
+                    LOGGER.debug(apkH.toString());
+                }
+            
             }
         }
     }

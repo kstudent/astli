@@ -199,8 +199,8 @@ public class main {
         
         File dexFileFile = new File(inputDexFileName);
         if (!dexFileFile.exists()) {
-            LOGGER.error("Can't find the file " + inputDexFileName);
-            System.exit(1);
+            LOGGER.error("* NEXT Can't find the file " + inputDexFileName);
+            System.exit(0);
         }
         
         if (options.aliFingerprintJAR) {
@@ -220,18 +220,21 @@ public class main {
         try {
             dexFile = DexFileFactory.loadDexFile(dexFileFile, options.dexEntry, options.apiLevel, options.experimental);
         } catch (MultipleDexFilesException ex) {
-            LOGGER.error(String.format("%s contains multiple dex files. You must specify which one to " +
+            LOGGER.error(String.format("* NEXT %s contains multiple dex files. You must specify which one to " +
                     "disassemble with the -e option", dexFileFile.getName()));
             LOGGER.error("Valid entries include:");
             for (OatDexFile oatDexFile: ex.oatFile.getDexFiles()) {
                 LOGGER.error(oatDexFile.filename);
             }
-            System.exit(1);
+            System.exit(0);
+        } catch (org.jf.util.ExceptionWithContext ex) {
+            LOGGER.error("* NEXT {}", ex.toString());
+            System.exit(0);
         }
 
         if (dexFile.hasOdexOpcodes()) {
             if (!options.deodex) {
-                LOGGER.error("Warning: You are disassembling an odex file without deodexing it. You");
+                LOGGER.error("* NEXT: Warning: You are disassembling an odex file without deodexing it. You");
                 LOGGER.error("won't be able to re-assemble the results unless you deodex it with the -x");
                 LOGGER.error("option");
                 options.allowOdex = true;
@@ -261,7 +264,8 @@ public class main {
         }
 
         if (errorOccurred) {
-            System.exit(1);
+            LOGGER.error("* NEXT: Some error occured...");
+            System.exit(0);
         }
     }
 
