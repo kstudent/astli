@@ -64,7 +64,6 @@ dependencies {
     compile project(':dexlib2')
     compile depends.commons_cli
     compile depends.guava
-    compile 'org.la4j:la4j:0.6.0'
     compile files('lib/dx.jar')
     compile 'net.java.dev.activeobjects:activeobjects:1.1.5'
     compile 'com.google.code.gson:gson:2.7'

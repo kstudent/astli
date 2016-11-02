@@ -45,8 +45,8 @@ public class ASTToFingerprintTransformer {
                 if(lvl2.getType().equals(NodeType.PAR)) params++;
             }
             
-            int llPairs = fromNChoose2(locals); 
-            int ppPairs = fromNChoose2(params); 
+            short llPairs = (short) fromNChoose2(locals); 
+            short ppPairs = (short) fromNChoose2(params); 
             
             print.incrementFeatureBy(llPairs, NodeType.LOC, NodeType.LOC);
             print.incrementFeatureBy(ppPairs, NodeType.PAR, NodeType.PAR);

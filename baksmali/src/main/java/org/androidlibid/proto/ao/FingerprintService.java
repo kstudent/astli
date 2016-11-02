@@ -40,7 +40,6 @@ public class FingerprintService {
         try {
             return service
                     .findMethodsBySignatureAndVector(needle.getSignature(), needle.getBinaryFeatureVector())
-//                    .findMethodsBySignature(needle.getSignature())
                     .parallelStream()
                     .map(e -> new Fingerprint(e));
             } catch (SQLException ex) {

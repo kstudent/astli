@@ -2,15 +2,10 @@ package org.androidlibid.proto.ao;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import net.java.ao.EntityManager;
-import net.java.ao.Query;
 import net.java.ao.builder.EntityManagerBuilder;
-import org.androidlibid.proto.Fingerprint;
-import org.la4j.vector.dense.BasicVector;
 
 /**
  *

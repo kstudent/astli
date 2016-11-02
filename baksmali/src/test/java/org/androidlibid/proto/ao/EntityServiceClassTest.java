@@ -10,8 +10,6 @@ import net.java.ao.test.jdbc.Jdbc;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.la4j.Vector;
-import org.la4j.vector.dense.BasicVector;
 
 /**
  *
@@ -133,8 +131,6 @@ public class EntityServiceClassTest {
     
     @Test
     public void testCountFingerprints() throws Exception {
-        Vector vector = new BasicVector(5);
-        
         EntityService service = new EntityService(em);
         assert(service.countClasses() == 0);
         
@@ -149,7 +145,6 @@ public class EntityServiceClassTest {
     public void testDeleteAllFingerprints() throws Exception {
         
         assert(em.count(Clazz.class) == 0);
-        Vector vector = new BasicVector(5);
         
         EntityService service = new EntityService(em);
         

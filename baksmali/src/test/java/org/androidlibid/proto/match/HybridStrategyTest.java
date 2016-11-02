@@ -9,9 +9,9 @@ import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchy;
 import org.androidlibid.proto.ao.FingerprintEntity;
 import org.androidlibid.proto.ao.FingerprintService;
+import org.androidlibid.proto.utils.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.la4j.vector.dense.BasicVector;
 import org.mockito.Mockito;
 
 /**
@@ -56,11 +56,11 @@ public class HybridStrategyTest {
         });
     }
 
-    private Fingerprint createPrint(String signature, double... values) {
+    private Fingerprint createPrint(String signature, int... values) {
         
         FingerprintEntity mock = Mockito.mock(FingerprintEntity.class);
         Mockito.when(mock.getSignature()).thenReturn(signature);
-        Mockito.when(mock.getVector()).thenReturn(BasicVector.fromArray(values).toBinary());
+        Mockito.when(mock.getVector()).thenReturn(ArrayUtils.truncateIntToLEByteArray(values));
         Mockito.when(mock.getName()).thenReturn("");
         
         return new Fingerprint(mock);

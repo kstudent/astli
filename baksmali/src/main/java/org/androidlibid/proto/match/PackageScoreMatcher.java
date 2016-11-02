@@ -86,7 +86,7 @@ class PackageScoreMatcher {
         for(int k = 0; k < printsA.size(); k++) {
             for(int l = 0; l < printsB.size(); l++) {
                 if(sigsA.get(k).equals(sigsB.get(l))) {
-                    double score = printsA.get(k).getNonCommutativeSimilarityScoreToFingerprint(printsB.get(l));
+                    double score = (double) printsA.get(k).getNonCommutativeSimilarityScoreToFingerprint(printsB.get(l));
                     if(score > max) {
                         max = score;
                     }

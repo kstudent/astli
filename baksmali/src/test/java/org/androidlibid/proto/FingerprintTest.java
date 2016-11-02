@@ -16,10 +16,10 @@
 package org.androidlibid.proto;
 
 import org.androidlibid.proto.ao.FingerprintEntity;
+import org.androidlibid.proto.utils.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
-import org.la4j.vector.dense.BasicVector;
 import org.mockito.Mockito;
 
 /**
@@ -33,7 +33,7 @@ public class FingerprintTest {
     @Test
     public void testFingerprint() {
                 
-        Fingerprint f = createFingerprint(0.0, 0.0, 0.0);
+        Fingerprint f = createFingerprint(0, 0, 0);
         
         assert(f.getFeatureCount(0) == 0);
         f.incrementFeature(0);
@@ -64,24 +64,24 @@ public class FingerprintTest {
     
     @Test 
     public void testSimilarityBetweenCloseVectors() {
-        Fingerprint f1 = createFingerprint( 10, 11);
-        Fingerprint f2 = createFingerprint( 11, 12);
+        Fingerprint f1 = createFingerprint(10, 11);
+        Fingerprint f2 = createFingerprint(11, 12);
         double similarity = f1.getNonCommutativeSimilarityScoreToFingerprint(f2);
         assert(doubleEquals(similarity, 19));
     }
     
     @Test 
     public void testSimilarityBetweenDistantVectors() {
-        Fingerprint f1 = createFingerprint(  1,  2);
-        Fingerprint f2 = createFingerprint(-.5, -1);
+        Fingerprint f1 = createFingerprint( 1,  1);
+        Fingerprint f2 = createFingerprint(20, 30);
         double similarity = f1.getNonCommutativeSimilarityScoreToFingerprint(f2);
         assert(doubleEquals(similarity, 0));
     }
     
     @Test 
     public void testNonCommutativeSimilarity() {
-        Fingerprint f1 = createFingerprint(  49,      35);
-        Fingerprint f2 = createFingerprint(  1.7, 0.8014);
+        Fingerprint f1 = createFingerprint(  49,35);
+        Fingerprint f2 = createFingerprint(  1,  1);
         double similarity1 = f1.getNonCommutativeSimilarityScoreToFingerprint(f2);
         double similarity2 = f2.getNonCommutativeSimilarityScoreToFingerprint(f1);
         assert(similarity1 > similarity2);
@@ -92,12 +92,11 @@ public class FingerprintTest {
         return Math.abs(a - b) < 0.00001;
     }
     
-    private Fingerprint createFingerprint(double... values) {
+    private Fingerprint createFingerprint(int... values) {
         FingerprintEntity e = Mockito.mock(FingerprintEntity.class);
         Mockito.when(e.getName()).thenReturn("");
         Mockito.when(e.getSignature()).thenReturn("");
-        Mockito.when(e.getVector()).thenReturn(BasicVector.fromArray(values).toBinary());
+        Mockito.when(e.getVector()).thenReturn(ArrayUtils.truncateIntToLEByteArray(values));
         return new Fingerprint(e);
     }
-
 }

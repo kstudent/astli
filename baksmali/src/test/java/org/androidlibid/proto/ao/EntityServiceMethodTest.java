@@ -9,10 +9,10 @@ import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.Hsql;
 import net.java.ao.test.jdbc.Jdbc;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import org.androidlibid.proto.utils.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.la4j.vector.dense.BasicVector;
 
 /**
  *
@@ -44,7 +44,7 @@ public class EntityServiceMethodTest {
         String signature = "V:V";
         
         FingerprintEntity methodEntity = service.saveMethod(
-            BasicVector.fromArray(new double[]{7.0, 1.0, 100.0, 12.0 , 0.0}).toBinary(),
+            ArrayUtils.short2LEByte(new short[]{7, 1, 100, 12 , 0}),
             methodName,
             signature,
             clazzEntity
@@ -72,9 +72,9 @@ public class EntityServiceMethodTest {
         assert(service.countMethods() == 3);
     }
 
-    private FingerprintEntity createMethod(String name, double... values) throws SQLException {
+    private FingerprintEntity createMethod(String name, int... values) throws SQLException {
         FingerprintEntity entity = em.create(FingerprintEntity.class);
-        entity.setVector(BasicVector.fromArray(values).toBinary());
+        entity.setVector(ArrayUtils.truncateIntToLEByteArray(values));
         entity.setSignature("");
         entity.setName(name);
         entity.save(); 
