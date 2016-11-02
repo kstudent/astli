@@ -81,7 +81,7 @@ public class HybridAlternativeStrategy extends MatchingStrategy {
         return hierarchy.getClassNames().parallelStream()
                 .map(name -> hierarchy.getMethodsByClassName(name))
                 .flatMap(methods -> methods.values().stream())
-                .filter(method -> method.getLength() > minimalNeedleEntropy)
+                .filter(method -> method.getEntropy() > minimalNeedleEntropy)
                 .sorted((that, othr) -> (-1) * Integer.compare(that.getEntropy(), othr.getEntropy()));
     }
     

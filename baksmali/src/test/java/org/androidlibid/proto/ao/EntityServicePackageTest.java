@@ -41,8 +41,6 @@ public class EntityServicePackageTest {
     
     @Before 
     public void setUp() throws SQLException {
-        zeroBytes = new BasicVector(1).toBinary();
-        
         lib1 = em.create(Library.class);
         lib1.setName("group:artifact:1.0");
         lib1.save();
@@ -61,7 +59,7 @@ public class EntityServicePackageTest {
         package2.setLibrary(lib1);
         package2.save();
         
-        service = new EntityService(em, zeroBytes);
+        service = new EntityService(em);
     }
     
     @Test

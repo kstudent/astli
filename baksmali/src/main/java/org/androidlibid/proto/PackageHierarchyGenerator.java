@@ -120,7 +120,6 @@ public class PackageHierarchyGenerator {
                 Fingerprint print = ast2fpt.createFingerprint(methodAST);
                 String clearSignature = getClearSignature(obfsClassName, obfsMethodSignature);
 
-                //@TODO Filter out small methods? 
                 print.setName(clearSignature);
                 prints.put(clearSignature, print);
             }

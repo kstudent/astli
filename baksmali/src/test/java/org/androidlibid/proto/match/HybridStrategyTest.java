@@ -7,9 +7,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.androidlibid.proto.Fingerprint;
 import org.androidlibid.proto.PackageHierarchy;
+import org.androidlibid.proto.ao.FingerprintEntity;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.junit.Before;
 import org.junit.Test;
+import org.la4j.vector.dense.BasicVector;
 import org.mockito.Mockito;
 
 /**
@@ -55,9 +57,13 @@ public class HybridStrategyTest {
     }
 
     private Fingerprint createPrint(String signature, double... values) {
-        Fingerprint print = new Fingerprint(values);
-        print.setSignature(signature);
-        return print;
+        
+        FingerprintEntity mock = Mockito.mock(FingerprintEntity.class);
+        Mockito.when(mock.getSignature()).thenReturn(signature);
+        Mockito.when(mock.getVector()).thenReturn(BasicVector.fromArray(values).toBinary());
+        Mockito.when(mock.getName()).thenReturn("");
+        
+        return new Fingerprint(mock);
     }
     
 }

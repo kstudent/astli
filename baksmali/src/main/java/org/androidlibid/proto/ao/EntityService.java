@@ -6,13 +6,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.java.ao.EntityManager;
 import net.java.ao.EntityStreamCallback;
 import net.java.ao.Query;
-import net.java.ao.RawEntity;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -23,7 +20,7 @@ public class EntityService {
 
     private final EntityManager em;
     
-    public EntityService(EntityManager em, byte[] defaultVector) {
+    public EntityService(EntityManager em) {
         this.em = em;
     }
     

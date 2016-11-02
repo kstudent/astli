@@ -29,9 +29,8 @@ public class EntityServiceClassTest {
     @Test 
     public void testSaveFingerprintCount() throws Exception {
         assert(em.count(Clazz.class) == 0);
-        Vector vector = new BasicVector(5);
         
-        EntityService service = new EntityService(em, vector.toBinary());
+        EntityService service = new EntityService(em);
         service.saveClass("vector 1", "", "");
         assert(em.count(Clazz.class) == 1);
         
@@ -52,8 +51,7 @@ public class EntityServiceClassTest {
         assert(em.count(Library.class) == 0);
         assert(em.count(Package.class) == 0);
         
-        Vector vector = new BasicVector(5);
-        EntityService service = new EntityService(em, vector.toBinary());
+        EntityService service = new EntityService(em);
         
         service.saveClass("vector 1", packageName, mvnIdentifier);
         service.saveClass("vector 2", packageName, mvnIdentifier);
@@ -94,8 +92,7 @@ public class EntityServiceClassTest {
         assert(em.count(Library.class) == 0);
         assert(em.count(Package.class) == 0);
         
-        Vector vector = new BasicVector(5);
-        EntityService service = new EntityService(em, vector.toBinary());
+        EntityService service = new EntityService(em);
         
         service.saveClass(className, packageName, lib1Identifier);
         service.saveClass(className, packageName, lib2Identifier);
@@ -123,9 +120,8 @@ public class EntityServiceClassTest {
     
     @Test
     public void testIterateOverFingerprints() throws Exception {
-        Vector vector = new BasicVector(5);
         
-        EntityService service = new EntityService(em, vector.toBinary());
+        EntityService service = new EntityService(em);
 
         service.saveClass("vector 1", "", "");
         service.saveClass("vector 2", "", "");
@@ -139,7 +135,7 @@ public class EntityServiceClassTest {
     public void testCountFingerprints() throws Exception {
         Vector vector = new BasicVector(5);
         
-        EntityService service = new EntityService(em, vector.toBinary());
+        EntityService service = new EntityService(em);
         assert(service.countClasses() == 0);
         
         service.saveClass("vector 1", "", "");
@@ -155,7 +151,7 @@ public class EntityServiceClassTest {
         assert(em.count(Clazz.class) == 0);
         Vector vector = new BasicVector(5);
         
-        EntityService service = new EntityService(em, vector.toBinary());
+        EntityService service = new EntityService(em);
         
         service.saveClass("vector 1", "", "");
         service.saveClass("vector 2", "", "");

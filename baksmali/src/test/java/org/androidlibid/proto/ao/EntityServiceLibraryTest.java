@@ -31,7 +31,6 @@ public class EntityServiceLibraryTest {
     private EntityManager em;
     private Library lib1;
     private Library lib2;
-    private byte[] zeroBytes;
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
@@ -39,8 +38,6 @@ public class EntityServiceLibraryTest {
     
     @Before 
     public void setUp() throws SQLException {
-        zeroBytes = new BasicVector(1).toBinary();
-        
         lib1 = em.create(Library.class);
         lib1.setName("group:artifact:1.0");
         lib1.save();
@@ -49,7 +46,7 @@ public class EntityServiceLibraryTest {
         lib2.setName("group:artifact:2.0");
         lib2.save();
         
-        service = new EntityService(em, zeroBytes);
+        service = new EntityService(em);
     }
     
     @Test

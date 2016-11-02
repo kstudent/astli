@@ -18,12 +18,6 @@ import org.la4j.vector.dense.BasicVector;
  */
 public class EntityServiceFactory {
     
-    private static final byte[] ZERO_BYTES;
-    
-    static {
-        ZERO_BYTES = new BasicVector(Fingerprint.getFeaturesSize()).toBinary();
-    }
-    
     @SuppressWarnings("unchecked")
     public static EntityService createService() throws SQLException {
 
@@ -39,7 +33,7 @@ public class EntityServiceFactory {
 
         entityManager.migrate(FingerprintEntity.class, Clazz.class, Package.class, Library.class);
        
-        return new EntityService(entityManager, ZERO_BYTES);
+        return new EntityService(entityManager);
     }
     
     private static JdbcProperties jdbcProperties() {
