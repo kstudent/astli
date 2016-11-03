@@ -25,7 +25,6 @@ public class HybridStrategy extends MatchingStrategy {
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
 
     private final FingerprintService fpService;
-    private final PackageSignatureMatcher sigMatcher;
     private final PackageScoreMatcher scoreMatcher;
     private final ResultEvaluator evaluator;
     
@@ -39,7 +38,6 @@ public class HybridStrategy extends MatchingStrategy {
     public HybridStrategy(FingerprintService fpService, int minimalNeedleLength, ResultEvaluator evaluator) {
         this.fpService = fpService;
         this.minimalNeedleEntropy = minimalNeedleLength;
-        this.sigMatcher = new PackageSignatureMatcher(new HungarianAlgorithm());
         this.scoreMatcher = new PackageScoreMatcher(new HungarianAlgorithm());
         this.evaluator = evaluator;
 //        this.hierarchyCache = new MapMaker().weakValues().makeMap(); //memory friendly but slower
@@ -95,13 +93,7 @@ public class HybridStrategy extends MatchingStrategy {
     }
 
     private double calculateHybridScore(PackageHierarchy apkh, PackageHierarchy libh) {
-        PackageSignatureMatcher.Result result = sigMatcher.checkSignatureInclusion(apkh, libh);
-
-        double score = 0.0d;
-        if(result.packageAIsIncludedInB()) {
-            score = scoreMatcher.getScore(apkh, libh, result.getCostMatrix());
-        }
-        return score;
+        return scoreMatcher.getScore(apkh, libh);
     }
 
     private synchronized PackageHierarchy getPackageHierarchyCandidate(Package pckg) {

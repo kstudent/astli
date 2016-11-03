@@ -90,7 +90,7 @@ public class HybridAlternativeStrategy extends MatchingStrategy {
 
         double score = 0.0d;
         if (result.packageAIsIncludedInB()) {
-            score = scoreMatcher.getScore(apkh, libh, result.getCostMatrix());
+            score = scoreMatcher.getScore(apkh, libh);
         }
         return score;
     }

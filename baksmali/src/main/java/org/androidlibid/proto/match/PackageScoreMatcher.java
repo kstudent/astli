@@ -18,11 +18,10 @@ class PackageScoreMatcher {
     private final HungarianAlgorithm hg;
     private List<List<Fingerprint>> bPrints;
     private List<List<Fingerprint>> aPrints;
-    private List<List<String>> aSigs; //TODO
-    private List<List<String>> bSigs; //TODO
+    private List<List<String>> aSigs; 
+    private List<List<String>> bSigs;
     private List<String> aClasses, bClasses;
     
-    private static final double SIGNATURES_MATCH = 0.0d;
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
     private static final Logger LOGGER = LogManager.getLogger();
     
@@ -30,13 +29,11 @@ class PackageScoreMatcher {
         this.hg = hg;
     }
     
-    public synchronized double getScore(PackageHierarchy a, PackageHierarchy b, double[][] sigM) {
+    public synchronized double getScore(PackageHierarchy a, PackageHierarchy b) {
         
         if(a.getClassesSize() == 0 || b.getClassesSize() == 0 ) {
             return 0.0d; 
         }
-        
-        double[][] scores  = new double[sigM.length][sigM[0].length];
         
         aPrints = a.getPrintTable();
         bPrints = b.getPrintTable();
@@ -45,21 +42,21 @@ class PackageScoreMatcher {
         aClasses = a.getClassTable();
         bClasses = b.getClassTable();
         
+        int aSize = aSigs.size(), bSize = bSigs.size();
+        
+        double[][] scores = new double[aSize][bSize];
+        
         double max = 0;
         
-        for(int i = 0; i < sigM.length; i++) {
-            for(int j = 0; j < sigM[0].length; j++) {
-                if(sigM[i][j] == SIGNATURES_MATCH) {
-                    double classScore = getClassInclusionScore(i, j);
-                    scores[i][j] = classScore;
-                    if(classScore > max) max = classScore;
-                } else {
-                    scores[i][j] = 0.0d;
-                }
+        for(int i = 0; i < aSize; i++) {
+            for(int j = 0; j < bSize; j++) {
+                double classScore = getClassInclusionScore(i, j);
+                scores[i][j] = classScore;
+                if(classScore > max) max = classScore;
             }
         }
         
-        double[][] scoresInverted = new double[sigM.length][sigM[0].length];
+        double[][] scoresInverted = new double[aSize][bSize];
         invertMatrix(scores, scoresInverted, max);
         int[] solution = hg.execute(scoresInverted);
         

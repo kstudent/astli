@@ -110,8 +110,7 @@ public class ConfusionMatrixStrategy extends MatchingStrategy {
         
         double score = 0.0d;
         if(result.packageAIsIncludedInB()) {
-            double[][] costMatrix = result.getCostMatrix();
-            score = scoreMatcher.getScore(apkh, libh, costMatrix);
+            score = scoreMatcher.getScore(apkh, libh);
         }
         return score;
     }
