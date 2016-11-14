@@ -36,7 +36,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.util.TypeUtils;
 import java.io.IOException;
 import java.util.*;
-import org.androidlibid.proto.SmaliNameConverter;
+import org.androidlibid.proto.utils.SmaliNameConverter;
 import org.jf.baksmali.Adaptors.Format.InstructionMethodItem;
 import org.jf.baksmali.Adaptors.MethodDefinition;
 import org.jf.baksmali.Adaptors.MethodItem;

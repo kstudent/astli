@@ -52,7 +52,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
-import org.androidlibid.proto.match.MatchFingerprintsAlgorithm;
+import org.androidlibid.proto.match.MatchAlgorithm;
 import org.androidlibid.proto.store.StoreFingerprintsAlgorithm;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
@@ -159,7 +159,7 @@ public class baksmali {
             if(options.aliFingerprintJAR) {
                 alg = new StoreFingerprintsAlgorithm(options, classDefs);
             } else {
-                alg = new MatchFingerprintsAlgorithm(options, classDefs);
+                alg = new MatchAlgorithm(options, classDefs);
             }
             
             return alg.run();

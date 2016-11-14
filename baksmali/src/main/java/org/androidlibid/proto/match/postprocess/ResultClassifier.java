@@ -1,25 +1,25 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.postprocess;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.stream.IntStream;
+import org.androidlibid.proto.match.MatchingProcess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.androidlibid.proto.match.MatchingStrategy.Result;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ResultEvaluator {
+public class ResultClassifier {
     
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
     private static final Logger LOGGER = LogManager.getLogger();
     
-    public Evaluation evaluateResult(Result result) {
+    public ClassificationTupel classify(MatchingProcess.Result result) {
         
-        List<MatchingStrategy.ResultItem> items = result.getItems();
+        List<MatchingProcess.ResultItem> items = result.getItems();
         String apkName = result.getApkH().getName();
         
         int position = IntStream.range(0, items.size())
@@ -70,10 +70,10 @@ public class ResultEvaluator {
                 });
         }
         
-        return new Evaluation(position, clss, score, items.size());
+        return new ClassificationTupel(position, clss, score, items.size());
     }
 
-    private boolean thereIsNoBetterMatchBeforePosition(List<MatchingStrategy.ResultItem> items, 
+    private boolean thereIsNoBetterMatchBeforePosition(List<MatchingProcess.ResultItem> items, 
             int position, double score) {
         return !IntStream.range(0, position)
                 .boxed()
@@ -81,14 +81,14 @@ public class ResultEvaluator {
                 .anyMatch(item -> item.getScore() > score);
     }
     
-    public static class Evaluation {
+    public static class ClassificationTupel {
     
         private final int position;
         private final Classification classification;
         private final double score; 
         private final int comparisons;
 
-        public Evaluation(int position, Classification classification, 
+        public ClassificationTupel(int position, Classification classification, 
                 double score, int comparisons) {
             this.position = position;
             this.classification = classification;

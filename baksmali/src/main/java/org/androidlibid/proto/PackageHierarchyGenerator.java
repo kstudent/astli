@@ -1,8 +1,8 @@
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.utils.SmaliNameConverter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

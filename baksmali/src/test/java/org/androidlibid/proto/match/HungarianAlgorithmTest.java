@@ -1,5 +1,6 @@
 package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.match.matcher.HungarianAlgorithm;
 import org.junit.Test;
 
 /**

@@ -1,5 +1,6 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.matcher;
 
+import org.androidlibid.proto.match.matcher.HungarianAlgorithm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,15 +12,15 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class PackageSignatureMatcher {
+public class InclusionChecker {
     
     private List<List<String>> a, b;
     private double[][] cost;
     private final HungarianAlgorithm hg;
     
-    private static final Logger LOGGER = LogManager.getLogger(PackageSignatureMatcher.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    public PackageSignatureMatcher(HungarianAlgorithm hg) {
+    public InclusionChecker(HungarianAlgorithm hg) {
         this.hg = hg;
     }
     
@@ -29,7 +30,7 @@ public class PackageSignatureMatcher {
      * @param b
      * @return 
      */
-    public synchronized Result checkSignatureInclusion(PackageHierarchy a, PackageHierarchy b) {
+    public synchronized Result checkInclusion(PackageHierarchy a, PackageHierarchy b) {
         
         if(a.getClassesSize() > b.getClassesSize() || a.getClassesSize() == 0) {
             return new Result(false); 

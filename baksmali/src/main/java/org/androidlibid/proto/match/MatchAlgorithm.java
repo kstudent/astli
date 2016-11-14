@@ -1,5 +1,11 @@
 package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.match.postprocess.EvaluateResults;
+import org.androidlibid.proto.match.postprocess.PostProcessor;
+import org.androidlibid.proto.match.matcher.SimilarityMatcher;
+import org.androidlibid.proto.match.matcher.HungarianAlgorithm;
+import org.androidlibid.proto.match.finder.ParticularCandidateFinder;
+import org.androidlibid.proto.match.finder.CandidateFinder;
 import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import org.androidlibid.proto.ao.FingerprintService;
 import java.io.BufferedReader;
@@ -27,15 +33,15 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
+public class MatchAlgorithm implements AndroidLibIDAlgorithm {
 
     private final baksmaliOptions options;
     private final List<? extends ClassDef> classDefs;
     
-    private static final Logger LOGGER = LogManager.getLogger( MatchFingerprintsAlgorithm.class.getName() );
+    private static final Logger LOGGER = LogManager.getLogger();
     private final ASTBuilderFactory astBuilderFactory;
        
-    public MatchFingerprintsAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
+    public MatchAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options   = options;
         this.classDefs = classDefs;
         astBuilderFactory = new ASTBuilderFactory(options);
@@ -45,22 +51,13 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
     @Override
     public boolean run() {
         try {
-            Date before = new Date();
-            MatchingStrategy strategy = setupStrategy(); 
-            Stream<PackageHierarchy> hierarchies = generatePackagePrintStream();
-            strategy.matchHierarchies(hierarchies);
+            MatchingProcess process = setupProcess(); 
+            PostProcessor processor = setupPostProcessor();
+            generatePackagePrintStream()
+                    .map(hierarchy  -> process.apply(hierarchy))
+                    .forEach(result -> processor.process(result));
             
-            Date after = new Date();
-            long diff = after.getTime() - before.getTime();
-            
-            
-            MatchingStrategy.Stats stats = strategy.getStats();
-            
-            stats.setDiff(diff);
-            stats.setOptions(options);
-            
-            new StatsToJsonLogger().logStats(stats);
-            new StatsToOrgLogger().logStats(stats);
+            processor.done();
             
         } catch (SQLException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -93,20 +90,19 @@ public class MatchFingerprintsAlgorithm implements AndroidLibIDAlgorithm {
         
     }
 
-    private MatchingStrategy setupStrategy() throws SQLException {
+    private MatchingProcess setupProcess() throws SQLException {
         
         EntityService service = EntityServiceFactory.createService();
         FingerprintService fpService = new FingerprintService(service);
-        ResultEvaluator evaluator = new ResultEvaluator();
+        CandidateFinder finder = new ParticularCandidateFinder(fpService);
+        SimilarityMatcher matcher = new SimilarityMatcher(new HungarianAlgorithm());
         
         new SetupLogger(options, service).logSetup();
         
-        if(options.strategy.equals(HybridStrategy.class)) {
-            return new HybridStrategy(fpService, 12, evaluator);
-//            return new HybridAlternativeStrategy(fpService, 12, evaluator);
-        }
-        
-        return new ConfusionMatrixStrategy(fpService);
-        
+        return new MatchingProcess(fpService, matcher, finder);
+    }
+
+    private PostProcessor setupPostProcessor() {
+        return new EvaluateResults(options, new Date());
     }
 }

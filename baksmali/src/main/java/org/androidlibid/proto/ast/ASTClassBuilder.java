@@ -33,7 +33,7 @@ import org.jf.dexlib2.iface.*;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
-import org.androidlibid.proto.SmaliNameConverter;
+import org.androidlibid.proto.utils.SmaliNameConverter;
 
 public class ASTClassBuilder {
     

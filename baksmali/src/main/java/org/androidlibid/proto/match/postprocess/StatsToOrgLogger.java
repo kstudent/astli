@@ -1,25 +1,26 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.postprocess;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Map;
-import org.androidlibid.proto.match.MatchingStrategy.Stats;
+import java.util.function.Consumer;
+import org.androidlibid.proto.match.postprocess.StatsCounter.Stats;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.androidlibid.proto.match.ResultEvaluator.*;
+import static org.androidlibid.proto.match.postprocess.ResultClassifier.*;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-class StatsToOrgLogger implements StatsLogger {
+class StatsToOrgLogger implements Consumer<Stats> {
 
     private final static Logger LOGGER = LogManager.getLogger(StatsToOrgLogger.class);
     
     private final NumberFormat frmt = new DecimalFormat("#0.00");
         
     @Override
-    public void logStats(Stats stats) {
+    public void accept(Stats stats) {
         LOGGER.info("** Stats : ");
         
         Map<Integer, Integer> positions = stats.getPositions();
@@ -61,7 +62,6 @@ class StatsToOrgLogger implements StatsLogger {
         LOGGER.info("| P(FN)   | {}% |", frmt.format(fn));
         
         LOGGER.info("*** #comparisons : {}", comparisons);
-        LOGGER.info("*** #db lookups: {}", stats.getDbLookups());
         LOGGER.info("*** Runtime: {} seconds", stats.getDiff() / 1000);
     }
 }

@@ -48,8 +48,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import org.androidlibid.proto.ao.EntityServiceFactory;
-import org.androidlibid.proto.match.HybridStrategy;
-import org.androidlibid.proto.match.ConfusionMatrixStrategy;
+import org.androidlibid.proto.match.MatchingProcess;
 import org.androidlibid.proto.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -154,11 +153,8 @@ public class main {
                     }
                     
                     switch(algId) {
-                        case 2 : 
-                            options.strategy = ConfusionMatrixStrategy.class;
-                            break;
                         default : 
-                            options.strategy = HybridStrategy.class;
+                            options.strategy = MatchingProcess.class;
                             break;
                     } 
                     

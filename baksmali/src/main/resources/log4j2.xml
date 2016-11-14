@@ -14,10 +14,12 @@
         <File name="RESULT" fileName="log/result.org" append="false">
           <PatternLayout pattern="%m%n" />
         </File>
-        <File name="JSON" fileName="log/results.json" append="true">
+        <File name="JSON" fileName="log/results.json" append="false">
           <PatternLayout pattern="%m%n" />
         </File>
-        
+        <File name="DETAILED_CLASSIFICATION" fileName="log/detailed_classification.csv" append="false">
+          <PatternLayout pattern="%m%n" />
+        </File>
      </Appenders>
     
     <Loggers>
@@ -34,27 +36,16 @@
             <AppenderRef ref="INFO"/>
         </Logger>
         
-        <Logger name="org.androidlibid.proto.match.ResultEvaluator" level="info" additivity="false">
-            <AppenderRef ref="STDOUT"/>
-            <AppenderRef ref="DEBUG"/>
-            <AppenderRef ref="INFO"/>
-        </Logger>
-        
-        <Logger name="org.androidlibid.proto.match.ResultEvaluator.Results" level="info" additivity="false">
-            <AppenderRef ref="RESULT"/>
-        </Logger>
-        
-        <Logger name="org.androidlibid.proto.match.StatsToOrgLogger" level="info" additivity="false">
+        <Logger name="org.androidlibid.proto.match.postprocess.StatsToOrgLogger" level="info" additivity="false">
             <AppenderRef ref="RESULT"/>
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="DEBUG"/>
             <AppenderRef ref="INFO"/>
         </Logger>
         
-        <Logger name="org.androidlibid.proto.match.StatsToJsonLogger" level="info" additivity="false">
+        <Logger name="org.androidlibid.proto.match.postprocess.StatsToJsonLogger" level="info" additivity="false">
             <AppenderRef ref="JSON"/>
         </Logger>
-        
         
         <Logger name="org.androidlibid.proto.integration.mainTest" level="info" additivity="false">
             <AppenderRef ref="RESULT"/>
@@ -62,48 +53,11 @@
             <AppenderRef ref="INFO"/>
         </Logger>
         
-        <Logger name="org.androidlibid.proto.match.MatchFingerprintsAlgorithm" level="info"/>
-        
-        <!--<Logger name="org.androidlibid.proto.match.HybridStrategy" level="info"/>-->
-        <Logger name="org.androidlibid.proto.match.HybridStrategy" level="DEBUG"/>
-        <Logger name="org.androidlibid.proto.match.ResultEvaluator" level="DEBUG"/>
-        
-        <Logger name="org.androidlibid.proto.match.PackageSignatureMatcherConfusionMatrixStrategy" level="info"/>
-        <!--<Logger name="org.androidlibid.proto.match.PackageSignatureMatcher" level="info"/>-->
-        <!--<Logger name="org.androidlibid.proto.match.PackageScoreMatcher" level="info"/>-->
-        <!--<Logger name="org.androidlibid.proto.PackageHierarchy" level="info"/>-->
-
-        <Logger name="org.androidlibid.proto.match.inclusion.InclusionStrategy" level="info"/>
-        <!--<Logger name="org.androidlibid.proto.match.InclusionStrategy" level="debug"/>-->
-        
-        <Logger name="org.androidlibid.proto.match.inclusion.PackageInclusionCalculator" level="info"/>
-        
-        <Logger name="org.androidlibid.proto.match.inclusion.QuickInclusionCalculator" level="info"/>
-        
-        <Logger name="org.androidlibid.proto.match.DebugObfuscationInvarianceStrategy" level="info"/>
-        
-<!--        <Logger name="org.androidlibid.proto.match.inclusion.ClassInclusionCalculator" level="info" additivity="false">
-            <AppenderRef ref="DEBUG"/>
-        </Logger>-->
-        
-        <!--<Logger name="org.androidlibid.proto.PackageHierarchyGenerator"     level="info"/>-->
-        
-        <!--<Logger name="org.androidlibid.proto.ao.EntityService" level="info" />-->
+        <Logger name="org.androidlibid.proto.match.postprocess.EvaluateResults" level="info" additivity="false">
+            <AppenderRef ref="DETAILED_CLASSIFICATION"/>
+        </Logger>
         
         <Logger name="org.androidlibid.proto.store.StoreFingerprintsAlgorithm" level="info" />
         
-<!--        <Logger name="net.java.ao.sql" level="debug">
-            <AppenderRef ref="RESULT"/>
-            <AppenderRef ref="STDOUT"/>
-            <AppenderRef ref="DEBUG"/>
-            <AppenderRef ref="INFO"/>
-        </Logger>-->
-        
-        <!--<Logger name="org.androidlibid.proto.StoreMethodFingerprint" level="debug"/>-->
-        
-        <!--<Logger name="org.androidlibid.proto.ast.ASTMethodDefinitionTest" level="info"/>-->
-        
-        <!--<Logger name="org.androidlibid.proto.ast.ASTClassDefinitionTest" level="info"/>-->
-
     </Loggers>
 </Configuration>

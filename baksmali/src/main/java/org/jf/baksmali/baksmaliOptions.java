@@ -42,7 +42,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.androidlibid.proto.match.HybridStrategy;
+import org.androidlibid.proto.match.MatchingProcess;
 
 public class baksmaliOptions {
     // register info values
@@ -98,7 +98,7 @@ public class baksmaliOptions {
     public String mappingFile = "";
     
     //strategy settings
-    public Class<? extends Object> strategy = HybridStrategy.class;
+    public Class<? extends Object> strategy = MatchingProcess.class;
     
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;

@@ -1,4 +1,4 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.match.matcher;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-class PackageScoreMatcher {
+public class SimilarityMatcher implements PackageMatcher {
 
     private final HungarianAlgorithm hg;
     private List<List<Fingerprint>> bPrints;
@@ -25,10 +25,11 @@ class PackageScoreMatcher {
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
     private static final Logger LOGGER = LogManager.getLogger();
     
-    public PackageScoreMatcher(HungarianAlgorithm hg) {
+    public SimilarityMatcher(HungarianAlgorithm hg) {
         this.hg = hg;
     }
     
+    @Override
     public synchronized double getScore(PackageHierarchy a, PackageHierarchy b) {
         
         if(a.getClassesSize() == 0 || b.getClassesSize() == 0 ) {
@@ -61,10 +62,6 @@ class PackageScoreMatcher {
         int[] solution = hg.execute(scoresInverted);
         
         double finalScore = computeScore(scores, solution);
-        
-//        LOGGER.info("*** class scores of {} -> {} (final score: {})", a.getName(), b.getName(), FRMT.format(finalScore));
-//        printClassSolution(scores, solution);
-//        printMatrix(scores, solution);
         
         return finalScore;
     }
@@ -100,11 +97,6 @@ class PackageScoreMatcher {
         
         double score = computeScore(costMatrix, solution);
         
-//        if(score > 0.0d && aClasses.get(i).equals(bClasses.get(j))) {
-//            LOGGER.info("*** method scores of {} -> {} (final score: {})", aClasses.get(i), bClasses.get(j), FRMT.format(score));
-//            printMethodSolution(costMatrix, solution, printsA, printsB);
-//        }
-        
         return score;
         
     }
@@ -116,6 +108,17 @@ class PackageScoreMatcher {
             }
         }
     }
+    
+    private double computeScore(double[][] matrix, int[] solution) {
+        return IntStream.range(0, solution.length)
+            .mapToDouble(index -> 
+                (solution[index] >= 0 && solution[index] < matrix[0].length) 
+                    ? matrix[index][solution[index]] 
+                    : 0.0d
+            )
+            .sum();
+    }
+    
     
     private void printMatrix(double[][] matrix, int[] solution) {
         
@@ -136,17 +139,6 @@ class PackageScoreMatcher {
             LOGGER.info(row);
         }
     }
-    
-    private double computeScore(double[][] matrix, int[] solution) {
-        return IntStream.range(0, solution.length)
-            .mapToDouble(index -> 
-                (solution[index] >= 0 && solution[index] < matrix[0].length) 
-                    ? matrix[index][solution[index]] 
-                    : 0.0d
-            )
-            .sum();
-    }
-    
         
     private void printMethodSolution(double[][] matrix, int[] solution, List<Fingerprint> printsA, List<Fingerprint> printsB) {
         
