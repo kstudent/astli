@@ -57,6 +57,10 @@
             <AppenderRef ref="DETAILED_CLASSIFICATION"/>
         </Logger>
         
+        <Logger name="org.androidlibid.proto.match.postprocess.PrintResultTable" level="info" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        
         <Logger name="org.androidlibid.proto.store.StoreFingerprintsAlgorithm" level="info" />
         
     </Loggers>

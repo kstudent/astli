@@ -26,13 +26,17 @@ public class EvaluateResults implements PostProcessor {
         this.options = options;
         this.before = before;
     }
+    
+    @Override
+    public void init() {
+    }
 
     @Override
     public void process(MatchingProcess.Result result) {
         
         ResultClassifier.ClassificationTupel classification = classifier.classify(result);
         
-        String libPckg = (result.getItems().size()>0) ? result.getItems().get(0).getPackage() : "";
+        String libPckg = (result.getItems().size()>0) ? result.getItems().get(0).getLib() : "";
         LOGGER.info("{},{},{},{},{}", 
             classification.getScore(), 
             classification.getClassification(),

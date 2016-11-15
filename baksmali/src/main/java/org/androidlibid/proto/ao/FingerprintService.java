@@ -108,7 +108,8 @@ public class FingerprintService {
     }
 
     public PackageHierarchy createHierarchyFromPackage(Package pckg) {
-        PackageHierarchy hierarchy = new PackageHierarchy(pckg.getName());
+        PackageHierarchy hierarchy = new PackageHierarchy(pckg.getName(),
+                pckg.getLibrary().getName());
         
         for(Clazz clazz : pckg.getClazzes()) {
             

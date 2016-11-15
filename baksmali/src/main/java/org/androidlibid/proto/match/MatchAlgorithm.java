@@ -1,7 +1,6 @@
 package org.androidlibid.proto.match;
 
-import org.androidlibid.proto.match.postprocess.EvaluateResults;
-import org.androidlibid.proto.match.postprocess.PostProcessor;
+import org.androidlibid.proto.match.postprocess.PostProcessorFactory;
 import org.androidlibid.proto.match.matcher.SimilarityMatcher;
 import org.androidlibid.proto.match.matcher.HungarianAlgorithm;
 import org.androidlibid.proto.match.finder.ParticularCandidateFinder;
@@ -12,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +22,7 @@ import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ast.ASTBuilderFactory;
 import org.androidlibid.proto.ast.ASTClassBuilder;
 import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
+import org.androidlibid.proto.match.postprocess.PostProcessor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmaliOptions;
@@ -40,19 +39,22 @@ public class MatchAlgorithm implements AndroidLibIDAlgorithm {
     
     private static final Logger LOGGER = LogManager.getLogger();
     private final ASTBuilderFactory astBuilderFactory;
+    private final PostProcessor processor;
        
     public MatchAlgorithm(baksmaliOptions options, List<? extends ClassDef> classDefs) {
         this.options   = options;
         this.classDefs = classDefs;
-        astBuilderFactory = new ASTBuilderFactory(options);
-        
+        this.astBuilderFactory = new ASTBuilderFactory(options);
+        this.processor = new PostProcessorFactory().createProcessor(options);
     }
     
     @Override
     public boolean run() {
         try {
             MatchingProcess process = setupProcess(); 
-            PostProcessor processor = setupPostProcessor();
+            
+            processor.init();
+            
             generatePackagePrintStream()
                     .map(hierarchy  -> process.apply(hierarchy))
                     .forEach(result -> processor.process(result));
@@ -100,9 +102,5 @@ public class MatchAlgorithm implements AndroidLibIDAlgorithm {
         new SetupLogger(options, service).logSetup();
         
         return new MatchingProcess(fpService, matcher, finder);
-    }
-
-    private PostProcessor setupPostProcessor() {
-        return new EvaluateResults(options, new Date());
     }
 }

@@ -54,7 +54,7 @@ public class MatchingProcess implements Function<PackageHierarchy, MatchingProce
                 .map(pckg -> getPackageHierarchyCandidate(pckg))
                 .map(libH -> {
                     double score = matcher.getScore(apkH, libH) / maxScore;
-                    return new ResultItem(score, libH.getName(), libH.getEntropy());
+                    return new ResultItem(score, libH);
                 })
                 .peek(item -> LOGGER.debug(
                         "{} -> {}: {}", apkH.getName(), item.getPackage(), 
@@ -80,23 +80,29 @@ public class MatchingProcess implements Function<PackageHierarchy, MatchingProce
         private final double score; 
         private final int entropy;
         private final String packageName;
+        private final String libName;
 
-        public ResultItem(double score, String packageName, int entropy) {
+        public ResultItem(double score, PackageHierarchy lib) {
             this.score = score;
-            this.packageName = packageName;
-            this.entropy = entropy;
+            this.packageName = lib.getName();
+            this.entropy = lib.getEntropy();
+            this.libName = lib.getLib();
         }
 
         public int getEntropy() {
             return entropy;
         }
-        
+
         public String getPackage() {
             return packageName;
         }
 
         public double getScore() {
             return score;
+        }
+
+        public String getLib() {
+            return libName;
         }
     }
     

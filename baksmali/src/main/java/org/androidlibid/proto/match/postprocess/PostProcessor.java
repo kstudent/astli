@@ -8,6 +8,7 @@ import org.androidlibid.proto.match.MatchingProcess;
  */
 public interface PostProcessor {
     
+    void init(); 
     void process(MatchingProcess.Result result);
     void done();
     

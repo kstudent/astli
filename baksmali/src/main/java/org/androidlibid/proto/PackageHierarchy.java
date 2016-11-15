@@ -17,6 +17,7 @@ public class PackageHierarchy {
     
     private final String name;
     private final Map<String, Map<String, Fingerprint>> classes = new HashMap<>();
+    private final String lib;
     private List<List<String>> signatureTable;
     private List<List<Fingerprint>> printTable;
     private List<String> classTable;
@@ -24,9 +25,14 @@ public class PackageHierarchy {
     private int computedEntropy = -1;
 
     private static final Logger LOGGER = LogManager.getLogger();
-    
+
     public PackageHierarchy(String name) {
+        this(name, "");
+    }
+    
+    public PackageHierarchy(String name, String lib) {
         this.name = name;
+        this.lib = lib;
     }
 
     public synchronized void addMethods(String className, Map<String, Fingerprint> prints) {
@@ -121,6 +127,10 @@ public class PackageHierarchy {
         return computedEntropy;
     }
 
+    public String getLib() {
+        return lib;
+    }
+    
     private int computeEntropy() {
         return classes.values().stream()
                 .flatMap(prints -> prints.values().stream())
