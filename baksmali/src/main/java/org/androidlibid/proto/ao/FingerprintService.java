@@ -6,10 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.PackageHierarchy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.androidlibid.proto.pojo.Fingerprint;
+import org.androidlibid.proto.pojo.PackageHierarchy;
 
 /**
  * Convenient Facade of EntityService to hide AO layer
@@ -20,7 +18,6 @@ public class FingerprintService {
 
     private final EntityService service; 
     
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public FingerprintService(EntityService service) {
         this.service = service;

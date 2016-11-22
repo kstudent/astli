@@ -3,7 +3,7 @@ package org.androidlibid.proto.match.postprocess;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
-import org.androidlibid.proto.PackageHierarchy;
+import org.androidlibid.proto.pojo.PackageHierarchy;
 import org.androidlibid.proto.match.MatchingProcess;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;

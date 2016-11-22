@@ -1,4 +1,4 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.pojo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

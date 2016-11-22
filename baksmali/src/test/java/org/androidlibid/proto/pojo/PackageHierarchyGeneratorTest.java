@@ -1,5 +1,6 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.pojo;
 
+import org.androidlibid.proto.pojo.Fingerprint;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

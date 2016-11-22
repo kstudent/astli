@@ -1,4 +1,4 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.pojo;
 
 import java.util.ArrayList;
 import java.util.HashMap;

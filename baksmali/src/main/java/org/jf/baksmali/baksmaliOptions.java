@@ -42,7 +42,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.androidlibid.proto.match.MatchingProcess;
 
 public class baksmaliOptions {
     // register info values
@@ -78,27 +77,6 @@ public class baksmaliOptions {
     public boolean checkPackagePrivateAccess = false;
     public boolean useImplicitReferences = false;
     public boolean normalizeVirtualMethods = false;
-    
-    //androidlibid settings
-    public String inputFileName = "";
-//    public int jobs = -1;
-    public int jobs = 1;
-    
-    //print setup settings
-    public boolean aliPrintSetup = false;
-    
-    //storing settings
-    public boolean aliFingerprintJAR = false;
-    public boolean storeOnMethodLevel = true;
-    public String mvnIdentifier = "";
-    
-    // matching settings
-    public boolean aliFingerprintAPK = false;
-    public boolean isObfuscated = false;
-    public String mappingFile = "";
-    
-    //strategy settings
-    public Class<? extends Object> strategy = MatchingProcess.class;
     
     public File customInlineDefinitions = null;
     public InlineMethodResolver inlineResolver = null;

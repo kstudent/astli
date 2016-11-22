@@ -2,8 +2,8 @@ package org.androidlibid.proto.ao;
 
 import java.sql.SQLException;
 import java.util.Map;
-import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.PackageHierarchy;
+import org.androidlibid.proto.pojo.Fingerprint;
+import org.androidlibid.proto.pojo.PackageHierarchy;
 
 /**
  *

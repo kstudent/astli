@@ -1,6 +1,6 @@
 package org.androidlibid.proto.ast;
 
-import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.pojo.Fingerprint;
 import org.junit.Test;
 
 /**

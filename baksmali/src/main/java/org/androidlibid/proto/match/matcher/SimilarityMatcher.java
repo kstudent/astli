@@ -4,8 +4,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.stream.IntStream;
-import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.PackageHierarchy;
+import org.androidlibid.proto.pojo.Fingerprint;
+import org.androidlibid.proto.pojo.PackageHierarchy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

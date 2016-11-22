@@ -1,4 +1,4 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.pojo;
 
 /**
  *

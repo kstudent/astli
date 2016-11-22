@@ -1,8 +1,8 @@
 package org.androidlibid.proto.match.finder;
 
 import java.util.stream.Stream;
-import org.androidlibid.proto.Fingerprint;
-import org.androidlibid.proto.PackageHierarchy;
+import org.androidlibid.proto.pojo.Fingerprint;
+import org.androidlibid.proto.pojo.PackageHierarchy;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.androidlibid.proto.ao.Package;
 

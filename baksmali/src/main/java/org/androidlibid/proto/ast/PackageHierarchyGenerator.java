@@ -1,4 +1,4 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.ast;
 
 import org.androidlibid.proto.utils.SmaliNameConverter;
 import java.io.IOException;
@@ -7,13 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.androidlibid.proto.ast.ASTClassBuilder;
-import org.androidlibid.proto.ast.ASTToFingerprintTransformer;
-import org.androidlibid.proto.ast.Node;
+import org.androidlibid.proto.pojo.Fingerprint;
+import org.androidlibid.proto.pojo.PackageHierarchy;
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jf.baksmali.baksmaliOptions;
 
 /**
  * 
@@ -21,9 +17,10 @@ import org.jf.baksmali.baksmaliOptions;
  */
 public class PackageHierarchyGenerator {
 
-    private final baksmaliOptions options;
     private final ASTToFingerprintTransformer ast2fpt;
     private final Map<String, String> mappings;
+    private final boolean isObfuscated;
+    
     
     private static final List<String> BLACKLISTED_PACKAGES; 
     private static final List<String> WHITELISTED_PACKAGES; 
@@ -34,13 +31,12 @@ public class PackageHierarchyGenerator {
         WHITELISTED_PACKAGES = new ArrayList<>();
     }
     
-    private static final Logger LOGGER = LogManager.getLogger();
-
-    public PackageHierarchyGenerator(baksmaliOptions options, 
-            ASTToFingerprintTransformer ast2fpt, Map<String, String> mappings) {
-        this.options = options;
+    public PackageHierarchyGenerator(ASTToFingerprintTransformer ast2fpt, 
+            Map<String, String> mappings) {
         this.ast2fpt = ast2fpt;
         this.mappings = mappings;
+        this.isObfuscated = !(mappings.isEmpty());
+        
     }
     
     public Stream<PackageHierarchy> generatePackageHierarchiesFromClassBuilders(
@@ -137,7 +133,7 @@ public class PackageHierarchyGenerator {
     }
     
     private String translateName(String obfuscatedName) {
-        if(options.isObfuscated && mappings.get(obfuscatedName) != null) {
+        if(isObfuscated && mappings.get(obfuscatedName) != null) {
             return mappings.get(obfuscatedName);
         }
         return obfuscatedName;

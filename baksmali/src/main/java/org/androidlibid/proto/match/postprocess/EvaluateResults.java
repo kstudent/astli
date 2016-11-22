@@ -1,10 +1,10 @@
 package org.androidlibid.proto.match.postprocess;
 
 import java.util.Date;
+import org.androidlibid.proto.ASTLIOptions;
 import org.androidlibid.proto.match.MatchingProcess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jf.baksmali.baksmaliOptions;
 
 /**
  *
@@ -15,12 +15,12 @@ public class EvaluateResults implements PostProcessor {
     private final ResultClassifier classifier;
     private final StatsCounter counter;
     
-    private final baksmaliOptions options;
+    private final ASTLIOptions options;
     private final Date before;
     
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public EvaluateResults(baksmaliOptions options, Date before) {
+    public EvaluateResults(ASTLIOptions options, Date before) {
         this.classifier = new ResultClassifier();
         this.counter = new StatsCounter();
         this.options = options;

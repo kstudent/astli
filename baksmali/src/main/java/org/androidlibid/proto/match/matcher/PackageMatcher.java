@@ -1,6 +1,6 @@
 package org.androidlibid.proto.match.matcher;
 
-import org.androidlibid.proto.PackageHierarchy;
+import org.androidlibid.proto.pojo.PackageHierarchy;
 
 /**
  *

@@ -28,19 +28,14 @@
 
 package org.jf.baksmali;
 
-import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.dexlib2.analysis.ClassPath;
 import org.jf.dexlib2.analysis.CustomInlineMethodResolver;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
-import org.jf.dexlib2.util.SyntheticAccessorResolver;
-import org.jf.util.ClassFileNameHandler;
-import org.jf.util.IndentingWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -51,19 +46,21 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.*;
-import org.androidlibid.proto.match.MatchAlgorithm;
-import org.androidlibid.proto.store.StoreFingerprintsAlgorithm;
-import org.apache.commons.lang.NotImplementedException;
+import javax.annotation.Nonnull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jf.baksmali.Adaptors.ClassDefinitionImpl;
+import org.jf.dexlib2.DexFileFactory;
+import org.jf.dexlib2.analysis.InlineMethodResolver;
+import org.jf.dexlib2.dexbacked.DexBackedDexFile;
+import org.jf.dexlib2.dexbacked.DexBackedOdexFile;
+import org.jf.dexlib2.dexbacked.OatFile;
+import org.jf.dexlib2.util.SyntheticAccessorResolver;
 
 public class baksmali {
     
-    private static final Logger LOGGER = LogManager.getLogger(baksmali.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    public static boolean disassembleDexFile(DexFile dexFile, final baksmaliOptions options) {
+    public static List<? extends ClassDef> disassembleDexFile(DexFile dexFile, final baksmaliOptions options) throws IOException {
         if (options.registerInfo != 0 || options.deodex || options.normalizeVirtualMethods) {
             try {
                 Iterable<String> extraClassPathEntries;
@@ -82,8 +79,7 @@ public class baksmali {
                             options.customInlineDefinitions);
                 }
             } catch (Exception ex) {
-                LOGGER.error("\n\nError occurred while loading boot class path files. Aborting.", ex);
-                return false;
+                throw new IOException("\n\nError occurred while loading boot class path files. Aborting.", ex);
             }
         }
 
@@ -132,138 +128,137 @@ public class baksmali {
         if (!outputDirectoryFile.exists()) {
             if (!outputDirectoryFile.mkdirs()) {
                 LOGGER.error("Can't create the output directory " + options.outputDirectory);
-                return false;
+                return null;
             }
         }
-
+        
         //sort the classes, so that if we're on a case-insensitive file system and need to handle classes with file
         //name collisions, then we'll use the same name for each class, if the dex file goes through multiple
         //baksmali/smali cycles for some reason. If a class with a colliding name is added or removed, the filenames
         //may still change of course
         List<? extends ClassDef> classDefs = Ordering.natural().sortedCopy(dexFile.getClasses());
-
+        
         if (!options.noAccessorComments) {
             options.syntheticAccessorResolver = new SyntheticAccessorResolver(dexFile.getOpcodes(), classDefs);
         }
 
-        final ClassFileNameHandler fileNameHandler = new ClassFileNameHandler(outputDirectoryFile, ".smali");
-        
-        if (options.aliFingerprintJAR || options.aliFingerprintAPK) {
-            
-            if(options.jobs != 1) {
-                throw new NotImplementedException("Multithreaded Fingerprinting has not been tested yet!");
-            }
-            
-            AndroidLibIDAlgorithm alg;
-            
-            if(options.aliFingerprintJAR) {
-                alg = new StoreFingerprintsAlgorithm(options, classDefs);
-            } else {
-                alg = new MatchAlgorithm(options, classDefs);
-            }
-            
-            return alg.run();
-        }
-        
-        ExecutorService executor = Executors.newFixedThreadPool(options.jobs);
-        List<Future<Boolean>> tasks = Lists.newArrayList();
-
-        for (final ClassDef classDef: classDefs) {
-            tasks.add(executor.submit(new Callable<Boolean>() {
-                @Override public Boolean call() throws Exception {
-                    return disassembleClass(classDef, fileNameHandler, options);
-                }
-            }));
-        }
-
-        boolean errorOccurred = false;
-        try {
-            for (Future<Boolean> task: tasks) {
-                while(true) {
-                    try {
-                        if (!task.get()) {
-                            errorOccurred = true;
-                        }
-                    } catch (InterruptedException ex) {
-                        continue;
-                    } catch (ExecutionException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    break;
-                }
-            }
-        } finally {
-            executor.shutdown();
-        }
-        return !errorOccurred;
+        return classDefs;
     }
 
-    private static boolean disassembleClass(ClassDef classDef, ClassFileNameHandler fileNameHandler,
-                                            baksmaliOptions options) {
-        /**
-         * The path for the disassembly file is based on the package name
-         * The class descriptor will look something like:
-         * Ljava/lang/Object;
-         * Where the there is leading 'L' and a trailing ';', and the parts of the
-         * package name are separated by '/'
-         */
-        String classDescriptor = classDef.getType();
-
-        //validate that the descriptor is formatted like we expect
-        if (classDescriptor.charAt(0) != 'L' ||
-                classDescriptor.charAt(classDescriptor.length()-1) != ';') {
-            LOGGER.error("Unrecognized class descriptor - " + classDescriptor + " - skipping class");
-            return false;
+    public static DexBackedDexFile readInAndParseTheDexFile(File dexFileFile, baksmaliOptions options) throws IOException {
+        DexBackedDexFile dexFile = null;
+        try {
+            dexFile = DexFileFactory.loadDexFile(dexFileFile, options.dexEntry, options.apiLevel, options.experimental);
+        } catch (DexFileFactory.MultipleDexFilesException ex) {
+            LOGGER.error(String.format("%s contains multiple dex files. You must specify which one to " +
+                    "disassemble.", dexFileFile.getName()));
+            LOGGER.error("Valid entries include:");
+            for (OatFile.OatDexFile oatDexFile: ex.oatFile.getDexFiles()) {
+                LOGGER.error(oatDexFile.filename);
+            }
+            throw new IOException(ex);
+        } catch (org.jf.util.ExceptionWithContext ex) {
+            LOGGER.error("{}", ex.toString());
+            throw new IOException(ex);
         }
 
-        File smaliFile = fileNameHandler.getUniqueFilenameForClass(classDescriptor);
-
-        //create and initialize the top level string template
-        ClassDefinition classDefinition = new ClassDefinitionImpl(options, classDef);
-
-        //write the disassembly
-        Writer writer = null;
-        try
-        {
-            File smaliParent = smaliFile.getParentFile();
-            if (!smaliParent.exists()) {
-                if (!smaliParent.mkdirs()) {
-                    // check again, it's likely it was created in a different thread
-                    if (!smaliParent.exists()) {
-                        LOGGER.error("Unable to create directory " + smaliParent.toString() + " - skipping class");
-                        return false;
-                    }
-                }
+        if (dexFile.hasOdexOpcodes()) {
+            if (!options.deodex) {
+                LOGGER.error("Warning: You are disassembling an odex file without deodexing it. You");
+                LOGGER.error("won't be able to re-assemble the results unless you deodex it with the -x");
+                LOGGER.error("option");
+                options.allowOdex = true;
             }
-
-            if (!smaliFile.exists()){
-                if (!smaliFile.createNewFile()) {
-                    LOGGER.error("Unable to create file " + smaliFile.toString() + " - skipping class");
-                    return false;
-                }
-            }
-
-            BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(smaliFile), "UTF8"));
-
-            writer = new IndentingWriter(bufWriter);
-            classDefinition.writeTo((IndentingWriter)writer);
-        } catch (Exception ex) {
-            LOGGER.error("\n\nError occurred while disassembling class " + classDescriptor.replace('/', '.') + " - skipping class", ex);
-            // noinspection ResultOfMethodCallIgnored
-            smaliFile.delete();
-            return false;
+        } else {
+            options.deodex = false;
         }
-        finally
-        {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (Throwable ex) {
-                    LOGGER.error("\n\nError occurred while closing file " + smaliFile.toString(), ex);
-                }
+
+        if (options.deodex || options.registerInfo != 0 || options.normalizeVirtualMethods) {
+            if (dexFile instanceof DexBackedOdexFile) {
+                options.bootClassPathEntries = ((DexBackedOdexFile)dexFile).getDependencies();
+            } else {
+                options.bootClassPathEntries = getDefaultBootClassPathForApi(options.apiLevel,
+                        options.experimental);
             }
         }
-        return true;
+
+        if (options.customInlineDefinitions == null && dexFile instanceof DexBackedOdexFile) {
+            options.inlineResolver =
+                    InlineMethodResolver.createInlineMethodResolver(
+                            ((DexBackedOdexFile)dexFile).getOdexVersion());
+        }
+        
+        return dexFile;
+    }
+    
+    @Nonnull
+    public static List<String> getDefaultBootClassPathForApi(int apiLevel, boolean experimental) {
+        if (apiLevel < 9) {
+            return Lists.newArrayList(
+                    "/system/framework/core.jar",
+                    "/system/framework/ext.jar",
+                    "/system/framework/framework.jar",
+                    "/system/framework/android.policy.jar",
+                    "/system/framework/services.jar");
+        } else if (apiLevel < 12) {
+            return Lists.newArrayList(
+                    "/system/framework/core.jar",
+                    "/system/framework/bouncycastle.jar",
+                    "/system/framework/ext.jar",
+                    "/system/framework/framework.jar",
+                    "/system/framework/android.policy.jar",
+                    "/system/framework/services.jar",
+                    "/system/framework/core-junit.jar");
+        } else if (apiLevel < 14) {
+            return Lists.newArrayList(
+                    "/system/framework/core.jar",
+                    "/system/framework/apache-xml.jar",
+                    "/system/framework/bouncycastle.jar",
+                    "/system/framework/ext.jar",
+                    "/system/framework/framework.jar",
+                    "/system/framework/android.policy.jar",
+                    "/system/framework/services.jar",
+                    "/system/framework/core-junit.jar");
+        } else if (apiLevel < 16) {
+            return Lists.newArrayList(
+                    "/system/framework/core.jar",
+                    "/system/framework/core-junit.jar",
+                    "/system/framework/bouncycastle.jar",
+                    "/system/framework/ext.jar",
+                    "/system/framework/framework.jar",
+                    "/system/framework/android.policy.jar",
+                    "/system/framework/services.jar",
+                    "/system/framework/apache-xml.jar",
+                    "/system/framework/filterfw.jar");
+        } else if (apiLevel < 21) {
+            // this is correct as of api 17/4.2.2
+            return Lists.newArrayList(
+                    "/system/framework/core.jar",
+                    "/system/framework/core-junit.jar",
+                    "/system/framework/bouncycastle.jar",
+                    "/system/framework/ext.jar",
+                    "/system/framework/framework.jar",
+                    "/system/framework/telephony-common.jar",
+                    "/system/framework/mms-common.jar",
+                    "/system/framework/android.policy.jar",
+                    "/system/framework/services.jar",
+                    "/system/framework/apache-xml.jar");
+        } else { // api >= 21
+            // TODO: verify, add new ones?
+            return Lists.newArrayList(
+                    "/system/framework/core-libart.jar",
+                    "/system/framework/conscrypt.jar",
+                    "/system/framework/okhttp.jar",
+                    "/system/framework/core-junit.jar",
+                    "/system/framework/bouncycastle.jar",
+                    "/system/framework/ext.jar",
+                    "/system/framework/framework.jar",
+                    "/system/framework/telephony-common.jar",
+                    "/system/framework/voip-common.jar",
+                    "/system/framework/ims-common.jar",
+                    "/system/framework/mms-common.jar",
+                    "/system/framework/android.policy.jar",
+                    "/system/framework/apache-xml.jar");
+        }
     }
 }

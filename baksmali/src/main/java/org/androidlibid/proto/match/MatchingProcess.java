@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.androidlibid.proto.PackageHierarchy;
+import org.androidlibid.proto.pojo.PackageHierarchy;
 import org.androidlibid.proto.ao.FingerprintService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

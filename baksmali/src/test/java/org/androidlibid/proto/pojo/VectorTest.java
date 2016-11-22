@@ -1,5 +1,6 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.pojo;
 
+import org.androidlibid.proto.pojo.Vector;
 import org.junit.Test;
 
 /**

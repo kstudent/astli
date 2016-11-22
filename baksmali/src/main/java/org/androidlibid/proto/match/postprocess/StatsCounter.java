@@ -2,7 +2,7 @@ package org.androidlibid.proto.match.postprocess;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.jf.baksmali.baksmaliOptions;
+import org.androidlibid.proto.ASTLIOptions;
 
 /**
  *
@@ -76,8 +76,8 @@ public class StatsCounter {
             return diff;
         }
         
-        public void setOptions(baksmaliOptions options) {
-            algorithm = options.strategy.getSimpleName(); 
+        public void setOptions(ASTLIOptions options) {
+            algorithm = options.process.getSimpleName(); 
             String[] pieces = options.inputFileName.split("/");
             obfLvl    = pieces[pieces.length - 1];
             apkName   = (pieces.length > 1) ? pieces[pieces.length - 2] : "<unknown>";

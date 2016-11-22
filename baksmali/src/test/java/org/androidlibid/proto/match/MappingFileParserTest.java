@@ -1,5 +1,6 @@
 package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.utils.ProGuardMappingFileParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;

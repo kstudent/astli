@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import org.jf.baksmali.main;
-import org.androidlibid.proto.Fingerprint;
+import org.androidlibid.proto.ASTLIOptions;
+import org.androidlibid.proto.main;
+import org.androidlibid.proto.pojo.Fingerprint;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.junit.Test;
@@ -14,7 +15,6 @@ import org.androidlibid.proto.ao.Clazz;
 import org.androidlibid.proto.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jf.baksmali.baksmaliOptions;
 import org.androidlibid.proto.ao.FingerprintEntity;
 
 /**
@@ -105,7 +105,7 @@ public class mainTest {
         File appApk = new File(appApkPath);
         assert (appApk.exists() && appApk.canRead());
 
-        String arg[] = {"-y", appApkPath};
+        String arg[] = {"-m", appApkPath};
         main.main(arg);
     }
 
@@ -119,7 +119,7 @@ public class mainTest {
         File mappingFile = new File(mappingFilePath);
         assert (mappingFile.exists() && mappingFile.canRead());
 
-        String arg[] = {"-y", appApkPath, "-Z", mappingFilePath, "-a", Integer.toString(algId)};
+        String arg[] = {"-m", "-f", mappingFilePath, appApkPath};
         main.main(arg);
     }
 
@@ -127,7 +127,7 @@ public class mainTest {
         String jarPath = resourcesSrcDir + "FingerprintJARTest/lib_spongy_core.jar";
         File jarFile = new File(jarPath);
         assert (jarFile.exists() && jarFile.canRead());
-        String arg[] = {"-z", "com.madgag.spongycastle:core:1.54.0.0", jarPath};
+        String arg[] = {"-l", "com.madgag.spongycastle:core:1.54.0.0", jarPath};
         main.main(arg);
     }
 
@@ -135,7 +135,7 @@ public class mainTest {
         String jarPath = resourcesSrcDir + "FingerprintJARTest/lib_spongy_prov.jar";
         File jarFile = new File(jarPath);
         assert (jarFile.exists() && jarFile.canRead());
-        String arg[] = {"-z", "com.madgag.spongycastle:prov:1.54.0.0", jarPath};
+        String arg[] = {"-l", "com.madgag.spongycastle:prov:1.54.0.0", jarPath};
         main.main(arg);
     }
 
@@ -187,7 +187,7 @@ public class mainTest {
 
     @Test
     public void printSetup() throws SQLException {
-        new SetupLogger(new baksmaliOptions(), EntityServiceFactory.createService()).logSetup();
+        new SetupLogger(EntityServiceFactory.createService(), new ASTLIOptions()).logSetup();
     }
 
     @Test

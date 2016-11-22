@@ -1,7 +1,6 @@
 package org.androidlibid.proto.match.postprocess;
 
-import java.util.Date;
-import org.jf.baksmali.baksmaliOptions;
+import org.androidlibid.proto.ASTLIOptions;
 
 /**
  *
@@ -9,7 +8,7 @@ import org.jf.baksmali.baksmaliOptions;
  */
 public class PostProcessorFactory {
 
-    public PostProcessor createProcessor(baksmaliOptions options) {
+    public PostProcessor createProcessor(ASTLIOptions options) {
         
         //todo... something like if production else evaluation
         // return new EvaluationModeProcessor(options, new Date());

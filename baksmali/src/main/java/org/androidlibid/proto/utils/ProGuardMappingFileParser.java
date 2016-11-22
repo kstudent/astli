@@ -1,4 +1,4 @@
-package org.androidlibid.proto.match;
+package org.androidlibid.proto.utils;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
