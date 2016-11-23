@@ -32,7 +32,6 @@ import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.Format;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.*;
-import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.util.TypeUtils;
 import java.io.IOException;
 import java.util.*;
@@ -54,6 +53,14 @@ public class ASTBuilder {
     private final boolean noParameterRegisters;
     private final String currentClassType;
     private final String currentPackage;
+    
+    private final static Map<Opcode, NodeType> OPCODE_TO_NODETYPE_MAP;
+    
+    static {
+        OPCODE_TO_NODETYPE_MAP = new HashMap<>();
+        OPCODE_TO_NODETYPE_MAP.put(Opcode.INVOKE_DIRECT , NodeType.DRC);
+        OPCODE_TO_NODETYPE_MAP.put(Opcode.INVOKE_VIRTUAL, NodeType.VRT);
+    }
 
     public ASTBuilder(MethodDefinition methodDefinition, 
             boolean noParameterRegisters, String smaliClassType) {
@@ -67,59 +74,44 @@ public class ASTBuilder {
         
         Node root = new Node(NodeType.MTH);
         
-        int parameterRegisterCount = 0;
+        int tmpParameterRegisterCount = 0;
         if (!AccessFlags.STATIC.isSet(getMethod().getAccessFlags())) {
-            parameterRegisterCount++;
+            tmpParameterRegisterCount++;
         }
 
-        parameterRegisterCount += countParameterRegisters(); 
+        tmpParameterRegisterCount += countParameterRegisters(); 
+        final int parameterRegisterCount = tmpParameterRegisterCount; 
         
         String signature = createSignature();
-        
         root.addChild(new Node(signature));
 
-        List<MethodItem> methodItems = getMethodItems();
-        for (MethodItem methodItem: methodItems) {
-            
-            if(methodItem instanceof InstructionMethodItem) {
-                InstructionMethodItem iMethodItem = (InstructionMethodItem) methodItem;
-                Instruction ins = iMethodItem.getInstruction();
+        getMethodItems().stream()
+            .filter(item -> item instanceof InstructionMethodItem)
+            .map(InstructionMethodItem.class::cast)
+            .map(item -> item.getInstruction())
+            .filter(instruction -> instruction.getOpcode().format == Format.Format35c)
+            .filter(instruction -> OPCODE_TO_NODETYPE_MAP.containsKey(instruction.getOpcode()))
+            .filter(instruction -> instruction instanceof FiveRegisterInstruction)
+            .map(instruction -> (FiveRegisterInstruction) instruction)
+            .map(ins -> createInstructionNode(ins, parameterRegisterCount))
+            .forEach(child -> root.addChild(child));
                 
-                if(ins.getOpcode().format == Format.Format35c && (ins.getOpcode() == Opcode.INVOKE_DIRECT || ins.getOpcode() == Opcode.INVOKE_VIRTUAL)) {
-                    
-                    Node child;
-                    
-                    switch (ins.getOpcode()) {
-                        case INVOKE_DIRECT:
-                            child = new Node(NodeType.DRC);
-                            break;
-                        case INVOKE_VIRTUAL:
-                            child = new Node(NodeType.VRT);
-                            break;
-                        default:
-                            continue;
-                    }
-                        
-                    root.addChild(child);
-                    
-                    FiveRegisterInstruction instruction = (FiveRegisterInstruction) ins;
-                    
-                    int methodRegCount = getMethodImpl().getRegisterCount();
-                    int instructionRegCount = instruction.getRegisterCount(); 
-                    
-                    if(instructionRegCount >= 1) child.addChild(createRegisterNode(instruction.getRegisterC(), methodRegCount, parameterRegisterCount));
-                    if(instructionRegCount >= 2) child.addChild(createRegisterNode(instruction.getRegisterD(), methodRegCount, parameterRegisterCount));
-                    if(instructionRegCount >= 3) child.addChild(createRegisterNode(instruction.getRegisterE(), methodRegCount, parameterRegisterCount));
-                    if(instructionRegCount >= 4) child.addChild(createRegisterNode(instruction.getRegisterF(), methodRegCount, parameterRegisterCount));
-                    if(instructionRegCount >= 5) child.addChild(createRegisterNode(instruction.getRegisterG(), methodRegCount, parameterRegisterCount));
-                }
-                
-            }
-        }
-        
         return root;
         
     }
+    
+    private Node createInstructionNode(FiveRegisterInstruction ins, int parameterRegisterCount) {
+        Node child = new Node(OPCODE_TO_NODETYPE_MAP.get(ins.getOpcode()));
+        int mrc = getMethodImpl().getRegisterCount();
+        int irc = ins.getRegisterCount();
+        if(irc >= 1) child.addChild(createRegisterNode(ins.getRegisterC(), mrc, parameterRegisterCount));
+        if(irc >= 2) child.addChild(createRegisterNode(ins.getRegisterD(), mrc, parameterRegisterCount));
+        if(irc >= 3) child.addChild(createRegisterNode(ins.getRegisterE(), mrc, parameterRegisterCount));
+        if(irc >= 4) child.addChild(createRegisterNode(ins.getRegisterF(), mrc, parameterRegisterCount));
+        if(irc >= 5) child.addChild(createRegisterNode(ins.getRegisterG(), mrc, parameterRegisterCount));
+        return child;
+    }
+    
     
     private Method getMethod() {
         return methodDefinition.getMethod();
