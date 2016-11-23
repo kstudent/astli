@@ -28,6 +28,7 @@
 
 package org.androidlibid.proto;
 
+import org.androidlibid.proto.pojo.ASTLIOptions;
 import org.androidlibid.proto.ast.BaksmaliSetup;
 import org.apache.commons.cli.*;
 import org.jf.util.ConsoleUtil;

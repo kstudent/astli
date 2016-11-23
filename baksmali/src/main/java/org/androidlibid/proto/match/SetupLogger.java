@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.androidlibid.proto.ASTLIOptions;
+import org.androidlibid.proto.pojo.ASTLIOptions;
 import org.androidlibid.proto.ao.EntityService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

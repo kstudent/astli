@@ -9,7 +9,7 @@ import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import org.androidlibid.proto.ao.FingerprintService;
 import java.sql.SQLException;
 import java.util.stream.Stream;
-import org.androidlibid.proto.ASTLIOptions;
+import org.androidlibid.proto.pojo.ASTLIOptions;
 import org.androidlibid.proto.pojo.PackageHierarchy;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;

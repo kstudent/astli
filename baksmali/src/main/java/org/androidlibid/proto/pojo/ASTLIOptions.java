@@ -1,5 +1,6 @@
-package org.androidlibid.proto;
+package org.androidlibid.proto.pojo;
 
+import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import org.androidlibid.proto.match.MatchAlgorithm;
 import org.androidlibid.proto.match.MatchingProcess;
 
@@ -21,7 +22,6 @@ public class ASTLIOptions {
         this.algorithm = MatchAlgorithm.class;
         this.process = MatchingProcess.class;
     }
-
     
     public void setFileName(String fileName) {
         String[] pieces = fileName.split("/");

@@ -4,7 +4,7 @@ import org.androidlibid.proto.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
-import org.androidlibid.proto.ASTLIOptions;
+import org.androidlibid.proto.pojo.ASTLIOptions;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.ao.PackageHierarchyService;

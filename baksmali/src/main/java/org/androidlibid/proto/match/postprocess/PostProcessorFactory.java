@@ -1,6 +1,6 @@
 package org.androidlibid.proto.match.postprocess;
 
-import org.androidlibid.proto.ASTLIOptions;
+import org.androidlibid.proto.pojo.ASTLIOptions;
 
 /**
  *

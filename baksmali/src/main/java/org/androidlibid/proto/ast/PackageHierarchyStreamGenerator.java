@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.androidlibid.proto.pojo.PackageHierarchy;
-import org.androidlibid.proto.ASTLIOptions;
+import org.androidlibid.proto.pojo.ASTLIOptions;
 
 import java.io.IOException;
 import java.util.List;
