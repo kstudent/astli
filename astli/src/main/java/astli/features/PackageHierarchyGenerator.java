@@ -45,9 +45,9 @@ public class PackageHierarchyGenerator {
         Map<String, PackageHierarchy> hierarchies = new HashMap<>();
         
         astClassBuilderStream
-                .map(builder -> createRecordFromASTBuilder(builder))
-                .filter(record -> !record.getMethods().isEmpty())
-                .forEach(record  -> insertRecordIntoHierarchies(record, hierarchies));
+                .map(builder -> createClassPrintsFromASTBuilder(builder))
+                .filter(prints -> !prints.getMethods().isEmpty())
+                .forEach(prints  -> insertClassPrintIntoHierarchies(prints, hierarchies));
         
         return hierarchies.values().parallelStream();
     }
@@ -58,7 +58,7 @@ public class PackageHierarchyGenerator {
      * @param astClassBuilder
      * @return 
      */
-    private Record createRecordFromASTBuilder(ASTClassBuilder astClassBuilder) {
+    private ClassPrints createClassPrintsFromASTBuilder(ASTClassBuilder astClassBuilder) {
         
         Map<String, Fingerprint> methods = new HashMap<>();
         
@@ -68,18 +68,18 @@ public class PackageHierarchyGenerator {
         String packageName    = SmaliNameConverter.extractPackageNameFromClassName(className);
         
         if(isBlacklisted(packageName)) {
-            return new Record(methods, className);
+            return new ClassPrints(methods, className);
         } else {
             methods = createFingerprintsFromASTBuilder(astClassBuilder);
-            return new Record(methods, className);
+            return new ClassPrints(methods, className);
         } 
     }
     
-    private void insertRecordIntoHierarchies(Record record, Map<String, PackageHierarchy> hierarchies) {
+    private void insertClassPrintIntoHierarchies(ClassPrints prints, Map<String, PackageHierarchy> hierarchies) {
             
         synchronized(hierarchies) {
             
-            String packageName = record.getPackageName();
+            String packageName = prints.getPackageName();
             
             PackageHierarchy hierarchy; 
             if(hierarchies.containsKey(packageName)) {
@@ -89,7 +89,7 @@ public class PackageHierarchyGenerator {
                 hierarchies.put(packageName, hierarchy);
             }
             
-            hierarchy.addMethods(record.className, record.getMethods());
+            hierarchy.addMethods(prints.className, prints.getMethods());
         }
         
     }
@@ -161,11 +161,11 @@ public class PackageHierarchyGenerator {
         
     }
 
-    private static class Record {
+    private static class ClassPrints {
         private final Map<String, Fingerprint> methods;
         private final String className;
 
-        public Record(Map<String, Fingerprint> methods, String className) {
+        public ClassPrints(Map<String, Fingerprint> methods, String className) {
             this.methods = methods;
             this.className = className;
         }
