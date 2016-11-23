@@ -14,6 +14,7 @@ import org.androidlibid.proto.pojo.PackageHierarchy;
 import org.androidlibid.proto.ao.EntityService;
 import org.androidlibid.proto.ao.EntityServiceFactory;
 import org.androidlibid.proto.match.postprocess.PostProcessor;
+import org.androidlibid.proto.pojo.Match;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,7 +44,7 @@ public class MatchAlgorithm implements AndroidLibIDAlgorithm {
             processor.init();
             
             packages.map(hierarchy  -> process.apply(hierarchy))
-                    .forEach(result -> processor.process(result));
+                    .forEach((Match match) -> processor.process(match));
             
             processor.done();
             

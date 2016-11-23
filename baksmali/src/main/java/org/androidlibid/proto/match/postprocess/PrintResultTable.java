@@ -3,8 +3,8 @@ package org.androidlibid.proto.match.postprocess;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
+import org.androidlibid.proto.pojo.Match;
 import org.androidlibid.proto.pojo.PackageHierarchy;
-import org.androidlibid.proto.match.MatchingProcess;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +37,7 @@ public class PrintResultTable implements PostProcessor {
     }
     
     @Override
-    public void process(MatchingProcess.Result result) {
+    public void process(Match result) {
         LOG.info(buildResultLines(result.getApkH(), result.getItems()) + "\n" + buildSeparator());
     }
 
@@ -45,7 +45,7 @@ public class PrintResultTable implements PostProcessor {
     public void done() {
     }
 
-    private String buildResultLines(PackageHierarchy apk, List<MatchingProcess.ResultItem> items) {
+    private String buildResultLines(PackageHierarchy apk, List<Match.Item> items) {
         
         StringBuilder lines = new StringBuilder();
         String apkName = apk.getName();
@@ -67,7 +67,7 @@ public class PrintResultTable implements PostProcessor {
         return lines.toString();
     }
     
-    private StringBuilder buildLine(String apkP, int code, MatchingProcess.ResultItem item) {
+    private StringBuilder buildLine(String apkP, int code, Match.Item item) {
         
         String codeString = (code > 0) ? Integer.toString(code) : ""; 
         

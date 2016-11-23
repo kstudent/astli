@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.stream.IntStream;
-import org.androidlibid.proto.match.MatchingProcess;
+import org.androidlibid.proto.pojo.Match;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,10 +17,10 @@ public class ResultClassifier {
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
     private static final Logger LOGGER = LogManager.getLogger();
     
-    public ClassificationTupel classify(MatchingProcess.Result result) {
+    public ClassificationTupel classify(Match match) {
         
-        List<MatchingProcess.ResultItem> items = result.getItems();
-        String apkName = result.getApkH().getName();
+        List<Match.Item> items = match.getItems();
+        String apkName = match.getApkH().getName();
         
         int position = IntStream.range(0, items.size())
                 .filter(index -> items.get(index).getPackage().equals(apkName))
@@ -42,7 +42,7 @@ public class ResultClassifier {
         
         boolean isOnTop = matchInList && thereIsNoBetterMatchBeforePosition(items, position, score);
         
-        boolean packageInDB     = result.isPackageInDB();
+        boolean packageInDB     = match.isPackageInDB();
         
         Classification clss = isOnTop ? 
                        ( isUniqueLeader ?   Classification.TPU : Classification.TPN )
@@ -51,9 +51,9 @@ public class ResultClassifier {
                         :                   Classification.TN;
         
         if(clss == Classification.FP) {
-            LOGGER.info("*** {} (E:{}) is a false positive", apkName, result.getApkH().getEntropy());
+            LOGGER.info("*** {} (E:{}) is a false positive", apkName, match.getApkH().getEntropy());
         } else if (clss == Classification.FN) {
-            LOGGER.info("*** {} (E:{}) is a false negative", apkName, result.getApkH().getEntropy());
+            LOGGER.info("*** {} (E:{}) is a false negative", apkName, match.getApkH().getEntropy());
         }
         
         if(candidatesExist) {
@@ -73,7 +73,7 @@ public class ResultClassifier {
         return new ClassificationTupel(position, clss, score, items.size());
     }
 
-    private boolean thereIsNoBetterMatchBeforePosition(List<MatchingProcess.ResultItem> items, 
+    private boolean thereIsNoBetterMatchBeforePosition(List<Match.Item> items, 
             int position, double score) {
         return !IntStream.range(0, position)
                 .boxed()

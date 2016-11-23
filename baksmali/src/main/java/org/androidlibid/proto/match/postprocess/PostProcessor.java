@@ -1,6 +1,6 @@
 package org.androidlibid.proto.match.postprocess;
 
-import org.androidlibid.proto.match.MatchingProcess;
+import org.androidlibid.proto.pojo.Match;
 
 /**
  *
@@ -9,7 +9,7 @@ import org.androidlibid.proto.match.MatchingProcess;
 public interface PostProcessor {
     
     void init(); 
-    void process(MatchingProcess.Result result);
+    void process(Match match);
     void done();
     
 }

@@ -2,8 +2,8 @@ package org.androidlibid.proto.match.postprocess;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.androidlibid.proto.pojo.Match;
 import static java.util.stream.Collectors.toList;
-import org.androidlibid.proto.match.MatchingProcess;
 
 /**
  *
@@ -23,14 +23,14 @@ public class PlateauFilterProcessor implements PostProcessor {
     }
     
     @Override
-    public void process(MatchingProcess.Result result) {
+    public void process(Match result) {
 
         double max = result.getItems().stream()
                 .mapToDouble(item -> item.getScore())
                 .max()
                 .orElse(0);
         
-        List<MatchingProcess.ResultItem> plateau;
+        List<Match.Item> plateau;
         
         if(max > 0) {
             plateau = result.getItems().stream()
@@ -40,7 +40,7 @@ public class PlateauFilterProcessor implements PostProcessor {
            plateau = new ArrayList<>();
         }
         
-        MatchingProcess.Result filteredResult = new MatchingProcess.Result(plateau, result.getApkH(), result.isPackageInDB());
+        Match filteredResult = new Match(plateau, result.getApkH(), result.isPackageInDB());
         
         actualProcessor.process(filteredResult);
     }

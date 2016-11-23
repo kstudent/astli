@@ -1,5 +1,6 @@
 package org.androidlibid.proto.match;
 
+import org.androidlibid.proto.pojo.Match;
 import org.androidlibid.proto.match.matcher.PackageMatcher;
 import org.androidlibid.proto.match.finder.CandidateFinder;
 import java.text.DecimalFormat;
@@ -20,7 +21,7 @@ import org.androidlibid.proto.ao.Package;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchingProcess implements Function<PackageHierarchy, MatchingProcess.Result> {
+public class MatchingProcess implements Function<PackageHierarchy, Match> {
 
     private static final Logger LOGGER = LogManager.getLogger(MatchingProcess.class);
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
@@ -44,17 +45,17 @@ public class MatchingProcess implements Function<PackageHierarchy, MatchingProce
     }
 
     @Override
-    public Result apply(PackageHierarchy apkH) {
+    public Match apply(PackageHierarchy apkH) {
 
         final double maxScore =  matcher.getScore(apkH, apkH);
 
         Stream<Package> candidates = finder.findCandidates(apkH);
 
-        List<ResultItem> results = candidates
+        List<Match.Item> results = candidates
                 .map(pckg -> getPackageHierarchyCandidate(pckg))
                 .map(libH -> {
                     double score = matcher.getScore(apkH, libH) / maxScore;
-                    return new ResultItem(score, libH);
+                    return new Match.Item(score, libH);
                 })
                 .peek(item -> LOGGER.debug(
                         "{} -> {}: {}", apkH.getName(), item.getPackage(), 
@@ -62,7 +63,7 @@ public class MatchingProcess implements Function<PackageHierarchy, MatchingProce
                 .sorted((that, other) -> Double.compare(other.getScore(), that.getScore()))
                 .collect(Collectors.toList());
         
-        return new Result(results, apkH, fpService.isPackageInDB(apkH.getName()));
+        return new Match(results, apkH, fpService.isPackageInDB(apkH.getName()));
         
     }
     
@@ -73,61 +74,5 @@ public class MatchingProcess implements Function<PackageHierarchy, MatchingProce
         }
         
         return hierarchyCache.get(pckg);
-    }
-
-    public static class ResultItem {
-        
-        private final double score; 
-        private final int entropy;
-        private final String packageName;
-        private final String libName;
-
-        public ResultItem(double score, PackageHierarchy lib) {
-            this.score = score;
-            this.packageName = lib.getName();
-            this.entropy = lib.getEntropy();
-            this.libName = lib.getLib();
-        }
-
-        public int getEntropy() {
-            return entropy;
-        }
-
-        public String getPackage() {
-            return packageName;
-        }
-
-        public double getScore() {
-            return score;
-        }
-
-        public String getLib() {
-            return libName;
-        }
-    }
-    
-    public static class Result {
-        
-        private final List<ResultItem> items; 
-        private final PackageHierarchy apkH;
-        private final boolean packageInDB; 
-
-        public Result(List<ResultItem> items, PackageHierarchy apkH, boolean packageInDB) {
-            this.items = items;
-            this.apkH = apkH;
-            this.packageInDB = packageInDB;
-        }
-
-        public boolean isPackageInDB() {
-            return packageInDB;
-        }
-
-        public List<ResultItem> getItems() {
-            return items;
-        }
-
-        public PackageHierarchy getApkH() {
-            return apkH;
-        }
     }
 }

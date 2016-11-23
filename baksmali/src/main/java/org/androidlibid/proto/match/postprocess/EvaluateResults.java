@@ -2,7 +2,7 @@ package org.androidlibid.proto.match.postprocess;
 
 import java.util.Date;
 import org.androidlibid.proto.ASTLIOptions;
-import org.androidlibid.proto.match.MatchingProcess;
+import org.androidlibid.proto.pojo.Match;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,16 +32,16 @@ public class EvaluateResults implements PostProcessor {
     }
 
     @Override
-    public void process(MatchingProcess.Result result) {
+    public void process(Match match) {
         
-        ResultClassifier.ClassificationTupel classification = classifier.classify(result);
+        ResultClassifier.ClassificationTupel classification = classifier.classify(match);
         
-        String libPckg = (result.getItems().size()>0) ? result.getItems().get(0).getLib() : "";
+        String libPckg = (match.getItems().size()>0) ? match.getItems().get(0).getLib() : "";
         LOGGER.info("{},{},{},{},{}", 
             classification.getScore(), 
             classification.getClassification(),
-            result.getApkH().getEntropy(),
-            result.getApkH().getName(),
+            match.getApkH().getEntropy(),
+            match.getApkH().getName(),
             libPckg
         );
         
