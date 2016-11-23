@@ -70,7 +70,7 @@ task release() {
 }
 
 // The projects that get pushed to maven
-def maven_release_projects = ['smali', 'baksmali', 'dexlib2', 'util']
+def maven_release_projects = ['smali', 'astli', 'dexlib2', 'util']
 
 subprojects {
     apply plugin: 'java'
