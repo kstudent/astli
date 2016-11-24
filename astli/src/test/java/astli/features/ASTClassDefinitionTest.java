@@ -1,6 +1,6 @@
 package astli.features;
 
-import astli.features.NodeType;
+import astli.pojo.NodeType;
 import astli.features.ASTClassBuilder;
 import astli.features.ASTBuilderFactory;
 import astli.features.ASTBuilder;

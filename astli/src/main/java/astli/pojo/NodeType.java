@@ -1,4 +1,4 @@
-package astli.features;
+package astli.pojo;
 
 /**
  *

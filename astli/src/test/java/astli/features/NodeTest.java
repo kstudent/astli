@@ -15,7 +15,7 @@
  */
 package astli.features;
 
-import astli.features.NodeType;
+import astli.pojo.NodeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

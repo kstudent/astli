@@ -14,7 +14,7 @@ import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.Hsql;
 import net.java.ao.test.jdbc.Jdbc;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import astli.utils.ArrayUtils;
+import astli.pojo.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

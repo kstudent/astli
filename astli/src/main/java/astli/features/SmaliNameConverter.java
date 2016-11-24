@@ -1,9 +1,8 @@
-package astli.utils;
+package astli.features;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import astli.utils.StringUtils;
 
 /**
  *

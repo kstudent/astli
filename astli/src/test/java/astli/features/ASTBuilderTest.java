@@ -1,6 +1,6 @@
 package astli.features;
 
-import astli.features.NodeType;
+import astli.pojo.NodeType;
 import astli.features.ASTBuilder;
 import astli.features.Node;
 import com.google.common.collect.ImmutableList;

@@ -9,7 +9,6 @@ import java.util.Map;
 import astli.features.ASTClassBuilder;
 import astli.features.ASTToFingerprintTransformer;
 import astli.features.Node;
-import astli.features.NodeType;
 import org.jf.baksmali.baksmaliOptions;
 import org.junit.Before;
 import org.junit.Test;

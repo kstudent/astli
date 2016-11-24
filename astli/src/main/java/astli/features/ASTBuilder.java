@@ -27,6 +27,7 @@
  */
 package astli.features;
 
+import astli.pojo.NodeType;
 import com.google.common.collect.ImmutableList;
 import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.Format;
@@ -35,7 +36,6 @@ import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.util.TypeUtils;
 import java.io.IOException;
 import java.util.*;
-import astli.utils.SmaliNameConverter;
 import org.jf.baksmali.Adaptors.Format.InstructionMethodItem;
 import org.jf.baksmali.Adaptors.MethodDefinition;
 import org.jf.baksmali.Adaptors.MethodItem;

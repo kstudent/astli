@@ -10,7 +10,6 @@ import astli.pojo.ASTLIOptions;
 
 import java.io.IOException;
 import java.util.List;
-import astli.utils.ProGuardMappingFileParser;
 import org.jf.dexlib2.iface.ClassDef;
 
 /**

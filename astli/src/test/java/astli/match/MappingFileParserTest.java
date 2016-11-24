@@ -1,6 +1,6 @@
 package astli.match;
 
-import astli.utils.ProGuardMappingFileParser;
+import astli.features.ProGuardMappingFileParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;

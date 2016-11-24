@@ -1,6 +1,5 @@
 package astli.features;
 
-import astli.utils.SmaliNameConverter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

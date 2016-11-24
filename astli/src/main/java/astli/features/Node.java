@@ -1,5 +1,6 @@
 package astli.features;
 
+import astli.pojo.NodeType;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnegative;

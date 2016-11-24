@@ -2,13 +2,10 @@ package astli.pojo;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import astli.features.NodeType;
-import astli.features.FeatureGenerator;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import astli.db.FingerprintEntity;
-import astli.utils.ArrayUtils;
 
 public class Fingerprint {
 

@@ -7,7 +7,7 @@ import astli.pojo.Fingerprint;
 import astli.db.EntityServiceFactory;
 import astli.db.FingerprintService;
 import astli.db.Package;
-import astli.features.NodeType;
+import astli.pojo.NodeType;
 import org.junit.Test;
 
 /**

@@ -1,4 +1,4 @@
-package astli.utils;
+package astli.features;
 
 import java.util.List;
 

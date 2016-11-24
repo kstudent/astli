@@ -33,7 +33,6 @@ import org.jf.dexlib2.iface.*;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
-import astli.utils.SmaliNameConverter;
 
 public class ASTClassBuilder {
     

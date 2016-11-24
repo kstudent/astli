@@ -169,7 +169,7 @@ public class main {
             return null;
         }
 
-        ASTLIOptions astliOptions = new ASTLIOptions();
+        ASTLIOptions astliOptions = new ASTLIOptions(MatchAlgorithm.class, MatchingProcess.class);
 
         String[] remainingArgs = commandLine.getArgs();
         Option[] clOptions = commandLine.getOptions();

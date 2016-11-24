@@ -18,9 +18,9 @@ public class ASTLIOptions {
     public String obfLvl = "";
     public String apkName = "";
 
-    public ASTLIOptions() {
-        this.algorithm = MatchAlgorithm.class;
-        this.process = MatchingProcess.class;
+    public ASTLIOptions(Class<? extends AndroidLibIDAlgorithm> algorithm, Class<? extends MatchingProcess> process) {
+        this.algorithm = algorithm;
+        this.process = process;
     }
     
     public void setFileName(String fileName) {

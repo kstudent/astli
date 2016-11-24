@@ -1,6 +1,6 @@
 package astli.utils;
 
-import astli.utils.ArrayUtils;
+import astli.pojo.ArrayUtils;
 import java.util.Arrays;
 import org.junit.Test;
 

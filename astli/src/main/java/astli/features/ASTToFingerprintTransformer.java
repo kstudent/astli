@@ -1,5 +1,6 @@
 package astli.features;
 
+import astli.pojo.NodeType;
 import astli.pojo.Fingerprint;
 
 /**

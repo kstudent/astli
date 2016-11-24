@@ -10,7 +10,7 @@ import astli.pojo.Fingerprint;
 import astli.pojo.PackageHierarchy;
 import astli.db.FingerprintEntity;
 import astli.db.FingerprintService;
-import astli.utils.ArrayUtils;
+import astli.pojo.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;

@@ -16,6 +16,8 @@ import astli.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import astli.db.FingerprintEntity;
+import astli.match.MatchAlgorithm;
+import astli.match.MatchingProcess;
 
 /**
  *
@@ -187,7 +189,7 @@ public class mainTest {
 
     @Test
     public void printSetup() throws SQLException {
-        new SetupLogger(EntityServiceFactory.createService(), new ASTLIOptions()).logSetup();
+        new SetupLogger(EntityServiceFactory.createService(), new ASTLIOptions(MatchAlgorithm.class, MatchingProcess.class)).logSetup();
     }
 
     //@Test
