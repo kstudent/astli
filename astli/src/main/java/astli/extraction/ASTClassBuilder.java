@@ -26,7 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package astli.features;
+package astli.extraction;
 
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 import org.jf.dexlib2.iface.*;

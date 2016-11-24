@@ -1,10 +1,10 @@
-package astli.features;
+package astli.extraction;
 
 import astli.pojo.NodeType;
-import astli.features.ASTClassBuilder;
-import astli.features.ASTBuilderFactory;
-import astli.features.ASTBuilder;
-import astli.features.Node;
+import astli.extraction.ASTClassBuilder;
+import astli.extraction.ASTBuilderFactory;
+import astli.extraction.ASTBuilder;
+import astli.extraction.Node;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

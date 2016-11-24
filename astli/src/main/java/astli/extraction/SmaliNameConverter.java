@@ -1,4 +1,4 @@
-package astli.features;
+package astli.extraction;
 
 import java.util.HashMap;
 import java.util.List;

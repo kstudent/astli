@@ -29,7 +29,7 @@
 package astli.main;
 
 import astli.pojo.ASTLIOptions;
-import astli.features.BaksmaliSetup;
+import astli.extraction.FeatureExtractor;
 import org.apache.commons.cli.*;
 import org.jf.util.ConsoleUtil;
 
@@ -71,7 +71,7 @@ public class main {
             
             ASTLIOptions astliOptions = parseOptions(args);
 
-            Stream<PackageHierarchy> packages = new BaksmaliSetup(astliOptions).setup();
+            Stream<PackageHierarchy> packages = new FeatureExtractor(astliOptions).extractPackageHierarchies();
             
             AndroidLibIDAlgorithm alg;
             

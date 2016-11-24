@@ -1,4 +1,4 @@
-package astli.features;
+package astli.extraction;
 
 import java.io.IOException;
 import java.util.ArrayList;

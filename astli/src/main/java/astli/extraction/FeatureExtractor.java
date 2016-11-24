@@ -1,4 +1,4 @@
-package astli.features;
+package astli.extraction;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,17 +17,17 @@ import org.jf.dexlib2.iface.ClassDef;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class BaksmaliSetup {
+public class FeatureExtractor {
     
     private final ASTLIOptions options;
     
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public BaksmaliSetup(ASTLIOptions options) {
+    public FeatureExtractor(ASTLIOptions options) {
         this.options = options;
     }
     
-    public Stream<PackageHierarchy> setup() throws IOException {
+    public Stream<PackageHierarchy> extractPackageHierarchies() throws IOException {
         baksmaliOptions bsOptions = new baksmaliOptions();
         List<? extends ClassDef> classDefs = parseClassesFromFile(options.inputFileName, bsOptions);
         ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(bsOptions);

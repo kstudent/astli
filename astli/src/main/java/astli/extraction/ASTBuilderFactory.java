@@ -1,4 +1,4 @@
-package astli.features;
+package astli.extraction;
 
 import org.jf.baksmali.Adaptors.ClassDefinition;
 import org.jf.baksmali.Adaptors.ClassDefinitionImpl;

@@ -1,4 +1,4 @@
-package astli.features;
+package astli.extraction;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;

@@ -1,8 +1,8 @@
-package astli.features;
+package astli.extraction;
 
 import astli.pojo.NodeType;
-import astli.features.ASTBuilder;
-import astli.features.Node;
+import astli.extraction.ASTBuilder;
+import astli.extraction.Node;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;

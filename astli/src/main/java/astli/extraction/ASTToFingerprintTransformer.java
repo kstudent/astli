@@ -1,4 +1,4 @@
-package astli.features;
+package astli.extraction;
 
 import astli.pojo.NodeType;
 import astli.pojo.Fingerprint;
