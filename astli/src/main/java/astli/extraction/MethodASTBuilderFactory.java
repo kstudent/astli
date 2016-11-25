@@ -13,15 +13,15 @@ import org.jf.dexlib2.iface.MethodImplementation;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ASTBuilderFactory {
+public class MethodASTBuilderFactory {
     
     private final baksmaliOptions options;
 
-    public ASTBuilderFactory(baksmaliOptions options) {
+    public MethodASTBuilderFactory(baksmaliOptions options) {
         this.options = options;
     }
     
-    public ASTBuilder createASTBuilder(
+    public MethodASTBuilder create(
             ClassDef classDef, 
             Method method, 
             MethodImplementation methodImpl) {
@@ -29,6 +29,6 @@ public class ASTBuilderFactory {
         ClassDefinition classDefinition   = new ClassDefinitionImpl(options, classDef);
         MethodDefinition methodDefinition = new MethodDefinitionImpl(classDefinition, method, methodImpl);
         
-        return new ASTBuilder(methodDefinition, options.noParameterRegisters, classDef.getType());
+        return new MethodASTBuilder(methodDefinition, options.noParameterRegisters, classDef.getType());
     }
 }

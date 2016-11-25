@@ -20,9 +20,9 @@ public class PackageHierarchyStreamGenerator {
 
     private final ASTLIOptions astliOptions;
     private final List<? extends ClassDef> classDefs;
-    private final ASTBuilderFactory astBuilderFactory;
+    private final MethodASTBuilderFactory astBuilderFactory;
 
-    public PackageHierarchyStreamGenerator(ASTLIOptions astliOptions, List<? extends ClassDef> classDefs, ASTBuilderFactory astBuilderFactory) {
+    public PackageHierarchyStreamGenerator(ASTLIOptions astliOptions, List<? extends ClassDef> classDefs, MethodASTBuilderFactory astBuilderFactory) {
         this.astliOptions = astliOptions;
         this.classDefs = classDefs;
         this.astBuilderFactory = astBuilderFactory;
@@ -44,8 +44,8 @@ public class PackageHierarchyStreamGenerator {
         PackageHierarchyGenerator phGen = new PackageHierarchyGenerator(
                 new ASTToFingerprintTransformer(), mappings);
         
-        Stream<ASTClassBuilder> builderStream = classDefs.parallelStream()
-                .map(classDef -> new ASTClassBuilder(classDef, astBuilderFactory));
+        Stream<ClassASTBuilder> builderStream = classDefs.parallelStream()
+                .map(classDef -> new ClassASTBuilder(classDef, astBuilderFactory));
         
         return phGen.generatePackageHierarchiesFromClassBuilders(builderStream);
         

@@ -39,7 +39,7 @@ public class PackageHierarchyGenerator {
     }
     
     public Stream<PackageHierarchy> generatePackageHierarchiesFromClassBuilders(
-            Stream<ASTClassBuilder> astClassBuilderStream) {
+            Stream<ClassASTBuilder> astClassBuilderStream) {
         
         Map<String, PackageHierarchy> hierarchies = new HashMap<>();
         
@@ -57,7 +57,7 @@ public class PackageHierarchyGenerator {
      * @param astClassBuilder
      * @return 
      */
-    private ClassPrints createClassPrintsFromASTBuilder(ASTClassBuilder astClassBuilder) {
+    private ClassPrints createClassPrintsFromASTBuilder(ClassASTBuilder astClassBuilder) {
         
         Map<String, Fingerprint> methods = new HashMap<>();
         
@@ -100,7 +100,7 @@ public class PackageHierarchyGenerator {
      * @return 
      */
     private Map<String, Fingerprint> createFingerprintsFromASTBuilder(
-            ASTClassBuilder astClassBuilder) {
+            ClassASTBuilder astClassBuilder) {
         
         try
         {
@@ -108,7 +108,7 @@ public class PackageHierarchyGenerator {
 
             Map<String, Fingerprint> prints = new HashMap<>();
 
-            Map<String, Node> methodASTs = astClassBuilder.buildASTs();
+            Map<String, Node> methodASTs = astClassBuilder.buildASTClass();
 
             for(String obfsMethodSignature : methodASTs.keySet()) {
                 Node methodAST = methodASTs.get(obfsMethodSignature);
@@ -126,7 +126,7 @@ public class PackageHierarchyGenerator {
         
     }
     
-    private String getClassName(ASTClassBuilder astClassBuilder) {
+    private String getClassName(ClassASTBuilder astClassBuilder) {
         String smaliClassName = astClassBuilder.getClassName();
         return SmaliNameConverter.convertTypeFromSmali(smaliClassName);
     }

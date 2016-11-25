@@ -34,14 +34,14 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
 
-public class ASTClassBuilder {
+public class ClassASTBuilder {
     
     @Nonnull private final ClassDef classDef;
-    private final ASTBuilderFactory astBuilderFactory;
+    private final MethodASTBuilderFactory astBuilderFactory;
 
-    public ASTClassBuilder(
+    public ClassASTBuilder(
             ClassDef classDef, 
-            ASTBuilderFactory astBuilderFactory) {
+            MethodASTBuilderFactory astBuilderFactory) {
         this.classDef = classDef;
         this.astBuilderFactory = astBuilderFactory;
     }
@@ -50,7 +50,7 @@ public class ASTClassBuilder {
         return classDef.getType();
     }
 
-    public Map<String, Node> buildASTs() throws IOException {
+    public Map<String, Node> buildASTClass() throws IOException {
         
         Iterable<? extends Method> virtualMethods, directMethods;
         if (classDef instanceof DexBackedClassDef) {
@@ -82,10 +82,10 @@ public class ASTClassBuilder {
                         method.getName(), method.getParameterTypes(), 
                         method.getReturnType());
                 
-                ASTBuilder methodASTBuilder = astBuilderFactory.createASTBuilder(
+                MethodASTBuilder methodASTBuilder = astBuilderFactory.create(
                         classDef, method, methodImpl);
                 
-                methodASTs.put(signature, methodASTBuilder.buildAST());
+                methodASTs.put(signature, methodASTBuilder.build());
             }
         }
         

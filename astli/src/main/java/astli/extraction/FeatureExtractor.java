@@ -30,8 +30,8 @@ public class FeatureExtractor {
     public Stream<PackageHierarchy> extractPackageHierarchies() throws IOException {
         baksmaliOptions bsOptions = new baksmaliOptions();
         List<? extends ClassDef> classDefs = parseClassesFromFile(options.inputFileName, bsOptions);
-        ASTBuilderFactory astBuilderFactory = new ASTBuilderFactory(bsOptions);
-        PackageHierarchyStreamGenerator psGen = new PackageHierarchyStreamGenerator(options, classDefs, astBuilderFactory);
+        MethodASTBuilderFactory methodASTfactory = new MethodASTBuilderFactory(bsOptions);
+        PackageHierarchyStreamGenerator psGen = new PackageHierarchyStreamGenerator(options, classDefs, methodASTfactory);
         return psGen.generateStream();
     }
     

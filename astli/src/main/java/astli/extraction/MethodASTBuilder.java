@@ -47,7 +47,7 @@ import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 
-public class ASTBuilder {
+public class MethodASTBuilder {
 
     private final MethodDefinition methodDefinition;
     private final boolean noParameterRegisters;
@@ -62,7 +62,7 @@ public class ASTBuilder {
         OPCODE_TO_NODETYPE_MAP.put(Opcode.INVOKE_VIRTUAL, NodeType.VRT);
     }
 
-    public ASTBuilder(MethodDefinition methodDefinition, 
+    public MethodASTBuilder(MethodDefinition methodDefinition, 
             boolean noParameterRegisters, String smaliClassType) {
         this.methodDefinition     = methodDefinition;
         this.noParameterRegisters = noParameterRegisters;
@@ -70,7 +70,7 @@ public class ASTBuilder {
         this.currentPackage       = SmaliNameConverter.extractPackageNameFromClassName(currentClassType);
     }
     
-    public Node buildAST() throws IOException {
+    public Node build() throws IOException {
         
         Node root = new Node(NodeType.MTH);
         
