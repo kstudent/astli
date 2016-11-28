@@ -108,7 +108,7 @@ public class PackageHierarchyGenerator {
 
             Map<String, Fingerprint> prints = new HashMap<>();
 
-            Map<String, Node> methodASTs = astClassBuilder.buildASTClass();
+            Map<String, Node> methodASTs = astClassBuilder.build();
 
             for(String obfsMethodSignature : methodASTs.keySet()) {
                 Node methodAST = methodASTs.get(obfsMethodSignature);

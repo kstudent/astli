@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import astli.pojo.ASTLIOptions;
 import astli.pojo.PackageHierarchy;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jf.baksmali.baksmali;
@@ -29,10 +30,19 @@ public class FeatureExtractor {
     
     public Stream<PackageHierarchy> extractPackageHierarchies() throws IOException {
         baksmaliOptions bsOptions = new baksmaliOptions();
+        
         List<? extends ClassDef> classDefs = parseClassesFromFile(options.inputFileName, bsOptions);
         MethodASTBuilderFactory methodASTfactory = new MethodASTBuilderFactory(bsOptions);
-        PackageHierarchyStreamGenerator psGen = new PackageHierarchyStreamGenerator(options, classDefs, methodASTfactory);
-        return psGen.generateStream();
+        
+        Map<String, String> mapping = new MappingHandler(options).getMapping();
+        
+        PackageHierarchyGenerator phGen = new PackageHierarchyGenerator(
+                new ASTToFingerprintTransformer(), mapping);
+        
+        Stream<ClassASTBuilder> builderStream = classDefs.parallelStream()
+                .map(classDef -> new ClassASTBuilder(classDef, methodASTfactory));
+        
+        return phGen.generatePackageHierarchiesFromClassBuilders(builderStream);
     }
     
     private List<? extends ClassDef> parseClassesFromFile(String fileName, baksmaliOptions bsOptions) throws IOException {

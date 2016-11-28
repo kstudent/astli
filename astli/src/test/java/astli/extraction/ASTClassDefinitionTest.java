@@ -1,9 +1,9 @@
 package astli.extraction;
 
 import astli.pojo.NodeType;
-import astli.extraction.ASTClassBuilder;
-import astli.extraction.ASTBuilderFactory;
-import astli.extraction.ASTBuilder;
+import astli.extraction.ClassASTBuilder;
+import astli.extraction.MethodASTBuilderFactory;
+import astli.extraction.MethodASTBuilder;
 import astli.extraction.Node;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,37 +30,37 @@ public class ASTClassDefinitionTest {
     
     private List<Method> virtualMethods;
     private List<Method> directMethods;
-    private ASTBuilderFactory factory;
-    private ASTBuilder astBuilder;
+    private MethodASTBuilderFactory factory;
+    private MethodASTBuilder astBuilder;
     
     private static final Logger LOGGER = LogManager.getLogger(ASTClassDefinitionTest.class);
     
     @Before
     public void setUp() throws IOException {
-        factory    = mock(ASTBuilderFactory.class);
-        astBuilder = mock(ASTBuilder.class);
+        factory    = mock(MethodASTBuilderFactory.class);
+        astBuilder = mock(MethodASTBuilder.class);
         
         virtualMethods = new ArrayList<Method>();
         directMethods  = new ArrayList<Method>();
         
-        when(factory.createASTBuilder(
+        when(factory.create(
                 any(ClassDef.class), 
                 any(Method.class), 
                 any(MethodImplementation.class)
             )).thenReturn(astBuilder);
-        when(astBuilder.buildAST()).thenReturn(new Node(NodeType.MTH));
+        when(astBuilder.build()).thenReturn(new Node(NodeType.MTH));
     }
         
     @Test
     public void testBuildClassASTs() throws IOException {
         ClassDef classDef = createClassDef();
         
-        ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, factory);
+        ClassASTBuilder astClassBuilder = new ClassASTBuilder(classDef, factory);
         
         addMethod(true,  "doVirtualSuchAndSuch", "I",                "I", "Z");
         addMethod(false, "doDirectSuchAndSuch",  "Ltld/pckg/Class;", "I", "Ltld/pckg/AnotherClass;");
         
-        Map<String, Node> asts = astClassBuilder.buildASTs();
+        Map<String, Node> asts = astClassBuilder.build();
         
         for(String signature : asts.keySet()) {
             LOGGER.info("{} : {}", signature, asts.get(signature));
@@ -80,11 +80,11 @@ public class ASTClassDefinitionTest {
     public void testBuildClassASTsWithDexBackendClassDef() throws IOException {
         ClassDef classDef = createClassDefWithDexBackend();
         
-        ASTClassBuilder astClassBuilder = new ASTClassBuilder(classDef, factory);
+        ClassASTBuilder astClassBuilder = new ClassASTBuilder(classDef, factory);
         addMethod(true,  "doVirtualSuchAndSuch", "I",                "I", "Z");
         addMethod(false, "doDirectSuchAndSuch",  "Ltld/pckg/Class;", "I", "Ltld/pckg/AnotherClass;");
         
-        Map<String, Node> asts = astClassBuilder.buildASTs();
+        Map<String, Node> asts = astClassBuilder.build();
         
         for(String signature : asts.keySet()) {
             LOGGER.info("{} : {}", signature, asts.get(signature));

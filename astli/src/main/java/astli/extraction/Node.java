@@ -4,11 +4,8 @@ import astli.pojo.NodeType;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnegative;
-import javax.annotation.Nullable;
 
 public class Node {
-    
-    @Nullable private Node parent;
     
     private final List<Node> children;
     private final NodeType type;
@@ -17,7 +14,6 @@ public class Node {
     private Node(NodeType type, String signature) {
         this.type = type;
         this.children = new LinkedList<>();
-        this.parent = null;
         this.signature = signature;
     }
     
@@ -41,14 +37,8 @@ public class Node {
         return children;
     }
 
-    @Nullable
-    public Node getParent() {
-        return parent;
-    }
-
     public void addChild(Node child) {
         children.add(child);
-        child.parent = this;
     }
 
     @Override

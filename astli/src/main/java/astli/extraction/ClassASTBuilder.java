@@ -50,7 +50,7 @@ public class ClassASTBuilder {
         return classDef.getType();
     }
 
-    public Map<String, Node> buildASTClass() throws IOException {
+    public Map<String, Node> build() throws IOException {
         
         Iterable<? extends Method> virtualMethods, directMethods;
         if (classDef instanceof DexBackedClassDef) {

@@ -1,7 +1,7 @@
 package astli.extraction;
 
 import astli.pojo.NodeType;
-import astli.extraction.ASTBuilder;
+import astli.extraction.MethodASTBuilder;
 import astli.extraction.Node;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
@@ -43,13 +43,12 @@ public class ASTBuilderTest {
         int methodRegisterCount = 0;
         String classType = "Lorg/pckg/clzz;";
         
-        ASTBuilder astBuilder = createASTBuilder(accessFlags, 
+        MethodASTBuilder astBuilder = createASTBuilder(accessFlags, 
                 methodRegisterCount, noParameterRegister, classType);
         
-        Node method = astBuilder.buildAST();
+        Node method = astBuilder.build();
         
         assert(method.getType().equals(NodeType.MTH));
-        assert(method.getParent() == null);
     }
     
     @Test
@@ -134,10 +133,10 @@ public class ASTBuilderTest {
         addParameter(internalType);
         addParameter(externalType);
         
-        ASTBuilder methodDefinition = createASTBuilder(accessFlags, 
+        MethodASTBuilder methodDefinition = createASTBuilder(accessFlags, 
                 localRegisterCount, noParameterRegister, currentClassType, returnType);
         
-        Node method = methodDefinition.buildAST();
+        Node method = methodDefinition.build();
 
         assert(method.getType().equals(NodeType.MTH));
         assert(method.getChildren().size() == 1);
@@ -149,14 +148,14 @@ public class ASTBuilderTest {
         
     } 
 
-    private ASTBuilder createASTBuilder(int accessFlags, 
+    private MethodASTBuilder createASTBuilder(int accessFlags, 
             int localRegisterCount, boolean noParameterRegister, 
             String classType) {
         return createASTBuilder(accessFlags, localRegisterCount, 
                 noParameterRegister, classType, "V");
     }
     
-    private ASTBuilder createASTBuilder(int accessFlags, 
+    private MethodASTBuilder createASTBuilder(int accessFlags, 
             int localRegisterCount, boolean noParameterRegister, 
             String classType, String returnType) {        
         
@@ -179,7 +178,7 @@ public class ASTBuilderTest {
         when(methodDefinitionImpl.getMethodParameters())
                 .thenAnswer(new CreateImmutableCopyOfMethodParameters());
         
-        return new ASTBuilder(methodDefinitionImpl, noParameterRegister, classType);
+        return new MethodASTBuilder(methodDefinitionImpl, noParameterRegister, classType);
     }
     
     private void addInstruction(Opcode opcode, int... registerValues) {

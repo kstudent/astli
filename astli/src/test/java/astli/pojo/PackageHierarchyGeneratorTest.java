@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import astli.extraction.ASTClassBuilder;
+import astli.extraction.ClassASTBuilder;
 import astli.extraction.ASTToFingerprintTransformer;
 import astli.extraction.Node;
 import org.jf.baksmali.baksmaliOptions;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.mock;
  */
 public class PackageHierarchyGeneratorTest {
 
-    List<ASTClassBuilder> astClassBuilders;
+    List<ClassASTBuilder> astClassBuilders;
     ASTToFingerprintTransformer ast2fpt;
     baksmaliOptions options; 
     
@@ -137,8 +137,8 @@ public class PackageHierarchyGeneratorTest {
     
     //test if empty methdos stay away!
 
-    private ASTClassBuilder prepareClassDefinition(int i, String packageName, String className, String returnValueType) throws IOException {
-        ASTClassBuilder astC = mock(ASTClassBuilder.class);
+    private ClassASTBuilder prepareClassDefinition(int i, String packageName, String className, String returnValueType) throws IOException {
+        ClassASTBuilder astC = mock(ClassASTBuilder.class);
         
         when(astC.getClassName()).thenReturn("L" + packageName + "." + className + i + ";");
 
@@ -146,7 +146,7 @@ public class PackageHierarchyGeneratorTest {
         Map<String, Node> methodsofClass = new HashMap<>();
         methodsofClass.put("method" + i + "():" + returnValueType, methodNode);
 
-        when(astC.buildASTs()).thenReturn(methodsofClass);
+        when(astC.build()).thenReturn(methodsofClass);
 
         Fingerprint methodFingerprint = perpareMethodFingerprint();
         when(ast2fpt.createFingerprint(methodNode)).thenReturn(methodFingerprint);
