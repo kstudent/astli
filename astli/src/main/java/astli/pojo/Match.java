@@ -10,16 +10,10 @@ public class Match {
     
     private final List<Match.Item> items;
     private final PackageHierarchy apkH;
-    private final boolean packageInDB;
 
-    public Match(List<Match.Item> items, PackageHierarchy apkH, boolean packageInDB) {
+    public Match(List<Match.Item> items, PackageHierarchy apkH) {
         this.items = items;
         this.apkH = apkH;
-        this.packageInDB = packageInDB;
-    }
-
-    public boolean isPackageInDB() {
-        return packageInDB;
     }
 
     public List<Match.Item> getItems() {

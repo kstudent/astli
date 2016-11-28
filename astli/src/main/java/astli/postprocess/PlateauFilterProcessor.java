@@ -40,7 +40,7 @@ public class PlateauFilterProcessor implements PostProcessor {
            plateau = new ArrayList<>();
         }
         
-        Match filteredResult = new Match(plateau, result.getApkH(), result.isPackageInDB());
+        Match filteredResult = new Match(plateau, result.getApkH());
         
         actualProcessor.process(filteredResult);
     }

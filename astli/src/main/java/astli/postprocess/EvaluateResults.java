@@ -20,11 +20,11 @@ public class EvaluateResults implements PostProcessor {
     
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public EvaluateResults(ASTLIOptions options, Date before) {
-        this.classifier = new ResultClassifier();
-        this.counter = new StatsCounter();
+    public EvaluateResults(ASTLIOptions options, ResultClassifier classifier , Date before) {
+        this.classifier = classifier;
         this.options = options;
         this.before = before;
+        this.counter = new StatsCounter();
     }
     
     @Override

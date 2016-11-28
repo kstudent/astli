@@ -6,7 +6,6 @@ import astli.score.HungarianAlgorithm;
 import astli.find.ParticularCandidateFinder;
 import astli.find.CandidateFinder;
 import astli.main.AndroidLibIDAlgorithm;
-import astli.db.FingerprintService;
 import java.sql.SQLException;
 import java.util.stream.Stream;
 import astli.pojo.ASTLIOptions;
@@ -24,44 +23,36 @@ import org.apache.logging.log4j.Logger;
  */
 public class MatchAlgorithm implements AndroidLibIDAlgorithm {
 
-    private final ASTLIOptions astliOptions;
     private final Stream<PackageHierarchy> packages;
     
     private static final Logger LOGGER = LogManager.getLogger();
-    private final PostProcessor processor;
+    private final ASTLIOptions options;
 
     public MatchAlgorithm(Stream<PackageHierarchy> packages, ASTLIOptions astliOptions) {
-        this.astliOptions = astliOptions;
         this.packages = packages;
-        this.processor = new PostProcessorFactory().createProcessor(astliOptions);
+        this.options = astliOptions;
     }
     
     @Override
     public void run() {
         try {
-            MatchingProcess process = setupProcess(); 
+            EntityService service = EntityServiceFactory.createService();
+            CandidateFinder finder = new ParticularCandidateFinder(service);
+            SimilarityMatcher matcher = new SimilarityMatcher(new HungarianAlgorithm());
+            PostProcessor processor = new PostProcessorFactory().createPrintResultsProcessor();
+            MatchingProcess process = new MatchingProcess(matcher, finder);
+            
+            new SetupLogger(service, options).logSetup();
             
             processor.init();
-            
+
             packages.map(hierarchy  -> process.apply(hierarchy))
                     .forEach((Match match) -> processor.process(match));
-            
+
             processor.done();
             
         } catch (SQLException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
-    }
-
-    private MatchingProcess setupProcess() throws SQLException {
-        
-        EntityService service = EntityServiceFactory.createService();
-        FingerprintService fpService = new FingerprintService(service);
-        CandidateFinder finder = new ParticularCandidateFinder(fpService);
-        SimilarityMatcher matcher = new SimilarityMatcher(new HungarianAlgorithm());
-        
-        new SetupLogger(service, astliOptions).logSetup();
-        
-        return new MatchingProcess(fpService, matcher, finder);
     }
 }

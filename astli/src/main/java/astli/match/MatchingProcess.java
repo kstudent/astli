@@ -12,7 +12,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import astli.pojo.PackageHierarchy;
-import astli.db.FingerprintService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import astli.db.Package;
@@ -27,18 +26,15 @@ public class MatchingProcess implements Function<PackageHierarchy, Match> {
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
     private final Map<Package, PackageHierarchy> hierarchyCache;
 
-    private final FingerprintService fpService;
     private final PackageMatcher matcher;
     private final CandidateFinder finder;
     
     /**
      *
-     * @param fpService
      * @param matcher
      * @param finder
      */
-    public MatchingProcess(FingerprintService fpService, PackageMatcher matcher, CandidateFinder finder) {
-        this.fpService = fpService;
+    public MatchingProcess(PackageMatcher matcher, CandidateFinder finder) {
         this.matcher = matcher;
         this.hierarchyCache = new HashMap<>();
         this.finder = finder;
@@ -63,13 +59,13 @@ public class MatchingProcess implements Function<PackageHierarchy, Match> {
                 .sorted((that, other) -> Double.compare(other.getScore(), that.getScore()))
                 .collect(Collectors.toList());
         
-        return new Match(results, apkH, fpService.isPackageInDB(apkH.getName()));
+        return new Match(results, apkH);
         
     }
     
     private synchronized PackageHierarchy getPackageHierarchyCandidate(Package pckg) {
         if (!hierarchyCache.containsKey(pckg)) {
-            PackageHierarchy hierarchy = fpService.createHierarchyFromPackage(pckg);
+            PackageHierarchy hierarchy = new PackageHierarchy(pckg);
             hierarchyCache.put(pckg, hierarchy);
         }
         

@@ -1,10 +1,12 @@
 package astli.postprocess;
 
+import astli.db.EntityService;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.stream.IntStream;
 import astli.pojo.Match;
+import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +18,11 @@ public class ResultClassifier {
     
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
     private static final Logger LOGGER = LogManager.getLogger();
+    private final EntityService service;
+
+    public ResultClassifier(EntityService service) {
+        this.service = service;
+    }
     
     public ClassificationTupel classify(Match match) {
         
@@ -42,7 +49,12 @@ public class ResultClassifier {
         
         boolean isOnTop = matchInList && thereIsNoBetterMatchBeforePosition(items, position, score);
         
-        boolean packageInDB     = match.isPackageInDB();
+        boolean packageInDB = false;
+        try {
+            packageInDB = !service.findPackagesByName(apkName).isEmpty();
+        } catch (SQLException ex) {
+            LOGGER.warn(ex.getMessage(), ex);
+        }
         
         Classification clss = isOnTop ? 
                        ( isUniqueLeader ?   Classification.TPU : Classification.TPN )

@@ -2,14 +2,10 @@ package astli.match;
 
 import astli.postprocess.ResultClassifier;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import astli.pojo.Fingerprint;
 import astli.pojo.PackageHierarchy;
 import astli.db.FingerprintEntity;
-import astli.db.FingerprintService;
 import astli.pojo.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,13 +17,11 @@ import org.mockito.Mockito;
  */
 public class HybridStrategyTest {
 
-    private FingerprintService fpService;
     private PackageHierarchy hierarchy; 
     private ResultClassifier eval;
     
     @Before 
     public void setUp() {
-        fpService = Mockito.mock(FingerprintService.class);
         eval = Mockito.mock(ResultClassifier.class);
         hierarchy = new PackageHierarchy("pckg");
         

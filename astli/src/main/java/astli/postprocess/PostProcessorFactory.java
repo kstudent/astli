@@ -1,6 +1,8 @@
 package astli.postprocess;
 
+import astli.db.EntityService;
 import astli.pojo.ASTLIOptions;
+import java.util.Date;
 
 /**
  *
@@ -8,12 +10,12 @@ import astli.pojo.ASTLIOptions;
  */
 public class PostProcessorFactory {
 
-    public PostProcessor createProcessor(ASTLIOptions options) {
-        
-        //todo... something like if production else evaluation
-        // return new EvaluationModeProcessor(options, new Date());
+    public PostProcessor createPrintResultsProcessor() {
         return new PlateauFilterProcessor(new PrintResultTable());
-
+    }
+    
+    public PostProcessor createEvaluateResultsProcessor(ASTLIOptions options, EntityService service) {
+        return new EvaluateResults(options, new ResultClassifier(service), new Date());
     }
     
 }
