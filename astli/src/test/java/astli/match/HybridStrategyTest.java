@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import astli.pojo.Fingerprint;
 import astli.pojo.PackageHierarchy;
-import astli.db.FingerprintEntity;
 import astli.pojo.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import astli.db.Method;
 
 /**
  *
@@ -53,7 +53,7 @@ public class HybridStrategyTest {
 
     private Fingerprint createPrint(String signature, int... values) {
         
-        FingerprintEntity mock = Mockito.mock(FingerprintEntity.class);
+        Method mock = Mockito.mock(Method.class);
         Mockito.when(mock.getSignature()).thenReturn(signature);
         Mockito.when(mock.getVector()).thenReturn(ArrayUtils.truncateIntToLEByteArray(values));
         Mockito.when(mock.getName()).thenReturn("");

@@ -1,7 +1,6 @@
 package astli.db;
 
 import astli.db.Clazz;
-import astli.db.FingerprintEntity;
 import astli.db.Library;
 import astli.db.EntityService;
 import astli.db.Package;
@@ -18,6 +17,7 @@ import astli.pojo.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import astli.db.Method;
 
 /**
  *
@@ -48,18 +48,18 @@ public class EntityServiceMethodTest {
         String methodName = "<init>():void";
         String signature = "V:V";
         
-        FingerprintEntity methodEntity = service.saveMethod(
+        Method methodEntity = service.saveMethod(
             ArrayUtils.short2LEByte(new short[]{7, 1, 100, 12 , 0}),
             methodName,
             signature,
             clazzEntity
         );
         
-        FingerprintEntity[] foundMethods = em.find(FingerprintEntity.class, "ID = ?", methodEntity.getID());
+        Method[] foundMethods = em.find(Method.class, "ID = ?", methodEntity.getID());
         
         assert(foundMethods.length == 1);
         
-        FingerprintEntity foundMethod = foundMethods[0];
+        Method foundMethod = foundMethods[0];
         
         assert(foundMethod.equals(methodEntity));
         assert(foundMethod.getClazz().equals(clazzEntity));
@@ -77,8 +77,8 @@ public class EntityServiceMethodTest {
         assert(service.countMethods() == 3);
     }
 
-    private FingerprintEntity createMethod(String name, int... values) throws SQLException {
-        FingerprintEntity entity = em.create(FingerprintEntity.class);
+    private Method createMethod(String name, int... values) throws SQLException {
+        Method entity = em.create(Method.class);
         entity.setVector(ArrayUtils.truncateIntToLEByteArray(values));
         entity.setSignature("");
         entity.setName(name);
@@ -92,7 +92,7 @@ public class EntityServiceMethodTest {
         @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(FingerprintEntity.class, Clazz.class, Package.class, Library.class);
+            entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
         }
     }
 }

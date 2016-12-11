@@ -11,7 +11,7 @@ import net.java.ao.schema.StringLength;
  */
 
 @Preload
-public interface FingerprintEntity extends Entity {
+public interface Method extends Entity {
    
     public Clazz getClazz();
     public void setClazz(Clazz clazz);

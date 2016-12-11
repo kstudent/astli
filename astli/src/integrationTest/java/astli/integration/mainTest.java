@@ -15,9 +15,9 @@ import astli.db.Clazz;
 import astli.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import astli.db.FingerprintEntity;
 import astli.match.MatchAlgorithm;
 import astli.match.MatchingProcess;
+import astli.db.Method;
 
 /**
  *
@@ -93,7 +93,7 @@ public class mainTest {
         for (Package pckg : packages) {
             for (Clazz clazz : pckg.getClazzes()) {
                 LOGGER.info("* " + clazz.getName());
-                for (FingerprintEntity m : clazz.getMethods()) {
+                for (Method m : clazz.getMethods()) {
                     LOGGER.info("** " + m.getName());
                     Fingerprint p = new Fingerprint(m);
                     LOGGER.info(p);
@@ -202,7 +202,7 @@ public class mainTest {
         for (int i = 0; i < upper_bound; i++) {
             Clazz clazz = classes.get(i);
             LOGGER.info(clazz.getName());
-            for (FingerprintEntity m : clazz.getMethods()) {
+            for (Method m : clazz.getMethods()) {
                 Fingerprint p = new Fingerprint(m);
                 LOGGER.info(m.getSignature());
                 LOGGER.info(p);
@@ -218,7 +218,7 @@ public class mainTest {
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         
-        service.findFingerprints((FingerprintEntity t) -> {
+        service.findFingerprints((Method t) -> {
             Fingerprint p = new Fingerprint(t);
             synchronized(builder) {
                 builder.append(p.getLength()).append(",");

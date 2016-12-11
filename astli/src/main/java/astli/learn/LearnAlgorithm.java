@@ -46,7 +46,7 @@ public class LearnAlgorithm implements AndroidLibIDAlgorithm {
         }
     }
     
-    public void saveHierarchy(PackageHierarchy hierarchy) {
+    private void saveHierarchy(PackageHierarchy hierarchy) {
         try {
             String packageName = hierarchy.getName();
             

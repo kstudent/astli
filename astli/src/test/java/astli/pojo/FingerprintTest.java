@@ -1,11 +1,11 @@
 package astli.pojo;
 
 import astli.pojo.Fingerprint;
-import astli.db.FingerprintEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.mockito.Mockito;
+import astli.db.Method;
 
 /**
  *
@@ -78,7 +78,7 @@ public class FingerprintTest {
     }
     
     private Fingerprint createFingerprint(int... values) {
-        FingerprintEntity e = Mockito.mock(FingerprintEntity.class);
+        Method e = Mockito.mock(Method.class);
         Mockito.when(e.getName()).thenReturn("");
         Mockito.when(e.getSignature()).thenReturn("");
         Mockito.when(e.getVector()).thenReturn(ArrayUtils.truncateIntToLEByteArray(values));

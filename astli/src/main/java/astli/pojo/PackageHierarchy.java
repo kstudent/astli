@@ -1,8 +1,8 @@
 package astli.pojo;
 
+import astli.db.Method;
 import astli.db.Clazz;
 import astli.db.Package;
-import astli.db.FingerprintEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +34,7 @@ public class PackageHierarchy {
         
         for(Clazz clazz : pckg.getClazzes()) {
             Map<String, Fingerprint> methods = new HashMap<>();
-            for(FingerprintEntity method : clazz.getMethods()) {
+            for(Method method : clazz.getMethods()) {
                 methods.put(method.getName(), new Fingerprint(method));
             }
             addMethods(clazz.getName(), methods);

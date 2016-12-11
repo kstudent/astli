@@ -1,7 +1,6 @@
 package astli.db;
 
 import astli.db.Clazz;
-import astli.db.FingerprintEntity;
 import astli.db.Library;
 import astli.db.EntityService;
 import astli.db.Package;
@@ -15,6 +14,7 @@ import net.java.ao.test.jdbc.Jdbc;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import astli.db.Method;
 
 /**
  *
@@ -170,7 +170,7 @@ public class EntityServiceClassTest {
         @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(FingerprintEntity.class, Clazz.class, Package.class, Library.class);
+            entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
         }
     }
 }

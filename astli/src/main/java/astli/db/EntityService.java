@@ -26,13 +26,13 @@ public class EntityService {
     }
     
     public void truncateTables() throws SQLException {
-        em.deleteWithSQL(FingerprintEntity.class,  "1 = 1");
+        em.deleteWithSQL(Method.class,  "1 = 1");
         em.deleteWithSQL(Clazz.class,   "1 = 1");
         em.deleteWithSQL(Package.class, "1 = 1");
         em.deleteWithSQL(Library.class, "1 = 1");
     }
     
-    public FingerprintEntity saveMethod(byte[] vector, String methodName, String signature, Clazz clazz) 
+    public Method saveMethod(byte[] vector, String methodName, String signature, Clazz clazz) 
             throws SQLException
     {
         
@@ -41,7 +41,7 @@ public class EntityService {
         DBParam claP = new DBParam("clazzID", clazz);
         DBParam vecP = new DBParam("vector", vector);
         
-        FingerprintEntity entity = em.create(FingerprintEntity.class, vecP, sigP, metP, claP);
+        Method entity = em.create(Method.class, vecP, sigP, metP, claP);
         return entity;
     }
     
@@ -94,7 +94,7 @@ public class EntityService {
     }    
 
     public int countMethods() throws SQLException {
-        return em.count(FingerprintEntity.class); 
+        return em.count(Method.class); 
     }
     
     public List<Clazz> findClasses() throws SQLException {
@@ -124,7 +124,7 @@ public class EntityService {
         
         if (packageEntities.length > 1) {
             throw new SQLWarning("Multiple Packages (" + packageEntities.length + ") with the same Package ("
-                    + packageName + ")/ Library Identifier (" + library.getName() + ") found. Database inconsitent?");
+                    + packageName + ")/ Library Identifier (" + library.getName() + ") found. Database inconsistent?");
         }
         
         if(packageEntities.length == 0) {
@@ -162,12 +162,12 @@ public class EntityService {
         return Arrays.asList(em.find(Package.class, "NAME = ?", name ));
     }
 
-    public List<FingerprintEntity> findMethodsBySignature(String signature) throws SQLException {
-        return Arrays.asList(em.find(FingerprintEntity.class, "SIGNATURE = ?", signature));
+    public List<Method> findMethodsBySignature(String signature) throws SQLException {
+        return Arrays.asList(em.find(Method.class, "SIGNATURE = ?", signature));
     }
     
-    public List<FingerprintEntity> findMethodsBySignatureAndVector(String signature, byte[] vector) throws SQLException {
-        return Arrays.asList(em.find(FingerprintEntity.class, "SIGNATURE = ? AND VECTOR = ?", signature, vector));
+    public List<Method> findMethodsBySignatureAndVector(String signature, byte[] vector) throws SQLException {
+        return Arrays.asList(em.find(Method.class, "SIGNATURE = ? AND VECTOR = ?", signature, vector));
     }
     
     public List<Package> findPackageCandidateBySignatureAndVector(String signature, byte[] vector) throws SQLException {
@@ -180,11 +180,11 @@ public class EntityService {
                 + ") ", signature, vector)));
     }
     
-    public void findFingerprints(Consumer<FingerprintEntity> consumer) throws SQLException {
+    public void findFingerprints(Consumer<Method> consumer) throws SQLException {
           
         em.stream(
-                FingerprintEntity.class, 
-                (EntityStreamCallback<FingerprintEntity, Integer>) (FingerprintEntity p) -> {
+                Method.class, 
+                (EntityStreamCallback<Method, Integer>) (Method p) -> {
                    consumer.accept(p);
                 }
         );
