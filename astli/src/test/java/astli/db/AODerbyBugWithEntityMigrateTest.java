@@ -1,7 +1,5 @@
 package astli.db;
 
-import astli.db.Clazz;
-import astli.db.Library;
 import net.java.ao.EntityManager;
 import net.java.ao.schema.CamelCaseFieldNameConverter;
 import net.java.ao.schema.FieldNameConverter;
@@ -15,15 +13,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- *
+ * Proves that combination of active objects and apache derby is buggy. 
+ * 
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(EntityMigrateTest.MyDatabaseUpdater.class)
-@Jdbc(Hsql.class)  
+@Data(AODerbyBugWithEntityMigrateTest.MyDatabaseUpdater.class)
+@Jdbc(Hsql.class)
+//@Jdbc(DerbyEmbedded.class)
 @NameConverters(field = CamelCaseFieldNameConverter.class)
-public class EntityMigrateTest {
+public class AODerbyBugWithEntityMigrateTest {
     
     private EntityManager entityManager;
     

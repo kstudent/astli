@@ -1,9 +1,5 @@
 package astli.db;
 
-import astli.db.Clazz;
-import astli.db.Library;
-import astli.db.EntityService;
-import astli.db.Package;
 import net.java.ao.EntityManager;
 import net.java.ao.schema.CamelCaseFieldNameConverter;
 import net.java.ao.test.converters.NameConverters;
@@ -14,7 +10,6 @@ import net.java.ao.test.jdbc.Jdbc;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import astli.db.Method;
 
 /**
  *

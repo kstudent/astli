@@ -1,9 +1,5 @@
 package astli.db;
 
-import astli.db.Clazz;
-import astli.db.Library;
-import astli.db.EntityService;
-import astli.db.Package;
 import java.sql.SQLException;
 import java.util.List;
 import net.java.ao.EntityManager;
@@ -36,7 +32,6 @@ public class EntityServicePackageTest {
     private Library lib2;
     private Package package1;
     private Package package2;
-    private byte[] zeroBytes;
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();

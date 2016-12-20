@@ -1,7 +1,5 @@
 package astli.db;
 
-import astli.db.Library;
-import astli.db.EntityService;
 import java.sql.SQLException;
 import java.util.List;
 import net.java.ao.EntityManager;
