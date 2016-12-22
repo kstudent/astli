@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
  */
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(EntityServiceMethodTest.FingerprintServiceTestDatabaseUpdater.class)
+@Data(EntityServiceMethodTest.MyDbUpdater.class)
 @NameConverters(field = CamelCaseFieldNameConverter.class)
 @Jdbc(Hsql.class)
 public class EntityServiceMethodTest {
@@ -81,7 +81,7 @@ public class EntityServiceMethodTest {
         return entity;
     }
         
-    public static final class FingerprintServiceTestDatabaseUpdater implements DatabaseUpdater
+    public static final class MyDbUpdater implements DatabaseUpdater
     {
         @Override
         @SuppressWarnings("unchecked")

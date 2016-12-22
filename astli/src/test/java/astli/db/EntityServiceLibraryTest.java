@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
  */
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(EntityServiceLibraryTest.MyDatabaseUpdater.class)
+@Data(EntityServiceLibraryTest.MyDbUpdater.class)
 @NameConverters(field = CamelCaseFieldNameConverter.class)
 @Jdbc(Hsql.class)
 public class EntityServiceLibraryTest {
@@ -99,7 +99,7 @@ public class EntityServiceLibraryTest {
         assert(foundLibs.contains(lib2));
     }
     
-    public static final class MyDatabaseUpdater implements DatabaseUpdater
+    public static final class MyDbUpdater implements DatabaseUpdater
     {
         @Override
         @SuppressWarnings("unchecked")

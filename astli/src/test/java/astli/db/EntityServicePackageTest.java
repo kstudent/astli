@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
  */
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(EntityServicePackageTest.MyDatabaseUpdater.class)
+@Data(EntityServicePackageTest.MyDbUpdater.class)
 @NameConverters(field = CamelCaseFieldNameConverter.class)
 @Jdbc(Hsql.class)
 public class EntityServicePackageTest {
@@ -168,7 +168,7 @@ public class EntityServicePackageTest {
         assert(foundPackages.contains(package2));
     }
     
-    public static final class MyDatabaseUpdater implements DatabaseUpdater
+    public static final class MyDbUpdater implements DatabaseUpdater
     {
         @Override
         @SuppressWarnings("unchecked")

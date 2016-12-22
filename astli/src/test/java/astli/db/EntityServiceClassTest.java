@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
  */
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(EntityServiceClassTest.FingerprintServiceTestDatabaseUpdater.class)
+@Data(EntityServiceClassTest.MyDbUpdater.class)
 @NameConverters(field = CamelCaseFieldNameConverter.class)
 @Jdbc(Hsql.class)
 public class EntityServiceClassTest {
@@ -159,7 +159,7 @@ public class EntityServiceClassTest {
         assert(em.count(Clazz.class) == 0);
     }
     
-    public static final class FingerprintServiceTestDatabaseUpdater implements DatabaseUpdater
+    public static final class MyDbUpdater implements DatabaseUpdater
     {
         @Override
         @SuppressWarnings("unchecked")
