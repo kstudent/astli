@@ -51,7 +51,7 @@ public class ResultClassifier {
         
         boolean packageInDB = false;
         try {
-            packageInDB = !service.findPackagesByName(apkName).isEmpty();
+            packageInDB = service.isPackageNameInDB(apkName);
         } catch (SQLException ex) {
             LOGGER.warn(ex.getMessage(), ex);
         }

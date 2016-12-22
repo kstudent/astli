@@ -161,6 +161,10 @@ public class EntityService {
     public List<Package> findPackagesByName(String name) throws SQLException {
         return Arrays.asList(em.find(Package.class, "NAME = ?", name ));
     }
+    
+    public boolean isPackageNameInDB(String name) throws SQLException {
+        return (em.find(Package.class, "NAME = ?", name).length > 0);
+    }
 
     public List<Method> findMethodsBySignature(String signature) throws SQLException {
         return Arrays.asList(em.find(Method.class, "SIGNATURE = ?", signature));

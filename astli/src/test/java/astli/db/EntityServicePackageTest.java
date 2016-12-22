@@ -168,6 +168,12 @@ public class EntityServicePackageTest {
         assert(foundPackages.contains(package2));
     }
     
+    @Test
+    public void testIsPackageInDB() throws SQLException {
+        assert(service.isPackageNameInDB("package1"));
+        assert(!service.isPackageNameInDB("packageX"));
+    }
+    
     public static final class MyDbUpdater implements DatabaseUpdater
     {
         @Override
