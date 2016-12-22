@@ -1,39 +1,31 @@
 package astli.extraction;
 
 import astli.pojo.NodeType;
-import astli.extraction.ClassASTBuilder;
-import astli.extraction.MethodASTBuilderFactory;
-import astli.extraction.MethodASTBuilder;
-import astli.extraction.Node;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MethodImplementation;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ASTClassDefinitionTest {
+public class ClassASTBuilderTest {
     
     private List<Method> virtualMethods;
     private List<Method> directMethods;
     private MethodASTBuilderFactory factory;
     private MethodASTBuilder astBuilder;
-    
-    private static final Logger LOGGER = LogManager.getLogger(ASTClassDefinitionTest.class);
     
     @Before
     public void setUp() throws IOException {
@@ -55,17 +47,13 @@ public class ASTClassDefinitionTest {
     public void testBuildClassASTs() throws IOException {
         ClassDef classDef = createClassDef();
         
-        ClassASTBuilder astClassBuilder = new ClassASTBuilder(classDef, factory);
+        ClassASTBuilder builder = new ClassASTBuilder(classDef, factory);
         
         addMethod(true,  "doVirtualSuchAndSuch", "I",                "I", "Z");
         addMethod(false, "doDirectSuchAndSuch",  "Ltld/pckg/Class;", "I", "Ltld/pckg/AnotherClass;");
         
-        Map<String, Node> asts = astClassBuilder.build();
+        Map<String, Node> asts = builder.build();
         
-        for(String signature : asts.keySet()) {
-            LOGGER.info("{} : {}", signature, asts.get(signature));
-        }
-                
         Node virtualMethod = asts.get("doVirtualSuchAndSuch(int,boolean):int");
         Node directMethod  = asts.get("doDirectSuchAndSuch(int,tld.pckg:AnotherClass):tld.pckg:Class");
         
@@ -80,16 +68,12 @@ public class ASTClassDefinitionTest {
     public void testBuildClassASTsWithDexBackendClassDef() throws IOException {
         ClassDef classDef = createClassDefWithDexBackend();
         
-        ClassASTBuilder astClassBuilder = new ClassASTBuilder(classDef, factory);
+        ClassASTBuilder builder = new ClassASTBuilder(classDef, factory);
         addMethod(true,  "doVirtualSuchAndSuch", "I",                "I", "Z");
         addMethod(false, "doDirectSuchAndSuch",  "Ltld/pckg/Class;", "I", "Ltld/pckg/AnotherClass;");
         
-        Map<String, Node> asts = astClassBuilder.build();
+        Map<String, Node> asts = builder.build();
         
-        for(String signature : asts.keySet()) {
-            LOGGER.info("{} : {}", signature, asts.get(signature));
-        }
-                
         Node virtualMethod = asts.get("doVirtualSuchAndSuch(int,boolean):int");
         Node directMethod  = asts.get("doDirectSuchAndSuch(int,tld.pckg:AnotherClass):tld.pckg:Class");
         

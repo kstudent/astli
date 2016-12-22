@@ -126,11 +126,11 @@ public class Fingerprint {
     }
     
     /* my test only section */
-    short getFeatureValue(int index) {
+    public short getFeatureValue(int index) {
         return this.vector.get(index);
     }
     
-    short getFeatureValue(NodeType... feature) {
+    public short getFeatureValue(NodeType... feature) {
         int index = FEATURES.indexOf(Arrays.asList(feature));
         if(index == -1) {
             throw new IllegalArgumentException("Dimension not found");
@@ -138,7 +138,7 @@ public class Fingerprint {
         return vector.get(index);
     }
     
-    void incrementFeatureBy(short value, int index) {
+    public void incrementFeatureBy(short value, int index) {
         
         if(index >= FEATURES.size() || index < 0) {
             throw new IndexOutOfBoundsException("Dimension not found");
@@ -147,7 +147,7 @@ public class Fingerprint {
         vector.set(index, (short) (vector.get(index) + value));
     }
     
-    void incrementFeature(int index) {
+    public void incrementFeature(int index) {
         Fingerprint.this.incrementFeatureBy((short)1, index);
     }
 

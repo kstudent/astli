@@ -1,6 +1,5 @@
-package astli.match;
+package astli.extraction;
 
-import astli.extraction.ProGuardMappingFileParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -11,7 +10,7 @@ import org.junit.Test;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MappingFileParserTest {
+public class ProguardMappingFileParserTest {
     
     private static final String CLASS_MAPPING_STRING  = 
         "org.spongycastle.jcajce.provider.config.ConfigurableProvider -> a.a.a.a.a.a:\n" +
