@@ -138,7 +138,7 @@ public class Fingerprint {
         return vector.get(index);
     }
     
-    public void incrementFeatureBy(short value, int index) {
+    public void incrementFeatureBy(int index, short value) {
         
         if(index >= FEATURES.size() || index < 0) {
             throw new IndexOutOfBoundsException("Dimension not found");
@@ -148,7 +148,7 @@ public class Fingerprint {
     }
     
     public void incrementFeature(int index) {
-        Fingerprint.this.incrementFeatureBy((short)1, index);
+        Fingerprint.this.incrementFeatureBy(index, (short)1);
     }
 
 }

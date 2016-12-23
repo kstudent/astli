@@ -14,21 +14,24 @@ import java.sql.SQLException;
 public class ParticularCandidateFinder implements CandidateFinder {
 
     private final EntityService service;
-    private final int minimalNeedleEntropy = 12;
+    private final int minimalNeedleEntropy;
+    private final int needleAmount;
 
-    public ParticularCandidateFinder(EntityService service) {
+    public ParticularCandidateFinder(EntityService service, int minimalNeedleEntropy, int needleAmount) {
         this.service = service;
+        this.minimalNeedleEntropy = minimalNeedleEntropy;
+        this.needleAmount = needleAmount;
     }
     
     @Override
     public Stream<Package> findCandidates(PackageHierarchy pckg) {
         return distillMethodsWithHighEntropy(pckg)
-                .limit(10)
+                .limit(needleAmount)
                 .flatMap(needle -> findCandidateBy(needle))
                 .distinct();
     }
     
-    Stream<Fingerprint> distillMethodsWithHighEntropy(PackageHierarchy hierarchy) {
+    private Stream<Fingerprint> distillMethodsWithHighEntropy(PackageHierarchy hierarchy) {
         return hierarchy.getClassNames().parallelStream()
                 .map(name -> hierarchy.getMethodsByClassName(name))
                 .flatMap(methods -> methods.values().stream())

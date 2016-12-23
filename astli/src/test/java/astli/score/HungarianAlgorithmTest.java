@@ -1,6 +1,6 @@
-package astli.match;
+package astli.score;
 
-import astli.score.HungarianAlgorithm;
+import java.util.Arrays;
 import org.junit.Test;
 
 /**
@@ -14,8 +14,6 @@ public class HungarianAlgorithmTest {
     @Test
     public void testHungarianAlgorithmSimple() {
         
-         
-        
         double[][] costMatrix = new double[][]{
             {0, i, i, i, i},
             {i, 0, i, i, i},
@@ -27,8 +25,7 @@ public class HungarianAlgorithmTest {
         HungarianAlgorithm ha = new HungarianAlgorithm();
         
         int[] solution = ha.execute(costMatrix);
-        
-        printSolution(costMatrix, solution);
+        assert(Arrays.equals(new int[]{0,1,2,3,4}, solution));
     }
     
      @Test
@@ -46,26 +43,7 @@ public class HungarianAlgorithmTest {
 
         int[] solution = ha.execute(costMatrix);
         
-        printSolution(costMatrix, solution);
-        
-    }
-    
-     @Test
-    public void testImpossibleSoltion2() {
-        
-        double[][] costMatrix = new double[][]{
-            {0, 0, i, i, 0},
-            {i, 0, 0, 0, 0},
-            {i, i, 0, i, i},
-            {i, i, i, i, 0},
-            {i, i, 0, i, i}
-        };
-        
-        HungarianAlgorithm ha = new HungarianAlgorithm();
-
-        int[] solution = ha.execute(costMatrix);
-        
-        printSolution(costMatrix, solution);
+        assert(Arrays.equals(new int[]{0,1,2,4,3}, solution));
         
     }
     
@@ -83,9 +61,7 @@ public class HungarianAlgorithmTest {
         HungarianAlgorithm ha = new HungarianAlgorithm();
 
         int[] solution = ha.execute(costMatrix);
-        
-        printSolution(costMatrix, solution);
-        
+        assert(Arrays.equals(new int[]{0,1,2,3,4}, solution));
     }
     
     

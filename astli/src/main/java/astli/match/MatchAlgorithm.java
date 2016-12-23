@@ -37,7 +37,7 @@ public class MatchAlgorithm implements AndroidLibIDAlgorithm {
     public void run() {
         try {
             EntityService service = EntityServiceFactory.createService();
-            CandidateFinder finder = new ParticularCandidateFinder(service);
+            CandidateFinder finder = new ParticularCandidateFinder(service, 12, 10);
             SimilarityMatcher matcher = new SimilarityMatcher(new HungarianAlgorithm());
             PostProcessor processor = new PostProcessorFactory().createPrintResultsProcessor();
             MatchingProcess process = new MatchingProcess(matcher, finder);
