@@ -37,10 +37,10 @@ public class ParticularCandidateFinderTest {
         
         EntityService service = mockService();
         
-        int minEntropy = 9;
+        int minParticularity = 9;
         int maxNeedle  = 3;
         
-        ParticularCandidateFinder f = new ParticularCandidateFinder(service, minEntropy, maxNeedle);
+        ParticularCandidateFinder f = new ParticularCandidateFinder(service, minParticularity, maxNeedle);
         
         f.findCandidates(h).forEach(pckg -> {});
         
@@ -58,7 +58,7 @@ public class ParticularCandidateFinderTest {
     
     private Fingerprint mockFingerprint(int particularity, String signature) {
         Fingerprint fp = mock(Fingerprint.class);
-        when(fp.getEntropy()).thenReturn(particularity);
+        when(fp.getParticularity()).thenReturn(particularity);
         when(fp.getSignature()).thenReturn(signature);
         return fp;
     }

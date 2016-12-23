@@ -42,7 +42,7 @@ public class FingerprintTest {
     public void testSimilarityBetweenEqualVectors() {
         Fingerprint f1 = createFingerprint(1, 1);
         Fingerprint f2 = createFingerprint(1, 1);
-        double similarity = f1.getNonCommutativeSimilarityScoreToFingerprint(f2);
+        double similarity = f1.getSimilarityTo(f2);
         assert(doubleEquals(similarity, 2));
     }
     
@@ -50,7 +50,7 @@ public class FingerprintTest {
     public void testSimilarityBetweenCloseVectors() {
         Fingerprint f1 = createFingerprint(10, 11);
         Fingerprint f2 = createFingerprint(11, 12);
-        double similarity = f1.getNonCommutativeSimilarityScoreToFingerprint(f2);
+        double similarity = f1.getSimilarityTo(f2);
         assert(doubleEquals(similarity, 19));
     }
     
@@ -58,7 +58,7 @@ public class FingerprintTest {
     public void testSimilarityBetweenDistantVectors() {
         Fingerprint f1 = createFingerprint( 1,  1);
         Fingerprint f2 = createFingerprint(20, 30);
-        double similarity = f1.getNonCommutativeSimilarityScoreToFingerprint(f2);
+        double similarity = f1.getSimilarityTo(f2);
         assert(doubleEquals(similarity, 0));
     }
     
@@ -66,8 +66,8 @@ public class FingerprintTest {
     public void testNonCommutativeSimilarity() {
         Fingerprint f1 = createFingerprint(  49,35);
         Fingerprint f2 = createFingerprint(  1,  1);
-        double similarity1 = f1.getNonCommutativeSimilarityScoreToFingerprint(f2);
-        double similarity2 = f2.getNonCommutativeSimilarityScoreToFingerprint(f1);
+        double similarity1 = f1.getSimilarityTo(f2);
+        double similarity2 = f2.getSimilarityTo(f1);
         assert(similarity1 > similarity2);
         assert(doubleEquals(0, similarity2));
     }

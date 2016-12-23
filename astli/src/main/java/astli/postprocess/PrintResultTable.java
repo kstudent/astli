@@ -49,7 +49,7 @@ public class PrintResultTable implements PostProcessor {
         
         StringBuilder lines = new StringBuilder();
         String apkName = apk.getName();
-        int apkCodeSize = apk.getEntropy();
+        int apkCodeSize = apk.getParticularity();
         
         if(items.isEmpty()) {
             lines

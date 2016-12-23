@@ -27,19 +27,19 @@ public class Match {
     public static class Item {
         
         private final double score; 
-        private final int entropy;
+        private final int particularity;
         private final String packageName;
         private final String libName;
 
         public Item(double score, PackageHierarchy lib) {
             this.score = score;
             this.packageName = lib.getName();
-            this.entropy = lib.getEntropy();
+            this.particularity = lib.getParticularity();
             this.libName = lib.getLib();
         }
 
-        public int getEntropy() {
-            return entropy;
+        public int getParticularity() {
+            return particularity;
         }
 
         public String getPackage() {

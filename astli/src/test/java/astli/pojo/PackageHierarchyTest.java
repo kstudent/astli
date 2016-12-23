@@ -63,15 +63,17 @@ public class PackageHierarchyTest {
     }
     
     @Test
-    public void testGetEntropy() {
+    public void testGetParticularity() {
         PackageHierarchy p = new PackageHierarchy("pck", "lib");
         Map<String, Fingerprint> prints = new HashMap<>();
         Fingerprint methodPrint = mock(Fingerprint.class);
-        when(methodPrint.getEntropy()).thenReturn(37);
+        when(methodPrint.getParticularity()).thenReturn(37);
         prints.put("methodX", methodPrint);
         p.addMethods("myClass", prints);
         
-        assert(p.getEntropy() == 37);
+        int particularity = p.getParticularity();
+        
+        assert(37 == particularity);
     }
     
     private Package generatePackageHierarchyMock() {

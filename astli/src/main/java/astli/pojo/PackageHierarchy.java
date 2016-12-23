@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -25,9 +23,7 @@ public class PackageHierarchy {
     private List<List<Fingerprint>> printTable;
     private List<String> classTable;
     
-    private int computedEntropy = -1;
-
-    private static final Logger LOGGER = LogManager.getLogger();
+    private int computedParticularity = -1;
 
     public PackageHierarchy(Package pckg) {
         this(pckg.getName(), pckg.getLibrary().getName());
@@ -133,30 +129,30 @@ public class PackageHierarchy {
         return classTable;
     }
     
-    public synchronized int getEntropy() {
+    public synchronized int getParticularity() {
         
-        if(computedEntropy < 0) {
-            computedEntropy = computeEntropy();
+        if(computedParticularity < 0) {
+            computedParticularity = computeParticularity();
         }
         
-        return computedEntropy;
+        return computedParticularity;
     }
 
     public String getLib() {
         return lib;
     }
     
-    private int computeEntropy() {
+    private int computeParticularity() {
         return classes.values().stream()
                 .flatMap(prints -> prints.values().stream())
-                .mapToInt(method -> method.getEntropy())
+                .mapToInt(method -> method.getParticularity())
                 .sum();
     }
     
     private void resetMembers() {
         this.signatureTable = null;
         this.printTable = null;
-        this.computedEntropy = -1;
+        this.computedParticularity = -1;
     }
     
     @Override

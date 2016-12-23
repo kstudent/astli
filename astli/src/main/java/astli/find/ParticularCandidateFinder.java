@@ -14,29 +14,29 @@ import java.sql.SQLException;
 public class ParticularCandidateFinder implements CandidateFinder {
 
     private final EntityService service;
-    private final int minimalNeedleEntropy;
-    private final int needleAmount;
+    private final int minNeedleParticularity;
+    private final int maxNeedleAmount;
 
-    public ParticularCandidateFinder(EntityService service, int minimalNeedleEntropy, int needleAmount) {
+    public ParticularCandidateFinder(EntityService service, int minNeedleParticularity, int maxNeedleAmount) {
         this.service = service;
-        this.minimalNeedleEntropy = minimalNeedleEntropy;
-        this.needleAmount = needleAmount;
+        this.minNeedleParticularity = minNeedleParticularity;
+        this.maxNeedleAmount = maxNeedleAmount;
     }
     
     @Override
     public Stream<Package> findCandidates(PackageHierarchy pckg) {
-        return distillMethodsWithHighEntropy(pckg)
-                .limit(needleAmount)
+        return distillMethodsWithHighParticularity(pckg)
+                .limit(maxNeedleAmount)
                 .flatMap(needle -> findCandidateBy(needle))
                 .distinct();
     }
     
-    private Stream<Fingerprint> distillMethodsWithHighEntropy(PackageHierarchy hierarchy) {
+    private Stream<Fingerprint> distillMethodsWithHighParticularity(PackageHierarchy hierarchy) {
         return hierarchy.getClassNames().parallelStream()
                 .map(name -> hierarchy.getMethodsByClassName(name))
                 .flatMap(methods -> methods.values().stream())
-                .filter(method -> method.getEntropy() > minimalNeedleEntropy)
-                .sorted((that, othr) -> (-1) * Integer.compare(that.getEntropy(), othr.getEntropy()));
+                .filter(method -> method.getParticularity() > minNeedleParticularity)
+                .sorted((that, othr) -> (-1) * Integer.compare(that.getParticularity(), othr.getParticularity()));
     }
 
     private Stream<Package> findCandidateBy(Fingerprint needle) {

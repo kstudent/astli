@@ -16,13 +16,13 @@ public class Fingerprint {
     @Nullable
     private final Method method;
 
-    private static final List<List<NodeType>> FEATURES;
-    private static final int LONGEST_FEATURE_LENGTH;
+    private static final List<List<NodeType>> DIMENSIONS;
+    private static final int LONGEST_DIMENSION;
     private static final NumberFormat FRMTR = new DecimalFormat("#0.00");
     
     static {
-        FEATURES = new FeatureGenerator().generateFeatures();
-        LONGEST_FEATURE_LENGTH = 12;
+        DIMENSIONS = new DimensionGenerator().generate();
+        LONGEST_DIMENSION = 12;
     }
     
     public Fingerprint(Method method) {
@@ -31,7 +31,7 @@ public class Fingerprint {
         
         byte[] byteVector = method.getVector();
         if(byteVector == null) {
-            this.vector = new Vector(FEATURES.size());
+            this.vector = new Vector(DIMENSIONS.size());
         } else {
             this.vector = new Vector(ArrayUtils.lEByte2Short(byteVector));
         }
@@ -40,7 +40,7 @@ public class Fingerprint {
     }
     
     public Fingerprint() {
-        this.vector = new Vector(FEATURES.size());
+        this.vector = new Vector(DIMENSIONS.size());
         this.name = "";
         this.signature = "";
         this.method = null;
@@ -57,7 +57,7 @@ public class Fingerprint {
         
         List dimensionList = Arrays.asList(dimension);
         
-        int index = FEATURES.indexOf(dimensionList);
+        int index = DIMENSIONS.indexOf(dimensionList);
         if(index == -1) {
             throw new IllegalArgumentException("Dimension not found");
         }
@@ -65,7 +65,7 @@ public class Fingerprint {
         vector.set(index, (short) (value + vector.get(index)));
     }
     
-    public int getNonCommutativeSimilarityScoreToFingerprint(Fingerprint that) {
+    public int getSimilarityTo(Fingerprint that) {
         int diff = vector.manhattanDiff(that.vector);
         int length = this.vector.manhattanNorm(); 
         int similarityScore = length - diff; 
@@ -92,7 +92,7 @@ public class Fingerprint {
         this.signature = signature;
     }
     
-    public int getEntropy() {
+    public int getParticularity() {
         return (this.signature.length() - 1) * 3 + this.getLength();
     }
 
@@ -111,11 +111,11 @@ public class Fingerprint {
         string.append(name).append(":\n");
         string.append("Signature: ").append(signature).append(":\n");
         
-        int numEntries = Math.min(FEATURES.size(), vector.getDimensions());
+        int numEntries = Math.min(DIMENSIONS.size(), vector.getDimensions());
         
         for (int i = 0; i < numEntries; i++) {
-            List<NodeType> feature = FEATURES.get(i);
-            String featureString = String.format("%-" + LONGEST_FEATURE_LENGTH + "s", feature.toString());
+            List<NodeType> feature = DIMENSIONS.get(i);
+            String featureString = String.format("%-" + LONGEST_DIMENSION + "s", feature.toString());
             string = string.append(featureString).append(" : ").append(FRMTR.format(vector.get(i))).append("\n");
         }
         return string.toString();
@@ -130,8 +130,8 @@ public class Fingerprint {
         return this.vector.get(index);
     }
     
-    public short getFeatureValue(NodeType... feature) {
-        int index = FEATURES.indexOf(Arrays.asList(feature));
+    public short getFeatureValue(NodeType... dimension) {
+        int index = DIMENSIONS.indexOf(Arrays.asList(dimension));
         if(index == -1) {
             throw new IllegalArgumentException("Dimension not found");
         }
@@ -140,7 +140,7 @@ public class Fingerprint {
     
     public void incrementFeatureBy(int index, short value) {
         
-        if(index >= FEATURES.size() || index < 0) {
+        if(index >= DIMENSIONS.size() || index < 0) {
             throw new IndexOutOfBoundsException("Dimension not found");
         }
         

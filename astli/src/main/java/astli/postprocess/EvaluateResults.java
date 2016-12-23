@@ -40,7 +40,7 @@ public class EvaluateResults implements PostProcessor {
         LOGGER.info("{},{},{},{},{}", 
             classification.getScore(), 
             classification.getClassification(),
-            match.getApkH().getEntropy(),
+            match.getApkH().getParticularity(),
             match.getApkH().getName(),
             libPckg
         );

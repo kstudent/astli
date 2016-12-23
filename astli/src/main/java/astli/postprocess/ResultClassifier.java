@@ -63,20 +63,20 @@ public class ResultClassifier {
                         :                   Classification.TN;
         
         if(clss == Classification.FP) {
-            LOGGER.info("*** {} (E:{}) is a false positive", apkName, match.getApkH().getEntropy());
+            LOGGER.info("*** {} (E:{}) is a false positive", apkName, match.getApkH().getParticularity());
         } else if (clss == Classification.FN) {
-            LOGGER.info("*** {} (E:{}) is a false negative", apkName, match.getApkH().getEntropy());
+            LOGGER.info("*** {} (E:{}) is a false negative", apkName, match.getApkH().getParticularity());
         }
         
         if(candidatesExist) {
             LOGGER.debug("{}' Plato : ", apkName);
-            LOGGER.debug("| Name | Entropy | Score |"); 
+            LOGGER.debug("| Name | Partic. | Score |"); 
             items.stream()
                 .filter(item -> item.getScore() >= score)
                 .forEach(item -> {
                     LOGGER.debug("| {} | {} | {} |", 
                         item.getPackage(), 
-                        item.getEntropy(),
+                        item.getParticularity(),
                         FRMT.format(item.getScore())
                     );
                 });
