@@ -7,19 +7,18 @@ import astli.pojo.Fingerprint;
 import astli.pojo.PackageHierarchy;
 import org.junit.Test;
 import java.sql.SQLException;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 /**
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ParticularCandidateFinderTest {
-
+public class FindByNeedleTest {
     
     @Test
     public void testFilterByParticularity() throws SQLException {
@@ -40,7 +39,7 @@ public class ParticularCandidateFinderTest {
         int minParticularity = 9;
         int maxNeedle  = 3;
         
-        ParticularCandidateFinder f = new ParticularCandidateFinder(service, minParticularity, maxNeedle);
+        FindByNeedle f = new FindByNeedle(service, minParticularity, maxNeedle);
         
         f.findCandidates(h).forEach(pckg -> {});
         

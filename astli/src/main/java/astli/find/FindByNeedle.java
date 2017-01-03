@@ -11,13 +11,13 @@ import java.sql.SQLException;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class ParticularCandidateFinder implements CandidateFinder {
+public class FindByNeedle implements CandidateFinder {
 
     private final EntityService service;
     private final int minNeedleParticularity;
     private final int maxNeedleAmount;
 
-    public ParticularCandidateFinder(EntityService service, int minNeedleParticularity, int maxNeedleAmount) {
+    public FindByNeedle(EntityService service, int minNeedleParticularity, int maxNeedleAmount) {
         this.service = service;
         this.minNeedleParticularity = minNeedleParticularity;
         this.maxNeedleAmount = maxNeedleAmount;

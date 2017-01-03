@@ -32,9 +32,7 @@ public class SetupLogger {
     
     public void logSetup() throws SQLException {
         
-        String algorithm = options.process.getSimpleName(); 
-        
-        LOGGER.info("* {} / {} / {}", options.apkName, options.obfLvl, algorithm);
+        LOGGER.info("* {} / {}", options.apkName, options.obfLvl);
         LOGGER.info("** Setup");
         LOGGER.info("- Time: {}", (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(new Date()));
         
@@ -53,6 +51,7 @@ public class SetupLogger {
             LOGGER.info("- LearningPhase");
             LOGGER.info("- MVN Lib Identifier: {}"    , options.mvnIdentifier);
         }
+        LOGGER.info("- Setup: {}",   options.toString());
     }
 
     private void logDBStatus() throws SQLException {

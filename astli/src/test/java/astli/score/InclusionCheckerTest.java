@@ -15,7 +15,7 @@ public class InclusionCheckerTest {
     
     @Test
     public void testInclusionSamePackages() {
-        InclusionChecker ic = new InclusionChecker(new HungarianAlgorithm());
+        InclusionChecker ic = new InclusionChecker();
         
         PackageHierarchy a = new PackageHierarchy("pckg a");
         Map<String, Fingerprint> class1prints = new HashMap<>();
@@ -37,7 +37,7 @@ public class InclusionCheckerTest {
     
     @Test
     public void testInclusionSubPackage() {
-        InclusionChecker ic = new InclusionChecker(new HungarianAlgorithm());
+        InclusionChecker ic = new InclusionChecker();
         
         PackageHierarchy a = new PackageHierarchy("pckg a");
         Map<String, Fingerprint> class1prints = new HashMap<>();
@@ -57,7 +57,7 @@ public class InclusionCheckerTest {
     
      @Test
     public void testInclusionDifferentPackages() {
-        InclusionChecker ic = new InclusionChecker(new HungarianAlgorithm());
+        InclusionChecker ic = new InclusionChecker();
         
         PackageHierarchy a = new PackageHierarchy("pckg a");
         Map<String, Fingerprint> class1prints = new HashMap<>();

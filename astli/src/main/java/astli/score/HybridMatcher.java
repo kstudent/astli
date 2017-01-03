@@ -8,8 +8,8 @@ import astli.pojo.PackageHierarchy;
  */
 public class HybridMatcher implements PackageMatcher {
 
-    private final InclusionChecker checker = new InclusionChecker(new HungarianAlgorithm());
-    private final SimilarityMatcher simMatcher = new SimilarityMatcher(new HungarianAlgorithm());
+    private final InclusionChecker checker = new InclusionChecker();
+    private final SimilarityMatcher simMatcher = new SimilarityMatcher();
     
     @Override
     public double getScore(PackageHierarchy a, PackageHierarchy b) {

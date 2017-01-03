@@ -15,8 +15,6 @@ import astli.db.Clazz;
 import astli.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import astli.match.MatchAlgorithm;
-import astli.match.MatchingProcess;
 import astli.db.Method;
 
 /**
@@ -37,49 +35,19 @@ public class mainTest {
         countStuff();
     }
 
-    //@Test
+    @Test
     public void matchAPKLvl1Alg1() throws Exception {
-        testFindLibrariesOfAPKLvl(1, 1);
+        testFindLibrariesOfAPKLvl(1);
     }
 
-    //@Test
+    @Test
     public void matchAPKLvl2Alg1() throws Exception {
-        testFindLibrariesOfAPKLvl(2, 1);
+        testFindLibrariesOfAPKLvl(2);
     }
 
-    //@Test
+    @Test
     public void matchAPKLvl3Alg1() throws Exception {
-        testFindLibrariesOfAPKLvl(3, 1);
-    }
-
-    //@Test
-    public void matchAPKLvl1Alg2() throws Exception {
-        testFindLibrariesOfAPKLvl(1, 2);
-    }
-
-    //@Test
-    public void matchAPKLvl2Alg2() throws Exception {
-        testFindLibrariesOfAPKLvl(2, 2);
-    }
-
-    //@Test
-    public void matchAPKLvl3Alg2() throws Exception {
-        testFindLibrariesOfAPKLvl(3, 2);
-    }
-
-    //@Test
-    public void matchAPKLvl1OV() throws Exception {
-        testFindLibrariesOfAPKLvl(1, 4);
-    }
-
-    //@Test
-    public void matchAPKLvl2OV() throws Exception {
-        testFindLibrariesOfAPKLvl(2, 4);
-    }
-
-    //@Test
-    public void matchAPKLvl3OV() throws Exception {
-        testFindLibrariesOfAPKLvl(3, 4);
+        testFindLibrariesOfAPKLvl(3);
     }
 
     //@Test
@@ -111,7 +79,7 @@ public class mainTest {
         main.main(arg);
     }
 
-    public void testFindLibrariesOfAPKLvl(int lvl, int algId) throws IOException {
+    public void testFindLibrariesOfAPKLvl(int lvl) throws IOException {
         LOGGER.info("analyzing lvl " + lvl);
         String appApkPath = resourcesSrcDir + "FingerprintAPKTest/app.obflvl" + lvl + ".apk";
         String mappingFilePath = resourcesSrcDir + "MappingFiles/mapping.obflvl" + lvl + ".txt";
@@ -189,7 +157,7 @@ public class mainTest {
 
     @Test
     public void printSetup() throws SQLException {
-        new SetupLogger(EntityServiceFactory.createService(), new ASTLIOptions(MatchAlgorithm.class, MatchingProcess.class)).logSetup();
+        new SetupLogger(EntityServiceFactory.createService(), new ASTLIOptions()).logSetup();
     }
 
     //@Test

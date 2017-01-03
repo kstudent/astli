@@ -46,9 +46,6 @@ public class ArrayUtils {
     
     /**
      * [0x____0a0b, 0x____0c0d] -> [0x0b, 0x0a, 0xd, 0xc]
-     * 
-     * @param values
-     * @return 
      */
     
     public static byte[] truncateIntToLEByteArray(int[] values) {

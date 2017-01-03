@@ -10,12 +10,14 @@ import java.util.Date;
  */
 public class PostProcessorFactory {
 
-    public PostProcessor createPrintResultsProcessor() {
+    public static PostProcessor createProcessor(ASTLIOptions options, EntityService service) {
+
+        if(options.isInEvaluationMode) {
+            return new EvaluateResults(options, new ResultClassifier(service), new Date());
+        }
+        
         return new PlateauFilterProcessor(new PrintResultTable());
-    }
-    
-    public PostProcessor createEvaluateResultsProcessor(ASTLIOptions options, EntityService service) {
-        return new EvaluateResults(options, new ResultClassifier(service), new Date());
+        
     }
     
 }

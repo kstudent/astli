@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class SimilarityMatcher implements PackageMatcher {
 
-    private final HungarianAlgorithm hg;
+    private final HungarianAlgorithm hg = new HungarianAlgorithm();
     private List<List<Fingerprint>> bPrints;
     private List<List<Fingerprint>> aPrints;
     private List<List<String>> aSigs; 
@@ -24,10 +24,6 @@ public class SimilarityMatcher implements PackageMatcher {
     
     private static final NumberFormat FRMT = new DecimalFormat("#0.00");
     private static final Logger LOGGER = LogManager.getLogger();
-    
-    public SimilarityMatcher(HungarianAlgorithm hg) {
-        this.hg = hg;
-    }
     
     @Override
     public synchronized double getScore(PackageHierarchy a, PackageHierarchy b) {

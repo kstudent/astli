@@ -16,7 +16,7 @@ public class SimilarityMatcherTest {
     
     @Test
     public void testScoreEqualPackages() {
-        SimilarityMatcher m = new SimilarityMatcher(new HungarianAlgorithm());
+        SimilarityMatcher m = new SimilarityMatcher();
         
         PackageHierarchy a = new PackageHierarchy("pckg a");
         Map<String, Fingerprint> class1prints = new HashMap<>();
@@ -40,7 +40,7 @@ public class SimilarityMatcherTest {
     
     @Test
     public void testScoreDifferentPackages() {
-        SimilarityMatcher m = new SimilarityMatcher(new HungarianAlgorithm());
+        SimilarityMatcher m = new SimilarityMatcher();
         
         PackageHierarchy a = new PackageHierarchy("pckg a");
         Map<String, Fingerprint> class1prints = new HashMap<>();
@@ -64,7 +64,7 @@ public class SimilarityMatcherTest {
     
     @Test
     public void testScoreTotallyDifferentPackages() {
-        SimilarityMatcher m = new SimilarityMatcher(new HungarianAlgorithm());
+        SimilarityMatcher m = new SimilarityMatcher();
         
         PackageHierarchy a = new PackageHierarchy("pckg a");
         Map<String, Fingerprint> class1prints = new HashMap<>();

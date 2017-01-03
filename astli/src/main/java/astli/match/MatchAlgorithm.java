@@ -1,9 +1,6 @@
 package astli.match;
 
 import astli.postprocess.PostProcessorFactory;
-import astli.score.SimilarityMatcher;
-import astli.score.HungarianAlgorithm;
-import astli.find.ParticularCandidateFinder;
 import astli.find.CandidateFinder;
 import astli.main.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
@@ -12,8 +9,11 @@ import astli.pojo.ASTLIOptions;
 import astli.pojo.PackageHierarchy;
 import astli.db.EntityService;
 import astli.db.EntityServiceFactory;
+import astli.find.FinderFactory;
 import astli.postprocess.PostProcessor;
 import astli.pojo.Match;
+import astli.score.MatcherFactory;
+import astli.score.PackageMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,19 +37,25 @@ public class MatchAlgorithm implements AndroidLibIDAlgorithm {
     public void run() {
         try {
             EntityService service = EntityServiceFactory.createService();
-            CandidateFinder finder = new ParticularCandidateFinder(service, 12, 10);
-            SimilarityMatcher matcher = new SimilarityMatcher(new HungarianAlgorithm());
-            PostProcessor processor = new PostProcessorFactory().createPrintResultsProcessor();
-            MatchingProcess process = new MatchingProcess(matcher, finder);
+            
+            CandidateFinder finder = FinderFactory.createFinder(options, service); 
+            PackageMatcher matcher = MatcherFactory.createMatcher(options.matcher); 
+            MatchingProcess matchingProcess = new MatchingProcess(
+                    matcher, finder, options.packageAcceptanceThreshold);
+            PostProcessor post = PostProcessorFactory.createProcessor(options, service);
             
             new SetupLogger(service, options).logSetup();
             
-            processor.init();
+            post.init();
 
-            packages.map(hierarchy  -> process.apply(hierarchy))
-                    .forEach((Match match) -> processor.process(match));
+            final int minPart = options.minimumPackageParticularity; 
+            
+            packages
+                .filter(hierarchy -> hierarchy.getParticularity() >= minPart)
+                .map(hierarchy -> matchingProcess.apply(hierarchy))
+                .forEach((Match match) -> post.process(match));
 
-            processor.done();
+            post.done();
             
         } catch (SQLException ex) {
             LOGGER.error(ex.getMessage(), ex);

@@ -45,7 +45,6 @@ public class StatsCounter {
         
         private String obfLvl = "";
         private String apkName = "";
-        private String algorithm = "";
         private long diff;
         
         public Map<ResultClassifier.Classification, Integer> getClassifications() {
@@ -68,16 +67,11 @@ public class StatsCounter {
             return apkName;
         }
 
-        public String getAlgorithm() {
-            return algorithm;
-        }
-
         public long getDiff() {
             return diff;
         }
         
         public void setOptions(ASTLIOptions options) {
-            algorithm = options.process.getSimpleName(); 
             String[] pieces = options.inputFileName.split("/");
             obfLvl    = pieces[pieces.length - 1];
             apkName   = (pieces.length > 1) ? pieces[pieces.length - 2] : "<unknown>";

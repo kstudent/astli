@@ -8,7 +8,7 @@ import astli.pojo.PackageHierarchy;
  */
 public class InclusionMatcher implements PackageMatcher {
 
-    private final InclusionChecker checker = new InclusionChecker(new HungarianAlgorithm());
+    private final InclusionChecker checker = new InclusionChecker();
     
     @Override
     public double getScore(PackageHierarchy a, PackageHierarchy b) {

@@ -1,8 +1,12 @@
 package astli.pojo;
 
+import astli.find.CandidateFinder;
+import astli.find.FindByNameOrNeedle;
+import astli.learn.LearnAlgorithm;
 import astli.main.AndroidLibIDAlgorithm;
 import astli.match.MatchAlgorithm;
-import astli.match.MatchingProcess;
+import astli.score.PackageMatcher;
+import astli.score.SimilarityMatcher;
 
 /**
  *
@@ -10,17 +14,24 @@ import astli.match.MatchingProcess;
  */
 public class ASTLIOptions {
     
-    public Class<? extends AndroidLibIDAlgorithm> algorithm;
-    public String  mvnIdentifier = "";
-    public String  mappingFile = "";
+    public Class<? extends AndroidLibIDAlgorithm> algorithm = LearnAlgorithm.class;
+    public String mvnIdentifier = "";
+    public String mappingFile = "";
     public String inputFileName = "";
-    public Class<? extends MatchingProcess> process;
     public String obfLvl = "";
     public String apkName = "";
 
-    public ASTLIOptions(Class<? extends AndroidLibIDAlgorithm> algorithm, Class<? extends MatchingProcess> process) {
-        this.algorithm = algorithm;
-        this.process = process;
+    public boolean isInEvaluationMode = false;
+    
+    //paramters for matching phase
+    public Class<? extends PackageMatcher> matcher = SimilarityMatcher.class;
+    public Class<? extends CandidateFinder> finder = FindByNameOrNeedle.class;
+    public double packageAcceptanceThreshold = 0.5d;
+    public int minimumNeedleParticularity = 12;    
+    public int maxNeedleAmount = 10;
+    public int minimumPackageParticularity = 30;
+    
+    public ASTLIOptions() {
     }
     
     public void setFileName(String fileName) {
@@ -38,5 +49,12 @@ public class ASTLIOptions {
         return algorithm.equals(MatchAlgorithm.class);
     }
 
+    public String getSetup() {
+        return "{" + "minimumPackageParticularity=" + minimumPackageParticularity 
+                + ", packageMatcher=" + matcher + ", finder=" + finder 
+                + ", packageAcceptanceThreshold=" + packageAcceptanceThreshold 
+                + ", minimumNeedleParticularity=" + minimumNeedleParticularity 
+                + ", maxNeedleAmount=" + maxNeedleAmount + '}';
+    }
     
 }

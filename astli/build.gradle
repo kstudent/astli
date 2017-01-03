@@ -224,7 +224,8 @@ def getLatestFolderName() {
     return "1"
 }
 
-def algIDs = [1];
+//requires sync with MatchingOptionsDecorder! 
+def algIDs = ["mat1", "mat2", "mat3"];
 
 task fossEvaluate {}
 
@@ -251,8 +252,8 @@ new File(apksFolderPath).listFiles().each{
             task "match-$taskID" (type: JavaExec, dependsOn: assemble) {
                 classpath sourceSets.main.runtimeClasspath
                 args = (mappingFile.exists()) ? 
-                    ["-m", "-f", mappingFile, apkFile] 
-                  : ["-m", apkFile]
+                    ["-m", "-f", mappingFile, "-a", algID, "-e", apkFile] 
+                  : ["-m",                    "-a", algID, "-e", apkFile]
                 main = "astli.main.main"
             }
 

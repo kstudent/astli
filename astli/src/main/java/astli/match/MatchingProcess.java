@@ -29,15 +29,13 @@ public class MatchingProcess implements Function<PackageHierarchy, Match> {
     private final PackageMatcher matcher;
     private final CandidateFinder finder;
     
-    /**
-     *
-     * @param matcher
-     * @param finder
-     */
-    public MatchingProcess(PackageMatcher matcher, CandidateFinder finder) {
+    private final double packageAcceptanceThreshold;
+    
+    public MatchingProcess(PackageMatcher matcher, CandidateFinder finder, double packageAcceptanceThreshold) {
         this.matcher = matcher;
         this.hierarchyCache = new HashMap<>();
         this.finder = finder;
+        this.packageAcceptanceThreshold = packageAcceptanceThreshold;
     }
 
     @Override
@@ -56,6 +54,7 @@ public class MatchingProcess implements Function<PackageHierarchy, Match> {
                 .peek(item -> LOGGER.debug(
                         "{} -> {}: {}", apkH.getName(), item.getPackage(), 
                         FRMT.format(item.getScore())))
+                .filter(item -> item.getScore() >= packageAcceptanceThreshold)
                 .sorted((that, other) -> Double.compare(other.getScore(), that.getScore()))
                 .collect(Collectors.toList());
         

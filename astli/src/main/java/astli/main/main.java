@@ -33,11 +33,9 @@ import astli.extraction.FeatureExtractor;
 import org.apache.commons.cli.*;
 import org.jf.util.ConsoleUtil;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.stream.Stream;
 import astli.match.MatchAlgorithm;
-import astli.match.MatchingProcess;
 import astli.learn.LearnAlgorithm;
 import astli.pojo.PackageHierarchy;
 import org.apache.logging.log4j.LogManager;
@@ -64,14 +62,22 @@ public class main {
      * @param args
      */
     public static void main(String[] args) {
+        
+        Locale locale = new Locale("en", "US");
+        Locale.setDefault(locale);
+        
+        ASTLIOptions astliOptions;
+        
         try {
-            Locale locale = new Locale("en", "US");
-            Locale.setDefault(locale);
-            
-            
-            ASTLIOptions astliOptions = parseOptions(args);
-
-            Stream<PackageHierarchy> packages = new FeatureExtractor(astliOptions).extractPackageHierarchies();
+            astliOptions = parseOptions(args);
+        } catch(RuntimeException ex) {
+            printUsage();
+            return;
+        }
+        
+        try {
+            Stream<PackageHierarchy> packages = new FeatureExtractor(astliOptions).
+                    extractPackageHierarchies();
             
             AndroidLibIDAlgorithm alg;
             
@@ -83,7 +89,7 @@ public class main {
             
             alg.run();
             
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOGGER.error(ex);
         }
     }
@@ -100,60 +106,60 @@ public class main {
 
         formatter.setWidth(consoleWidth);
 
-        formatter.printHelp("java -jar baksmali.jar [options] <dex-file>",
+        formatter.printHelp("java -jar astli.jar [options]+ <dex-file>",
                 "find library dependencies in android apk", OPTIONS, "");
-    }
-
-    /**
-     * Prints the version message.
-     */
-    protected static void printVersion() {
-        LOGGER.info("androidlibid " + VERSION);
-        LOGGER.info("Copyright...?");
-        LOGGER.info("Licence...?");
-        System.exit(0);
     }
 
     @SuppressWarnings("AccessStaticViaInstance")
     private static void buildOptions() {
-        Option versionOption = OptionBuilder.withLongOpt("version")
-                .withDescription("prints the version then exits")
-                .create("v");
-
+        
         Option helpOption = OptionBuilder.withLongOpt("help")
-                .withDescription("prints the help message then exits. "
-                        + "Specify twice for debug options")
+                .withDescription("Prints the help message then exits.")
                 .create("?");
         
         Option printOption = OptionBuilder.withLongOpt("print-setup")
-                .withDescription("print setup in libraries")
+                .withDescription("Print setup in libraries.")
                 .create("s");
 
         Option matchingOption = OptionBuilder.withLongOpt("matching")
-                .withDescription("compare from given .apk file with packages from db")
+                .withDescription("Find similar packages from given .apk file "
+                        + "in the set of learned packages.")
                 .create("m");
+        
+        Option evalOption = OptionBuilder.withLongOpt("evaluation-mode")
+                .withDescription("Activates evaluation mode (default: production mode). "
+                        + "Use with --matching.")
+                .create("e");
         
         Option mappingFileOption = OptionBuilder.withLongOpt("mapping-file")
                 .hasArg()
                 .withArgName("MAPPING_FILE")
                 .withDescription("Replace class and package "
                         + "names with the names specified in the mapping file. "
-                        + "For format, see Proguard documentation. Makes sense "
-                        + "to use together with --matching.")
+                        + "For format, see Proguard documentation. "
+                        + "Use with --matching.")
                 .create("f");
+        
+        Option algorithmOption = OptionBuilder.withLongOpt("matching-algorithm-setup")
+                .hasArg()
+                .withArgName("ID")
+                .withDescription("Choose a matching algorithm setup. "
+                        + "Use with --matching.")
+                .create("a");
 
         Option learningOption = OptionBuilder.withLongOpt("learning")
                 .hasArg()
                 .withArgName("GROUP_ID:ARTIFACT_ID:VERSION")
-                .withDescription("learn a library (.jar) and store to database.")
+                .withDescription("Learn a library (.jar) and store to database.")
                 .create("l");
 
-        OPTIONS.addOption(versionOption);
         OPTIONS.addOption(helpOption);
-        OPTIONS.addOption(matchingOption);
-        OPTIONS.addOption(learningOption);
         OPTIONS.addOption(printOption);
+        OPTIONS.addOption(learningOption);
+        OPTIONS.addOption(matchingOption);
         OPTIONS.addOption(mappingFileOption);
+        OPTIONS.addOption(algorithmOption);
+        OPTIONS.addOption(evalOption);
 
     }
     
@@ -165,11 +171,10 @@ public class main {
         try {
             commandLine = parser.parse(OPTIONS, args);
         } catch (ParseException ex) {
-            printUsage();
-            return null;
+            throw new RuntimeException(ex);
         }
 
-        ASTLIOptions astliOptions = new ASTLIOptions(MatchAlgorithm.class, MatchingProcess.class);
+        ASTLIOptions astliOptions = new ASTLIOptions();
 
         String[] remainingArgs = commandLine.getArgs();
         Option[] clOptions = commandLine.getOptions();
@@ -179,19 +184,10 @@ public class main {
             String opt = option.getOpt();
 
             switch (opt.charAt(0)) {
-                case 'v':
-                    printVersion();
-                    return null;
+                    
                 case '?':
-                    while (++i < clOptions.length) {
-                        if (clOptions[i].getOpt().charAt(0) == '?') {
-                            printUsage();
-                            return null;
-                        }
-                    }
-                    printUsage();
-                    return null;
-
+                    throw new RuntimeException();
+                    
                 case 'm':
                     astliOptions.algorithm = MatchAlgorithm.class;
                     break;
@@ -205,32 +201,27 @@ public class main {
                     astliOptions.mvnIdentifier = commandLine.getOptionValue('l');
                     break;
                     
-                case 'a':
-                    int algId = Integer.parseInt(commandLine.getOptionValue('a'));
-                    if(algId != 1) {
-                        printUsage();
-                        return null;
-                    }
+                case 'e':
+                    astliOptions.isInEvaluationMode = true;
+                    break;
                     
-                    //todo: add  other processes
-                    astliOptions.process = MatchingProcess.class;
+                case 'a':
+                    String algId = commandLine.getOptionValue('a');
+                    if(!MatchingOptionsDecoder.decode(algId, astliOptions)) {
+                        throw new RuntimeException();
+                    }
                     break;
-                case 's': 
-                    // astliOptions.algorithm = 
-                    //todo!
-                    break;
+                    
                 default:
                     assert false;
             }
         }
                     
         if (remainingArgs.length != 1) {
-            printUsage();
-            return null;
+            throw new RuntimeException();
         }
         
         astliOptions.setFileName(remainingArgs[0]);
-        
         return astliOptions;
         
     }

@@ -15,19 +15,12 @@ public class InclusionChecker {
     
     private List<List<String>> a, b;
     private double[][] cost;
-    private final HungarianAlgorithm hg;
+    private final HungarianAlgorithm hg = new HungarianAlgorithm();
     
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public InclusionChecker(HungarianAlgorithm hg) {
-        this.hg = hg;
-    }
-    
-    /**
+    /** 
      * Checks if a's signatures are in b
-     * @param a
-     * @param b
-     * @return 
      */
     public synchronized Result checkInclusion(PackageHierarchy a, PackageHierarchy b) {
         
@@ -83,7 +76,7 @@ public class InclusionChecker {
 
     private boolean checkClassInclusion(int i, int j) {
         List<String> methodsA = a.get(i);
-        List<String> methodsB = new ArrayList(b.get(j));
+        List<String> methodsB = new ArrayList<String>(b.get(j));
         
         if(methodsA.size() > methodsB.size()) {
             return false;
