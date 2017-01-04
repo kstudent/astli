@@ -11,7 +11,7 @@ import net.java.ao.schema.StringLength;
  */
 
 @Preload
-public interface Method extends Entity {
+public interface MethodE extends Entity {
    
     public Clazz getClazz();
     public void setClazz(Clazz clazz);

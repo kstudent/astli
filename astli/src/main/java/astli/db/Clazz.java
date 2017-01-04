@@ -19,6 +19,6 @@ public interface Clazz extends Entity{
     public String getName();
     
     @OneToMany
-    public Method[] getMethods();
+    public MethodE[] getMethods();
     
 }

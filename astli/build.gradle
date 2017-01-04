@@ -177,6 +177,9 @@ jacocoTestReport {
 
 //foss evaluate
 
+//requires sync with MatchingOptionsDecorder! 
+def algIDs = ["simmatch", "hybmatch", "incmatch"];
+
 def apkFilter = new FilenameFilter() {
     boolean accept(File path, String filename) {
         return filename.matches(".*apk\$")
@@ -224,8 +227,6 @@ def getLatestFolderName() {
     return "1"
 }
 
-//requires sync with MatchingOptionsDecorder! 
-def algIDs = ["mat1", "mat2", "mat3"];
 
 task fossEvaluate {}
 

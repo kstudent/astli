@@ -3,7 +3,6 @@ package astli.pojo;
 import astli.db.Clazz;
 import astli.db.Library;
 import astli.db.Package;
-import astli.db.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.Set;
 import org.junit.Test;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import astli.db.MethodE;
 
 
 /**
@@ -78,7 +78,7 @@ public class PackageHierarchyTest {
     
     private Package generatePackageHierarchyMock() {
         Library l = mock(Library.class);
-        Method  m = mock(Method.class);
+        MethodE  m = mock(MethodE.class);
         Clazz   c = mock(Clazz.class);
         Package p = mock(Package.class);
         
@@ -86,7 +86,7 @@ public class PackageHierarchyTest {
         when(m.getSignature()).thenReturn("V:E");
         when(m.getVector()).thenReturn(new byte[10]);
         when(m.getClazz()).thenReturn(c);
-        when(c.getMethods()).thenReturn(new Method[]{m});
+        when(c.getMethods()).thenReturn(new MethodE[]{m});
         when(c.getName()).thenReturn("classX");
         when(c.getPackage()).thenReturn(p);
         when(p.getClazzes()).thenReturn(new Clazz[]{c});

@@ -9,7 +9,7 @@ import astli.score.SimilarityMatcher;
  *
  * @author Christof Rabensteiner <christof.rabensteiner@gmail.com>
  */
-public class MatchingOptionsDecoder {
+public class AlgIDDecoder {
     
     /**
      * Prepares options depending on algID
@@ -26,18 +26,20 @@ public class MatchingOptionsDecoder {
         
         //requires sync with build.gradle (hardcoded! bad! :P)
         switch (algId) {
-            case "mat1":
+            case "simmatch":
                 astliOptions.matcher = SimilarityMatcher.class;
                 break;
-            case "mat2":
+            case "hybmatch":
                 astliOptions.matcher = HybridMatcher.class;
                 break;
-            case "mat3":
+            case "incmatch":
                 astliOptions.matcher = InclusionMatcher.class;
                 break;
+            default: 
+                return false; 
         }
         
-        return false;
+        return true;
     }
 
 }

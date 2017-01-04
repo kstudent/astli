@@ -5,7 +5,7 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
-import astli.db.Method;
+import astli.db.MethodE;
 
 public class Fingerprint {
 
@@ -14,7 +14,7 @@ public class Fingerprint {
     private final Vector vector;
     
     @Nullable
-    private final Method method;
+    private final MethodE method;
 
     private static final List<List<NodeType>> DIMENSIONS;
     private static final int LONGEST_DIMENSION;
@@ -25,7 +25,7 @@ public class Fingerprint {
         LONGEST_DIMENSION = 12;
     }
     
-    public Fingerprint(Method method) {
+    public Fingerprint(MethodE method) {
         this.signature = method.getSignature();
         this.name = method.getName();
         
@@ -96,7 +96,7 @@ public class Fingerprint {
         return (this.signature.length() - 1) * 3 + this.getLength();
     }
 
-    public Method getMethod() {
+    public MethodE getMethod() {
         
         if(method == null) {
             throw new RuntimeException("Fingerprint does not have Reference to "

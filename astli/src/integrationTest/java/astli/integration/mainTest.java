@@ -15,7 +15,7 @@ import astli.db.Clazz;
 import astli.match.SetupLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import astli.db.Method;
+import astli.db.MethodE;
 
 /**
  *
@@ -27,7 +27,7 @@ public class mainTest {
 
     private static final String resourcesSrcDir = "./src/integrationTest/resources/";
 
-    //@Test
+//    @Test
     public void storeLibs() throws Exception {
         clearDB();
         testStoreFingerprintLibSpongyCore();
@@ -61,7 +61,7 @@ public class mainTest {
         for (Package pckg : packages) {
             for (Clazz clazz : pckg.getClazzes()) {
                 LOGGER.info("* " + clazz.getName());
-                for (Method m : clazz.getMethods()) {
+                for (MethodE m : clazz.getMethods()) {
                     LOGGER.info("** " + m.getName());
                     Fingerprint p = new Fingerprint(m);
                     LOGGER.info(p);
@@ -118,7 +118,7 @@ public class mainTest {
         LOGGER.info("libs   : {}", service.countLibraries());
     }
 
-    //@Test
+    @Test
     public void clearDB() throws Exception {
         EntityService service = EntityServiceFactory.createService();
         LOGGER.info("Fingerprint.count(): " + service.countClasses());
@@ -170,7 +170,7 @@ public class mainTest {
         for (int i = 0; i < upper_bound; i++) {
             Clazz clazz = classes.get(i);
             LOGGER.info(clazz.getName());
-            for (Method m : clazz.getMethods()) {
+            for (MethodE m : clazz.getMethods()) {
                 Fingerprint p = new Fingerprint(m);
                 LOGGER.info(m.getSignature());
                 LOGGER.info(p);
@@ -186,7 +186,7 @@ public class mainTest {
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         
-        service.findFingerprints((Method t) -> {
+        service.findFingerprints((MethodE t) -> {
             Fingerprint p = new Fingerprint(t);
             synchronized(builder) {
                 builder.append(p.getLength()).append(",");

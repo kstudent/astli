@@ -43,18 +43,18 @@ public class EntityServiceMethodTest {
         String methodName = "<init>():void";
         String signature = "V:V";
         
-        Method methodEntity = service.saveMethod(
+        MethodE methodEntity = service.saveMethod(
             ArrayUtils.short2LEByte(new short[]{7, 1, 100, 12 , 0}),
             methodName,
             signature,
             clazzEntity
         );
         
-        Method[] foundMethods = em.find(Method.class, "ID = ?", methodEntity.getID());
+        MethodE[] foundMethods = em.find(MethodE.class, "ID = ?", methodEntity.getID());
         
         assert(foundMethods.length == 1);
         
-        Method foundMethod = foundMethods[0];
+        MethodE foundMethod = foundMethods[0];
         
         assert(foundMethod.equals(methodEntity));
         assert(foundMethod.getClazz().equals(clazzEntity));
@@ -72,8 +72,8 @@ public class EntityServiceMethodTest {
         assert(service.countMethods() == 3);
     }
 
-    private Method createMethod(String name, int... values) throws SQLException {
-        Method entity = em.create(Method.class);
+    private MethodE createMethod(String name, int... values) throws SQLException {
+        MethodE entity = em.create(MethodE.class);
         entity.setVector(ArrayUtils.truncateIntToLEByteArray(values));
         entity.setSignature("");
         entity.setName(name);
@@ -87,7 +87,7 @@ public class EntityServiceMethodTest {
         @SuppressWarnings("unchecked")
         public void update(EntityManager entityManager) throws Exception
         {
-            entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
+            entityManager.migrate(MethodE.class, Clazz.class, Package.class, Library.class);
         }
     }
 }

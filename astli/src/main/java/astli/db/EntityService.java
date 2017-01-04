@@ -26,13 +26,13 @@ public class EntityService {
     }
     
     public void truncateTables() throws SQLException {
-        em.deleteWithSQL(Method.class,  "1 = 1");
+        em.deleteWithSQL(MethodE.class,  "1 = 1");
         em.deleteWithSQL(Clazz.class,   "1 = 1");
         em.deleteWithSQL(Package.class, "1 = 1");
         em.deleteWithSQL(Library.class, "1 = 1");
     }
     
-    public Method saveMethod(byte[] vector, String methodName, String signature, Clazz clazz) 
+    public MethodE saveMethod(byte[] vector, String methodName, String signature, Clazz clazz) 
             throws SQLException
     {
         
@@ -41,7 +41,7 @@ public class EntityService {
         DBParam claP = new DBParam("clazzID", clazz);
         DBParam vecP = new DBParam("vector", vector);
         
-        Method entity = em.create(Method.class, vecP, sigP, metP, claP);
+        MethodE entity = em.create(MethodE.class, vecP, sigP, metP, claP);
         return entity;
     }
     
@@ -94,7 +94,7 @@ public class EntityService {
     }    
 
     public int countMethods() throws SQLException {
-        return em.count(Method.class); 
+        return em.count(MethodE.class); 
     }
     
     public List<Clazz> findClasses() throws SQLException {
@@ -166,29 +166,29 @@ public class EntityService {
         return (em.find(Package.class, "NAME = ?", name).length > 0);
     }
 
-    public List<Method> findMethodsBySignature(String signature) throws SQLException {
-        return Arrays.asList(em.find(Method.class, "SIGNATURE = ?", signature));
+    public List<MethodE> findMethodsBySignature(String signature) throws SQLException {
+        return Arrays.asList(em.find(MethodE.class, "SIGNATURE = ?", signature));
     }
     
-    public List<Method> findMethodsBySignatureAndVector(String signature, byte[] vector) throws SQLException {
-        return Arrays.asList(em.find(Method.class, "SIGNATURE = ? AND VECTOR = ?", signature, vector));
+    public List<MethodE> findMethodsBySignatureAndVector(String signature, byte[] vector) throws SQLException {
+        return Arrays.asList(em.find(MethodE.class, "SIGNATURE = ? AND VECTOR = ?", signature, vector));
     }
     
     public List<Package> findPackageCandidateBySignatureAndVector(String signature, byte[] vector) throws SQLException {
         return Arrays.asList(em.find(Package.class, "ID", Query.select().where(
                 "ID IN( "
                 +    "SELECT PACKAGEID FROM CLAZZ WHERE ID IN ( "
-                +       "SELECT CLAZZID FROM FINGERPRINTENTITY "
+                +       "SELECT CLAZZID FROM METHODE "
                 +       "WHERE SIGNATURE = ? and VECTOR = ? "
                 +    ") "
                 + ") ", signature, vector)));
     }
     
-    public void findFingerprints(Consumer<Method> consumer) throws SQLException {
+    public void findFingerprints(Consumer<MethodE> consumer) throws SQLException {
           
         em.stream(
-                Method.class, 
-                (EntityStreamCallback<Method, Integer>) (Method p) -> {
+                MethodE.class, 
+                (EntityStreamCallback<MethodE, Integer>) (MethodE p) -> {
                    consumer.accept(p);
                 }
         );

@@ -26,7 +26,7 @@ public class EntityServiceFactory {
                 .password(jdbcProperties.password)
                 .auto().build();
 
-        entityManager.migrate(Method.class, Clazz.class, Package.class, Library.class);
+        entityManager.migrate(MethodE.class, Clazz.class, Package.class, Library.class);
        
         return new EntityService(entityManager);
     }

@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.mockito.Mockito;
-import astli.db.Method;
+import astli.db.MethodE;
 
 /**
  *
@@ -95,7 +95,7 @@ public class FingerprintTest {
     }
     
     private Fingerprint createFingerprint(int... values) {
-        Method e = Mockito.mock(Method.class);
+        MethodE e = Mockito.mock(MethodE.class);
         Mockito.when(e.getName()).thenReturn("nameOfMethod");
         Mockito.when(e.getSignature()).thenReturn("I[:Z");
         Mockito.when(e.getVector()).thenReturn(ArrayUtils.truncateIntToLEByteArray(values));

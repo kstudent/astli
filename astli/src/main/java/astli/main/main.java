@@ -28,6 +28,7 @@
 
 package astli.main;
 
+import astli.db.EntityServiceFactory;
 import astli.pojo.ASTLIOptions;
 import astli.extraction.FeatureExtractor;
 import org.apache.commons.cli.*;
@@ -37,7 +38,10 @@ import java.util.Locale;
 import java.util.stream.Stream;
 import astli.match.MatchAlgorithm;
 import astli.learn.LearnAlgorithm;
+import astli.match.SetupLogger;
 import astli.pojo.PackageHierarchy;
+import java.sql.SQLException;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -188,6 +192,16 @@ public class main {
                 case '?':
                     throw new RuntimeException();
                     
+                case 's': 
+                    {
+                        try {
+                            new SetupLogger(EntityServiceFactory.createService(), astliOptions).logSetup();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                    throw new RuntimeException();
+                    
                 case 'm':
                     astliOptions.algorithm = MatchAlgorithm.class;
                     break;
@@ -207,7 +221,7 @@ public class main {
                     
                 case 'a':
                     String algId = commandLine.getOptionValue('a');
-                    if(!MatchingOptionsDecoder.decode(algId, astliOptions)) {
+                    if(!AlgIDDecoder.decode(algId, astliOptions)) {
                         throw new RuntimeException();
                     }
                     break;
