@@ -41,6 +41,17 @@ public class StringUtils {
         return implode(stringList, glue);
     }
     
+    public static String implode(int[] list, String glue) {
+        
+        String[] stringList = new String[list.length];
+        
+        for(int i = 0; i < list.length; i++) {
+            stringList[i] = String.valueOf(list[i]);
+        }
+        
+        return implode(stringList, glue);
+    }
+    
     public static String implode(Object[] list, String glue) {
         StringBuilder builder = new StringBuilder();
         

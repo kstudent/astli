@@ -29,7 +29,7 @@ public class ASTLIOptions {
     public double packageAcceptanceThreshold = 0.5d;
     public int minimumNeedleParticularity = 12;    
     public int maxNeedleAmount = 10;
-    public int minimumPackageParticularity = 30;
+    public int minimumPackageParticularity = 80;
     
     public ASTLIOptions() {
     }

@@ -1,5 +1,6 @@
 package astli.main;
 
+import astli.find.FindByNeedle;
 import astli.pojo.ASTLIOptions;
 import astli.score.HybridMatcher;
 import astli.score.InclusionMatcher;
@@ -28,12 +29,15 @@ public class AlgIDDecoder {
         switch (algId) {
             case "simmatch":
                 astliOptions.matcher = SimilarityMatcher.class;
+                astliOptions.finder = FindByNeedle.class;
                 break;
             case "hybmatch":
                 astliOptions.matcher = HybridMatcher.class;
+                astliOptions.finder = FindByNeedle.class;
                 break;
             case "incmatch":
                 astliOptions.matcher = InclusionMatcher.class;
+                astliOptions.finder = FindByNeedle.class;
                 break;
             default: 
                 return false; 

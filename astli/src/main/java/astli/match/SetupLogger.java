@@ -51,7 +51,7 @@ public class SetupLogger {
             LOGGER.info("- LearningPhase");
             LOGGER.info("- MVN Lib Identifier: {}"    , options.mvnIdentifier);
         }
-        LOGGER.info("- Setup: {}",   options.toString());
+        LOGGER.info("- Setup: {}",   options.getSetup());
     }
 
     private void logDBStatus() throws SQLException {

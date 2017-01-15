@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
  */
 class StatsToJsonLogger implements Consumer<Stats> {
 
-    private final static Logger LOGGER = LogManager.getLogger(StatsToJsonLogger.class);
+    private final static Logger LOGGER = LogManager.getLogger();
     
     @Override
     public void accept(Stats stats) {

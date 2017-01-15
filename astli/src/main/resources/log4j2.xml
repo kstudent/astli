@@ -20,6 +20,9 @@
         <File name="DETAILED_CLASSIFICATION" fileName="log/detailed_classification.csv" append="false">
           <PatternLayout pattern="%m%n" />
         </File>
+        <File name="MATCHES" fileName="log/matches.csv" append="false">
+          <PatternLayout pattern="%m%n" />
+        </File>
      </Appenders>
     
     <Loggers>
@@ -62,6 +65,11 @@
         </Logger>
         
         <Logger name="astli.learn.LearnAlgorithm" level="info" />
+        
+        <Logger name="astli.postprocess.MatchToCSVLogger" level="info" additivity="false">
+            <AppenderRef ref="MATCHES"/>
+            <AppenderRef ref="SYSTEM_OUT"/>
+        </Logger>
         
     </Loggers>
 </Configuration>

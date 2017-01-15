@@ -162,8 +162,12 @@ public class EntityService {
         return Arrays.asList(em.find(Package.class, "NAME = ?", name ));
     }
     
+    public int getPackageCountByName(String name) throws SQLException {
+        return em.count(Package.class, "NAME = ?", name);
+    }
+    
     public boolean isPackageNameInDB(String name) throws SQLException {
-        return (em.find(Package.class, "NAME = ?", name).length > 0);
+        return (em.count(Package.class, "NAME = ?", name) > 0);
     }
 
     public List<MethodE> findMethodsBySignature(String signature) throws SQLException {
