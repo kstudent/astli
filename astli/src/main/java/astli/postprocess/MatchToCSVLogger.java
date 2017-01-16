@@ -21,28 +21,9 @@ public class MatchToCSVLogger implements PostProcessor {
     private static final String NEGATIVE = "<negative>"; 
     
     private final EntityService service;
-    private final List<String> packageNames;
 
     public MatchToCSVLogger(EntityService service) {
         this.service = service;
-        packageNames = initPackageNames();
-    }
-    
-    private List<String> initPackageNames() {
-        try {
-            List<String> names = service.findPackages().stream()
-                    .map(pckg -> pckg.getName())
-                    .distinct()
-                    .sorted((that, other) -> that.compareTo(other))
-                    .peek(pckg -> LOG.info("{}", pckg))
-                    .collect(Collectors.toList());
-                    
-            names.add(NEGATIVE); 
-            return names;
-            
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
     }
     
     @Override
@@ -54,9 +35,9 @@ public class MatchToCSVLogger implements PostProcessor {
         
         PackageHierarchy apkH = match.getApkH();
 
-        String actual;
+        String actualName;
         try {
-            actual = service.isPackageNameInDB(apkH.getName()) 
+            actualName = service.isPackageNameInDB(apkH.getName()) 
                     ? apkH.getName()
                     : NEGATIVE;
         } catch (SQLException ex) {
@@ -65,7 +46,7 @@ public class MatchToCSVLogger implements PostProcessor {
 
         List<String> predicted = new ArrayList<>();
         
-        double maxScore = 1.0d;
+        double maxScore = 0.0d;
         
         if(match.getItems().isEmpty()) {
             predicted.add(NEGATIVE);
@@ -82,7 +63,7 @@ public class MatchToCSVLogger implements PostProcessor {
         
         predicted.stream()
                 .forEach(predictedName -> LOG.info("{},{},{},{},{}", 
-                        apkH.getName(), apkH.getParticularity(), actual, 
+                        apkH.getName(), apkH.getParticularity(), actualName, 
                         predictedName, score));
     }
 

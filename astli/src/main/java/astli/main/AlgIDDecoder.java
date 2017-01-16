@@ -39,6 +39,17 @@ public class AlgIDDecoder {
                 astliOptions.matcher = InclusionMatcher.class;
                 astliOptions.finder = FindByNeedle.class;
                 break;
+            case "pat" : 
+                astliOptions.matcher = SimilarityMatcher.class;
+                astliOptions.finder = FindByNeedle.class;
+                astliOptions.packageAcceptanceThreshold = -1.0d;
+                astliOptions.minimumPackageParticularity = 0;
+                break;
+            case "minpp" : 
+                astliOptions.matcher = SimilarityMatcher.class;
+                astliOptions.finder = FindByNeedle.class;
+                astliOptions.minimumPackageParticularity = 0;
+                break;
             default: 
                 return false; 
         }
