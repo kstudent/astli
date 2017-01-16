@@ -3,12 +3,12 @@ package astli.learn;
 import astli.db.Clazz;
 import astli.main.AndroidLibIDAlgorithm;
 import java.sql.SQLException;
-import java.util.stream.Stream;
 import astli.pojo.ASTLIOptions;
 import astli.db.EntityService;
 import astli.db.EntityServiceFactory;
 import astli.pojo.Fingerprint;
 import astli.pojo.PackageHierarchy;
+import java.util.Collection;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,10 +21,10 @@ public class LearnAlgorithm implements AndroidLibIDAlgorithm {
     
     private static final Logger LOGGER = LogManager.getLogger();
     private EntityService service;
-    private final Stream<PackageHierarchy> packages;
+    private final Collection<PackageHierarchy> packages;
     private final String libName;
 
-    public LearnAlgorithm(Stream<PackageHierarchy> packages, ASTLIOptions astliOptions) {
+    public LearnAlgorithm(Collection<PackageHierarchy> packages, ASTLIOptions astliOptions) {
         this.libName = astliOptions.mvnIdentifier;
         this.packages = packages;
     }

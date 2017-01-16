@@ -13,8 +13,7 @@ public class PostProcessorFactory {
     public static PostProcessor createProcessor(ASTLIOptions options, EntityService service) {
 
         if(options.isInEvaluationMode) {
-//            return new EvaluateResults(options, new ResultClassifier(service), new Date());
-            return new MatchToCSVLogger(service);
+            return new MatchToCSVLogger(service, new Date());
         }
         
         return new PlateauFilterProcessor(new PrintResultTable());

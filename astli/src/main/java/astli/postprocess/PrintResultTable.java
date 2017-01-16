@@ -42,7 +42,7 @@ public class PrintResultTable implements PostProcessor {
     }
 
     @Override
-    public void done() {
+    public void done(int totalPackages, int keptPackages) {
     }
 
     private String buildResultLines(PackageHierarchy apk, List<Match.Item> items) {

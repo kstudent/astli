@@ -10,6 +10,6 @@ public interface PostProcessor {
     
     void init(); 
     void process(Match match);
-    void done();
+    void done(int totalPackages, int keptPackages);
     
 }

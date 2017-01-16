@@ -5,8 +5,8 @@ import astli.pojo.Match;
 import astli.pojo.PackageHierarchy;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,12 +18,15 @@ import org.apache.logging.log4j.Logger;
 public class MatchToCSVLogger implements PostProcessor {
 
     private static final Logger LOG = LogManager.getLogger();
+    
     private static final String NEGATIVE = "<negative>"; 
     
     private final EntityService service;
+    private final Date start;
 
-    public MatchToCSVLogger(EntityService service) {
+    MatchToCSVLogger(EntityService service, Date start) {
         this.service = service;
+        this.start = start;
     }
     
     @Override
@@ -68,7 +71,11 @@ public class MatchToCSVLogger implements PostProcessor {
     }
 
     @Override
-    public void done() {
+    public void done(int totalPackages, int keptPackages) {
+        long diff = new Date().getTime() - start.getTime();
+        LOG.info(":runtime:,{}", diff / 1000);
+        LOG.info(":total:,{}", totalPackages);
+        LOG.info(":kept:,{}", keptPackages);
     }
     
 }

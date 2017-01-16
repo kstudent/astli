@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import astli.pojo.ASTLIOptions;
 import astli.pojo.PackageHierarchy;
+import java.util.Collection;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +29,7 @@ public class FeatureExtractor {
         this.options = options;
     }
     
-    public Stream<PackageHierarchy> extractPackageHierarchies() throws IOException {
+    public Collection<PackageHierarchy> extractPackageHierarchies() throws IOException {
         baksmaliOptions bsOptions = new baksmaliOptions();
         
         List<? extends ClassDef> classDefs = parseClassesFromFile(options.inputFileName, bsOptions);

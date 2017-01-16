@@ -5,14 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import astli.extraction.ClassASTBuilder;
-import astli.extraction.ASTToFingerprintTransformer;
-import astli.extraction.Node;
-import astli.extraction.PackageHierarchyGenerator;
 import astli.pojo.Fingerprint;
 import astli.pojo.NodeType;
 import astli.pojo.PackageHierarchy;
-import java.util.stream.Collectors;
 import org.jf.baksmali.baksmaliOptions;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,9 +47,9 @@ public class PackageHierarchyGeneratorTest {
         
         PackageHierarchyGenerator phg = new PackageHierarchyGenerator(ast2fpt, mappings);
         
-        List<PackageHierarchy> hierarchies = 
+        List<PackageHierarchy> hierarchies = new ArrayList(
                 phg.generatePackageHierarchiesFromClassBuilders(astClassBuilders.stream())
-                .collect(Collectors.toList());
+        );
         
         assert(hierarchies.size() == 1);
         

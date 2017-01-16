@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 import astli.pojo.Fingerprint;
 import astli.pojo.PackageHierarchy;
+import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -38,7 +39,7 @@ public class PackageHierarchyGenerator {
         
     }
     
-    public Stream<PackageHierarchy> generatePackageHierarchiesFromClassBuilders(
+    public Collection<PackageHierarchy> generatePackageHierarchiesFromClassBuilders(
             Stream<ClassASTBuilder> astClassBuilderStream) {
         
         Map<String, PackageHierarchy> hierarchies = new HashMap<>();
@@ -48,7 +49,7 @@ public class PackageHierarchyGenerator {
                 .filter(prints -> !prints.getMethods().isEmpty())
                 .forEach(prints  -> insertClassPrintIntoHierarchies(prints, hierarchies));
         
-        return hierarchies.values().parallelStream();
+        return hierarchies.values();
     }
      
     /**

@@ -35,13 +35,12 @@ import org.apache.commons.cli.*;
 import org.jf.util.ConsoleUtil;
 
 import java.util.Locale;
-import java.util.stream.Stream;
 import astli.match.MatchAlgorithm;
 import astli.learn.LearnAlgorithm;
 import astli.match.SetupLogger;
 import astli.pojo.PackageHierarchy;
 import java.sql.SQLException;
-import java.util.logging.Level;
+import java.util.Collection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,7 +79,7 @@ public class main {
         }
         
         try {
-            Stream<PackageHierarchy> packages = new FeatureExtractor(astliOptions).
+            Collection<PackageHierarchy> packages = new FeatureExtractor(astliOptions).
                     extractPackageHierarchies();
             
             AndroidLibIDAlgorithm alg;

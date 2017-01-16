@@ -46,7 +46,7 @@ public class PlateauFilterProcessor implements PostProcessor {
     }
 
     @Override
-    public void done() {
-        actualProcessor.done();
+    public void done(int totalPackages, int keptPackages) {
+        actualProcessor.done(totalPackages, keptPackages);
     }
 }
