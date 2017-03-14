@@ -73,9 +73,7 @@ public class MatchToCSVLogger implements PostProcessor {
     @Override
     public void done(int totalPackages, int keptPackages) {
         long diff = new Date().getTime() - start.getTime();
-        LOG.info(":runtime:,{}", diff / 1000);
-        LOG.info(":total:,{}", totalPackages);
-        LOG.info(":kept:,{}", keptPackages);
+        LOG.info(":stats_per_app:,{},{},{}", diff / 1000, totalPackages, keptPackages);
     }
     
 }

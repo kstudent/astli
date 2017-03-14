@@ -32,7 +32,7 @@ public class FindByNeedle implements CandidateFinder {
     }
     
     private Stream<Fingerprint> distillMethodsWithHighParticularity(PackageHierarchy hierarchy) {
-        return hierarchy.getClassNames().parallelStream()
+        return hierarchy.getClassNames().parallelStream() //TODO: unparallelize//
                 .map(name -> hierarchy.getMethodsByClassName(name))
                 .flatMap(methods -> methods.values().stream())
                 .filter(method -> method.getParticularity() > minNeedleParticularity)

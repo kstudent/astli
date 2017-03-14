@@ -68,7 +68,7 @@
         
         <Logger name="astli.postprocess.MatchToCSVLogger" level="info" additivity="false">
             <AppenderRef ref="MATCHES"/>
-            <AppenderRef ref="SYSTEM_OUT"/>
+            <AppenderRef ref="STDOUT"/>
         </Logger>
         
     </Loggers>
