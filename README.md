@@ -1,19 +1,31 @@
-### About
+# Abstract-Syntax-Tree-based Library Identification (ASTLI)
 
-smali/baksmali is an assembler/disassembler for the dex format used by dalvik, Android's Java VM implementation. The syntax is loosely based on Jasmin's/dedexer's syntax, and supports the full functionality of the dex format (annotations, debug info, line info, etc.)
+## What It Is
 
-Downloads are at  https://bitbucket.org/JesusFreke/smali/downloads. If you are interested in submitting a patch, feel free to send me a pull request here.
+ASTLI finds libraries (`.jar`) in obfuscated Android applications (`.apk`). First, ASTLI learns library by extracting fingerprints that are derived from the abstract syntax tree and from method signatures. Then, ASTLI matches fingerprints against an application and gives an estimate on how likely the library is present in the application. See [1] for further explanation. Please cite [2] if you use this work. 
 
-See [the wiki](https://github.com/JesusFreke/smali/wiki) for more info/news/release notes/etc.
+## Requirements
 
-#### Support
-- [github Issue tracker](https://github.com/JesusFreke/smali/issues) - For any bugs/issues/feature requests
-- [#smali on freenode](http://webchat.freenode.net/?channels=smali) - Free free to drop by and ask a question. Don't expect an instant response, but if you hang around someone will respond.
+- dx.jar from Android SDK Build Tools
+- Tested with OpenJDK 8
 
+## Build
 
-#### Some useful links for getting started with smali
+1. `git clone http://github.com`
+2. `cd astli`
+1. copy `dx.jar` or create symlink to `dx.jar` in `astli/lib/`
+3. `gradle jar`
 
-- [Official dex bytecode reference](https://source.android.com/devices/tech/dalvik/dalvik-bytecode.html)
-- [Registers wiki page](https://github.com/JesusFreke/smali/wiki/Registers)
-- [Types, Methods and Fields wiki page](https://github.com/JesusFreke/smali/wiki/TypesMethodsAndFields)
-- [Official dex format reference](https://source.android.com/devices/tech/dalvik/dex-format.html)
+## Usage
+
+Run `java -jar gradle.jar` to a list of options.
+
+## Notice
+
+ASTLI is a research prototype, and, although ASTLI has been extensively evaluated with FOSS applications, one may encounter edge cases that ASTLI cannot handle. 
+
+## Sources
+
+[1] Rabensteiner, Christof: Android Library Identification (Master's Thesis); 2017;  http://diglib.tugraz.at/download.php?id=5988e795a35ec&location=search
+
+[2] Feichtner, Johannes, and Rabensteiner, Christof: Obfuscation-Resilient Code Recognition in Android Apps; ARES 2019;  
