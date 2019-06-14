@@ -6,19 +6,19 @@ ASTLI finds libraries (`.jar`) in obfuscated Android applications (`.apk`). Firs
 
 ## Requirements
 
-- dx.jar from Android SDK Build Tools
+- `dx.jar` from Android SDK Build Tools
 - Tested with OpenJDK 8
 
 ## Build
 
-1. `git clone http://github.com`
+1. `git clone https://github.com/kstudent/astli`
 2. `cd astli`
-1. copy `dx.jar` or create symlink to `dx.jar` in `astli/lib/`
-3. `gradle jar`
+3. Copy `dx.jar` or create symlink to `dx.jar` in `astli/lib/`
+4. Build with `./gradlew jar` (run `./gradlew tasks` to see all tasks)
 
 ## Usage
 
-Run `java -jar gradle.jar` to a list of options.
+Run `java -jar astli.jar` to a list options and parameters.
 
 ## Notice
 
