@@ -18,7 +18,7 @@ ASTLI finds libraries (`.jar`) in obfuscated Android applications (`.apk`). Firs
 
 ## Usage
 
-Run `java -jar astli.jar` to a list options and parameters.
+Run `java -jar astli.jar` to list all options and parameters.
 
 ## Notice
 
