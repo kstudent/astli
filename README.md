@@ -2,7 +2,7 @@
 
 ## What It Is
 
-ASTLI finds libraries (`.jar`) in obfuscated Android applications (`.apk`). First, ASTLI learns library by extracting fingerprints that are derived from the abstract syntax tree and from method signatures. Then, ASTLI matches fingerprints against an application and gives an estimate on how likely the library is present in the application. See [1] for further explanation. Please cite [2] if you use this work. 
+ASTLI finds libraries (`.jar`) in obfuscated Android applications (`.apk`). First, ASTLI learns libraries by extracting fingerprints that are derived from its abstract syntax tree and from its method signatures. Then, ASTLI matches fingerprints against an application and gives an estimate on how likely the library is present in the application. See [1] for a detailed explanation of the process and the evaluation. Cite [2] if you use this work. 
 
 ## Requirements
 
